@@ -81,13 +81,9 @@ void parseDIMACS(std::string filename) {
 
     // push pure literals to prop queue
     for (int i = 1; i <= numOfVars; i++) {
-        if (vars[i].static_neg_occ.size() == 0 && vars[i].static_pos_occ.size() > 0) {
+        if ((vars[i].static_neg_occ.size() * vars[i].static_pos_occ.size()) == 0) {
             vars[std::abs(i)].enqueued = true;
-            toPropagate.push(i);
-        }
-        if (vars[i].static_pos_occ.size() == 0 && vars[i].static_neg_occ.size() > 0) {
-            vars[std::abs(i)].enqueued = true;
-            toPropagate.push(-i);
+            toPropagate.push(std::abs(i));
         }
     }
 }
