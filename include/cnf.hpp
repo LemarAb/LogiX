@@ -96,7 +96,7 @@ void chooseJW();
 void update(int assertedVar);
 
 // updates the CNF after unassignment in backtrack()
-void updateBacktrack(int unassignedVar);
+void revert(int unassignedVar);
 
 // handles conficts and signals UNSAT
 void backtrack();

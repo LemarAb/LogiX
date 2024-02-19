@@ -13,7 +13,7 @@ void backtrack() {
   while (!assig.empty() && vars[assig.top()].forced) {
     btc++;
     int toUnassign = assig.top();
-    updateBacktrack(toUnassign);
+    revert(toUnassign);
     vars[toUnassign].val = FREE;
     vars[toUnassign].forced = false;
 
@@ -32,7 +32,7 @@ void backtrack() {
 
   // handle most recent branching variable
   int b = assig.top();
-  updateBacktrack(b);
+  revert(b);
   vars[b].forced = true;
 
   // assign negated val
