@@ -1,4 +1,4 @@
-#include "../../include/cnf.hpp"
+#include "../../include/cnf2.hpp"
 
 void* dpll(void* arg) {  // TODO: We should implement the more optimised appproach of checking the satisfaction of every clause
     while (true) {

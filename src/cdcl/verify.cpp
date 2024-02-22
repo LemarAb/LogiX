@@ -1,4 +1,4 @@
-#include "../../include/cnf.hpp"
+#include "../../include/cnf2.hpp"
 
 void verifyModel() {
     for (int i = 1; i <= numOfClauses; i++) {

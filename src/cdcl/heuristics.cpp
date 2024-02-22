@@ -1,4 +1,4 @@
-#include "../../include/cnf.hpp"
+#include "../../include/cnf2.hpp"
 
 void chooseINC() {
     while (vars[curVar].getValue() != FREE) curVar++;
