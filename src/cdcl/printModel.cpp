@@ -4,8 +4,6 @@ void printModel(int res) {
     if (res == 1) {
         printf("\nUNSAT: No model!\n");
     } else {
-        std::cout << "All clauses satisfied!"
-                  << "\n";
         printf("Model: ");
     }
 
