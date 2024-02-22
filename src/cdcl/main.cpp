@@ -34,10 +34,10 @@ int main(int argc, char *argv[]) {
   std::string fileName;
 
   if (path[0] == 't')
-    fileName = "test/" + fileNamesTest[std::stoi(index)];
+    fileName = "benchmarks/test/" + fileNamesTest[std::stoi(index)];
 
   if (path[0] == 'c')
-    fileName = "comp/" + fileNamesComp[std::stoi(index)];
+    fileName = "benchmarks/comp/" + fileNamesComp[std::stoi(index)];
 
   printf("\nRunning %s\n\n", fileName.c_str());
 
