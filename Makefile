@@ -7,7 +7,7 @@ CXXFLAGS = -std=c++11 -Wall -Wno-sign-compare -Wno-format -g -O3
 SRCDIR = src
 INCDIR = include
 BINDIR = .
-SOLVERDIR = dpll
+SOLVERDIR = cdcl
 
 # Source files
 SOURCES = $(wildcard $(SRCDIR)/$(SOLVERDIR)/*.cpp)
