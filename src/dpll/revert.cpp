@@ -1,4 +1,4 @@
-#include "../include/cnf.hpp"
+#include "../../include/cnf.hpp"
 
 void revert(int unassignedVar) {
     // clauses where assertedVar evaluates to FALSE

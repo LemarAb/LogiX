@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "../include/cnf.hpp"
+#include "../../include/cnf.hpp"
 
 void backtrack() {
   backtrackFlag = false;

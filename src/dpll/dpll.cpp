@@ -1,4 +1,4 @@
-#include "../include/cnf.hpp"
+#include "../../include/cnf.hpp"
 
 void* dpll(void* arg) {
     while (true) {

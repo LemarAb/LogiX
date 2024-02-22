@@ -1,4 +1,4 @@
-#include "../include/cnf.hpp"
+#include "../../include/cnf.hpp"
 
 void parseDIMACS(std::string filename) {
     std::ifstream file(filename);

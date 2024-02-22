@@ -7,9 +7,10 @@ CXXFLAGS = -std=c++11 -Wall -Wno-sign-compare -Wno-format -g -O3
 SRCDIR = src
 INCDIR = include
 BINDIR = .
+SOLVERDIR = dpll
 
 # Source files
-SOURCES = $(wildcard $(SRCDIR)/*.cpp)
+SOURCES = $(wildcard $(SRCDIR)/$(SOLVERDIR)/*.cpp)
 SELECTED_SOURCES =  $(wildcard $(SRCDIR)/main.cpp) $(wildcard $(SRCDIR)/parseDIMACS.cpp)
 OBJ = $(SRC:.cpp=.o)
 EXECUTABLE = main

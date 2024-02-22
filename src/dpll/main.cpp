@@ -3,8 +3,8 @@
 #include <chrono>
 #include <iostream>
 
-#include "../include/cnf.hpp"
-#include "../include/fileNames.hpp"
+#include "../../include/cnf.hpp"
+#include "../../include/fileNames.hpp"
 
 int numOfVars;
 int numOfClauses;

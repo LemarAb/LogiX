@@ -1,4 +1,4 @@
-#include "../include/cnf.hpp"
+#include "../../include/cnf.hpp"
 
 void printModel(int res) {
     if (res == 1) {

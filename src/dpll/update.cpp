@@ -1,4 +1,4 @@
-#include "../include/cnf.hpp"
+#include "../../include/cnf.hpp"
 
 void update(int assertedVar) {
     // clauses where assertedVar evaluates to FALSE

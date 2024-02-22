@@ -4,7 +4,7 @@
 #include <utility>
 #include <vector>
 
-#include "../include/cnf.hpp"
+#include "../../include/cnf.hpp"
 
 void chooseINC() {
     dc++;
