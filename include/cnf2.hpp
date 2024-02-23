@@ -68,12 +68,12 @@ struct Variable {
     Assig getValue() { return val; }
 };
 
-struct Clause {
-    std::vector<int> literals;
-    int w1 = 0;
-    int w2 = 1;
-    int sat = -1;
-};
+// struct Clause {
+//     std::vector<int> literals;
+//     int w1 = 0;
+//     int w2 = 1;
+//     int sat = -1;
+// };
 
 extern Heuristics heuristic;
 
@@ -94,6 +94,8 @@ extern std::set<int> satClauses;
 
 // queue storing unit literals
 extern std::queue<int> unitQueue;
+
+extern std::vector<int> vsids;
 
 // stack of variables with assigned values
 extern std::stack<int> assig;

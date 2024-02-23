@@ -14,6 +14,7 @@ std::vector<Variable> vars;
 std::set<int> satClauses;
 std::queue<int> unitQueue;
 std::stack<int> assig;
+std::vector<int> vsids;
 int curVar = 1;
 int curProp;
 Heuristics heuristic = INC;
@@ -41,8 +42,8 @@ int main(int argc, char *argv[]) {
 
   printf("\nRunning %s\n\n", fileName.c_str());
 
-//   if (argc > 2)
-//     heuristic = Heuristics(std::stoi(argv[2]));
+  //   if (argc > 2)
+  //     heuristic = Heuristics(std::stoi(argv[2]));
 
   parseDIMACS(fileName);
 
@@ -62,16 +63,19 @@ int main(int argc, char *argv[]) {
   std::chrono::duration<double> duration =
       std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
 
+  if ((intptr_t)res == 0)
+    verifyModel();
+
   printf("\nCPU time used: %.6f seconds\n\n", duration.count());
   // for (auto it = satClauses.begin(); it != satClauses.end(); ++it) {
   //     std::cout << *it << std::endl;  // Perform operations with each element
   // }
-  if ((intptr_t)res == 0)
-    verifyModel();
 
   // std::cout << "\nCPU time used: " << duration.count() << " seconds\n" <<
   // std::endl;
   std::cout.flush();
+
+  printf("-------------------------------------\n\n", duration.count());
 
   return 0;
 }
