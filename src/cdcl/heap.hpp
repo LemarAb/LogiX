@@ -20,3 +20,10 @@ struct CompVSIDSScore{
 };
 
 std::priority_queue<int, std::vector<int>, CompVSIDSScore> vsidsPrioQueue;
+
+
+// Unfinished
+void InitVSIDSScore(std::vector<int>);
+
+void UpdateVSIDSCore(int var);
+
