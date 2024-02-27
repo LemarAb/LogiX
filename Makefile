@@ -15,11 +15,17 @@ SELECTED_SOURCES =  $(wildcard $(SRCDIR)/main.cpp) $(wildcard $(SRCDIR)/parseDIM
 OBJ = $(SRC:.cpp=.o)
 EXECUTABLE = main
 
+TEST = test
+TESTSOURCES = $(wildcard $(SRCDIR)/$(SOLVERDIR)/heapTest.cpp)  $(wildcard $(SRCDIR)/$(SOLVERDIR)/parseDIMACS.cpp)
+
 # Build target
 all: $(EXECUTABLE)
 
 # Rule to create executable
 $(EXECUTABLE): $(SOURCES)
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $@ $^
+
+$(TEST): $(TESTSOURCES)
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $@ $^
 	
 %.o: %.cpp
@@ -33,3 +39,5 @@ clean:
 run: $(EXECUTABLE) 
 	$(EXECUTABLE) $(arg) $(heur=0)
 
+testrun: $(TEST)
+	$(TEST)
