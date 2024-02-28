@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <math.h>
+#include "../../include/cnf2.hpp"
 
 #ifndef K_Heap_hpp
 #define K_Heap_hpp
@@ -32,13 +33,11 @@ private:
 public:
     Heap(int capacity);
 
-    void heapifyUp(int);
-    void heapifyDown(int);
     void insertKey(int);
     int getHeapSize() const;
     void display() const;
     int deleteKey();
-    void scoreInit(std::vector<int>);
+    void initHeap(Heap);
     void heapify(int);
     int extractMin();
 };
@@ -51,6 +50,8 @@ Heap::Heap(int capacity): size(0), capacity(capacity){
 
 void Heap::insertKey(int k) {
 
+    std::vector<double> occs (1);
+
     if (size == capacity){
         std::cerr << "Heap Overflow\n";
         return;
@@ -58,17 +59,26 @@ void Heap::insertKey(int k) {
     
     //Increase amount of elems.
     size++;
+    
 
     //Insert new key at the end
     int i = size - 1;
     heap[i] = k;
+
+    printf("inserting element %i \n", i);
+
+    occs[0] = vars[i].pos_occ + vars[i].neg_occ;
+        
+
+    score[i] = occs[0]; 
+    printf("score for %i is %f \n", i, score[i]);
 
     
     //score[k] = TODO : number of occs of k in cnf
     
     //Fix the tree property
     //Move the element up until i => parent or root
-    while (i != 0 && heap[getParent(i)] > heap[i]) {
+    while (i != 0 && score[getParent(i)] > score[i]) {
         std::swap(heap[i], heap[getParent(i)]);
         i = getParent(i);
     }
@@ -85,10 +95,10 @@ int Heap::deleteKey() {
     score[root] = 0; // Reset the score of the removed variable
     size--;
 
-    heapifyDown(0);
+    heapify(0);
 
     return root;
-}
+}   
 
 void Heap::heapify(int i) {
     int l = getLChild(i);
@@ -96,11 +106,11 @@ void Heap::heapify(int i) {
     int smallest = i;
 
     //find smallest elem
-    if (( l < size) && (heap[l] < heap[smallest])){
+    if (( l < size) && (score[l] < score[smallest])){
         smallest = l;
     }
 
-    if ((r < size) && (heap[r] < heap[smallest])){
+    if ((r < size) && (score[r] < score[smallest])){
         smallest = r;
     }
 
@@ -126,25 +136,6 @@ int Heap::extractMin( ) {
         
         return root;
     }
-
-
-}
-
-void Heap::heapifyDown(int i) {
-    int maxIdx = i;
-    int leftChild = getLChild(i);
-    int rightChild = getRChild(i);
-
-    if (leftChild < size && score[heap[leftChild]] > score[heap[maxIdx]])
-        maxIdx = leftChild;
-
-    if (rightChild < size && score[heap[rightChild]] > score[heap[maxIdx]])
-        maxIdx = rightChild;
-
-    if (maxIdx != i) {
-        std::swap(heap[i], heap[maxIdx]);
-        heapifyDown(maxIdx);
-    }
 }
 
 int Heap::getHeapSize() const {
@@ -152,29 +143,30 @@ int Heap::getHeapSize() const {
 }
 
 void Heap::display() const {
+
     int power = 0;
     int value = 1;
     for (int i = 0; i < size; ++i) {
         if(i == value){
-            std::cout << "\n";
+            printf("\n");
             power += 1;
             value += (1 << value);
         }
-        std::cout << "(" << heap[i] << ") ";
+        printf("(%i, %f) ", heap[i], score[i]);
+        
     }
-    std::cout << "\n";
+    printf("\n");
 }
 
-void Heap::scoreInit(std::vector<int> formula){
+void Heap::initHeap(Heap heap){
 
-    for (int i = 1; i < formula.size();  i++) {
-        int var = formula[i];
-        int count = 0;
-        for (int j = 1; j < formula.size(); j++) {
-            if (formula[j] == formula[i]) count++;
-        }
-        score[i-1] = count;
-    }
+    for (int i = 0; i < numOfVars; i++) {
+        
+        heap.insertKey(i + 1);
+        heap.display();
+
+        printf("\n");
+}
 }
 
 // Unfinished
