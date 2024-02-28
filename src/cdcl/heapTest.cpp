@@ -18,12 +18,15 @@ int main() {
     
     int N = vars.size();
 
-    Heap heap(N);
+    Heap vsidsheap(N);
 
-    heap.initHeap(heap);
-    heap.display();
+    vsidsheap.initHeap(vsidsheap);
+    vsidsheap.display();
+    int heapsize = vsidsheap.getHeapSize();
+    printf("This is the size after init %i \n", vsidsheap.getHeapSize());
 
-    //int min = heap.extractMin();
-    //heap.display();
+    int max = vsidsheap.extractMax();
+    printf("This is the max %i\n", max);
+    vsidsheap.display();
     return 0;
 }

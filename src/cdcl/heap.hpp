@@ -16,7 +16,7 @@
 
 class Heap {
 private:
-    int size;
+    
     int capacity;
     std::vector<int> heap;                              // int vector for the order of elems (0-indexed)
     std::vector<double> score;                          // double vector for the scores of elems. score[1] == score of the 1st elem
@@ -25,27 +25,28 @@ private:
     int getRChild(int i) const { return (i + 1) * 2; }
     int getParent(int i) const { return (i - 1) / 2; }
 
-    bool scoreOperator(int v1, int v2) const { 
-        return score[v1] < score[v2]; 
-    }
-
     
 public:
+    int size;
     Heap(int capacity);
-
     void insertKey(int);
-    int getHeapSize() const;
+    int getHeapSize() ;
     void display() const;
     int deleteKey();
     void initHeap(Heap);
     void heapify(int);
-    int extractMin();
+    int extractMax();
 };
 
 //Constructor
-Heap::Heap(int capacity): size(0), capacity(capacity){ 
+Heap::Heap(int capacity): capacity(capacity){ 
+    size = 0;
     heap.resize(capacity);
     score.resize(capacity);
+};
+
+int Heap::getHeapSize()  {
+    return size;
 };
 
 void Heap::insertKey(int k) {
@@ -59,6 +60,7 @@ void Heap::insertKey(int k) {
     
     //Increase amount of elems.
     size++;
+    printf("size == %i,\n", getHeapSize());
     
 
     //Insert new key at the end
@@ -85,7 +87,7 @@ void Heap::insertKey(int k) {
         std::swap(heap[i], heap[getParent(i)]);
         i = getParent(i);
     }
-}   
+};   
 
 int Heap::deleteKey() {
     if (size <= 0) {
@@ -101,30 +103,33 @@ int Heap::deleteKey() {
     heapify(0);
 
     return root;
-}   
+};  
 
 void Heap::heapify(int i) {
     int l = getLChild(i);
     int r = getRChild(i);
-    int smallest = i;
+    int largest = i;
 
-    //find smallest elem
-    if (( l < size) && (score[l] < score[smallest])){
-        smallest = l;
+    //find biggest elem
+
+    //check if left child is bigger
+    if (( l < size) && (score[heap[l]] > score[heap[largest]])){
+        largest = l;
     }
 
-    if ((r < size) && (score[r] < score[smallest])){
-        smallest = r;
+    if ((r < size) && (score[heap[r]] > score[heap[largest]])){
+        largest = r;
     }
 
-    if (smallest != i){
-        std::swap(heap[i], heap[smallest]);
-        heapify(smallest);
+    if (largest != i){
+        std::swap(heap[i], heap[largest]);
+        heapify(largest);
     }
-}
+};
 
-int Heap::extractMin( ) {
-    if (size == 0){
+int Heap::extractMax( ) {
+    printf("%d size\n", getHeapSize());
+    if (getHeapSize() == 0){
         std::cerr << "Empty Heap\n";
         return -1;
     } else if (size == 1) {
@@ -139,11 +144,7 @@ int Heap::extractMin( ) {
         
         return root;
     }
-}
-
-int Heap::getHeapSize() const {
-    return size;
-}
+};
 
 void Heap::display() const {
 
@@ -159,7 +160,7 @@ void Heap::display() const {
         
     }
     printf("\n");
-}
+};
 
 void Heap::initHeap(Heap heap){
 
@@ -169,9 +170,8 @@ void Heap::initHeap(Heap heap){
         heap.display();
 
         printf("\n");
-}
+};
 }
 
-// Unfinished
 
 #endif
