@@ -18,7 +18,7 @@ class Heap {
 private:
     int size;
     int capacity;
-    std::vector<int> heap;                              // int vector for the order of elems
+    std::vector<int> heap;                              // int vector for the order of elems (0-indexed)
     std::vector<double> score;                          // double vector for the scores of elems. score[1] == score of the 1st elem
     
     int getLChild(int i) const { return i * 2 + 1; }
@@ -65,20 +65,23 @@ void Heap::insertKey(int k) {
     int i = size - 1;
     heap[i] = k;
 
-    printf("inserting element %i \n", i);
+    printf("inserting element %i \n", k);
 
-    occs[0] = vars[i].pos_occ + vars[i].neg_occ;
+    occs[0] = vars[k].pos_occ + vars[k].neg_occ;
         
 
-    score[i] = occs[0]; 
-    printf("score for %i is %f \n", i, score[i]);
+    score[k] = occs[0]; 
+    printf("score for %i is %f \n", heap[i], score[k]);
 
     
     //score[k] = TODO : number of occs of k in cnf
     
     //Fix the tree property
     //Move the element up until i => parent or root
-    while (i != 0 && score[getParent(i)] > score[i]) {
+    while (i != 0 && score[heap[getParent(i)]] < score[heap[i]]) {
+        printf("get parent results %i\n", heap[getParent(i)]);
+        printf("elem %i has score %f and its parents score is %f \n", heap[i], score[heap[i]], score[getParent(i)]);
+        if(score[getParent(i)] < score[i]) printf("they should change positions\n");
         std::swap(heap[i], heap[getParent(i)]);
         i = getParent(i);
     }
@@ -150,9 +153,9 @@ void Heap::display() const {
         if(i == value){
             printf("\n");
             power += 1;
-            value += (1 << value);
+            value += (1 << power);
         }
-        printf("(%i, %f) ", heap[i], score[i]);
+        printf("(%i, %f) ", heap[i], score[heap[i]]);
         
     }
     printf("\n");
@@ -160,9 +163,9 @@ void Heap::display() const {
 
 void Heap::initHeap(Heap heap){
 
-    for (int i = 0; i < numOfVars; i++) {
+    for (int i = 1; i < vars.size(); i++) {
         
-        heap.insertKey(i + 1);
+        heap.insertKey(i);
         heap.display();
 
         printf("\n");

@@ -12,7 +12,7 @@ std::queue<int> unitQueue;
 int main() {
     // Example usage
 
-    std::string filename = "benchmarks/test/005_hole2_u.cnf";
+    std::string filename = "benchmarks/test/025_tent4_4_s.cnf";
 
     parseDIMACS(filename);
     
