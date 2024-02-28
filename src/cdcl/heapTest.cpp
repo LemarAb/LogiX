@@ -1,5 +1,5 @@
 #include "heap.hpp"
-#include "../../include/cnf2.hpp"
+#include "../../include/cdcl.hpp"
 
 int numOfVars;
 int numOfClauses;

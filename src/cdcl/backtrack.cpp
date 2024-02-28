@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "../../include/cnf2.hpp"
+#include "../../include/cdcl.hpp"
 
 void backtrack() {
     while (!assig.empty() && vars[assig.top()].forced) {  // until the last branching variable.

@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <math.h>
-#include "../../include/cnf2.hpp"
+#include "../../include/cdcl.hpp"
 
 #ifndef K_Heap_hpp
 #define K_Heap_hpp

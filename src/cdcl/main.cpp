@@ -3,7 +3,7 @@
 #include <chrono>
 #include <iostream>
 
-#include "../../include/cnf2.hpp"
+#include "../../include/cdcl.hpp"
 #include "../../include/fileNames.hpp"
 
 int numOfVars;

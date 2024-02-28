@@ -1,4 +1,4 @@
-#include "../../include/cnf2.hpp"
+#include "../../include/cdcl.hpp"
 
 void updateWatchedLiterals(int assertedVar) {
   auto clausesToUpdatePointers = &vars[assertedVar].neg_watched;
