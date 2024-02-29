@@ -16,7 +16,7 @@ OBJ = $(SRC:.cpp=.o)
 EXECUTABLE = main
 
 TEST = test
-TESTSOURCES = $(wildcard $(SRCDIR)/$(SOLVERDIR)/heapTest.cpp)  $(wildcard $(SRCDIR)/$(SOLVERDIR)/parseDIMACS.cpp)
+TESTSOURCES = $(wildcard $(SRCDIR)/$(SOLVERDIR)/heap2Test.cpp)  $(wildcard $(SRCDIR)/$(SOLVERDIR)/parseDIMACS.cpp)
 
 # Build target
 all: $(EXECUTABLE)

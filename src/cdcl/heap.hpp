@@ -6,165 +6,149 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <math.h>
+#include <map>
 #include "../../include/cdcl.hpp"
+#include "intmap.hpp"
+#include "vector.hpp"
+#include <cassert>
 
 #ifndef K_Heap_hpp
 #define K_Heap_hpp
 
 // A MaxHeap for VSIDS Branching Heuristic
 
-class Heap {
-private:
-    
-    int capacity;
-    std::vector<int> heap;                              // int vector for the order of elems (0-indexed)
-    std::vector<double> activity;                          // double vector for the scores of elems. score[1] == score of the 1st elem
-    
-    int getLChild(int i)  { return i * 2 + 1; }
-    int getRChild(int i)  { return (i + 1) * 2; }
-    int getParent(int i)  { return (i - 1) / 2; }
-
-    
-public:
-    int size;
-    Heap(int capacity);
-    void insertKey(int);
-    int getHeapSize() ;
-    void display() ;
-    int deleteKey();
-    void initHeap();
-    void heapify(int);
-    int popMax();
-};
-
-//Constructor
-Heap::Heap(int capacity): capacity(capacity){ 
-    size = 0;
-    heap.resize(capacity);
-    activity.resize(capacity);
-};
-
-int Heap::getHeapSize()  {
-    return size;
-};
-
-void Heap::insertKey(int k) {
-
-    if (size == capacity){
-        std::cerr << "Heap Overflow\n";
-        return;
-    }
-    
-    //Increase amount of elems.
-    size++;
-    printf("size == %i,\n", getHeapSize());
-    
-
-    //Insert new key at the end
-    int i = size - 1;
-    heap[i] = k;
-
-    printf("inserting element %i \n", k);
-
-    activity[k] = vars[k].pos_occ + vars[k].neg_occ;
-    printf("score for %i is %f \n", heap[i], activity[k]);
-
-    
-    //score[k] = TODO : number of occs of k in cnf
-    
-    //Fix the tree property
-    //Move the element up until i => parent or root
-    while (i != 0 && activity[heap[getParent(i)]] < activity[heap[i]]) {
-        printf("get parent results %i\n", heap[getParent(i)]);
-        printf("elem %i has score %f and its parents score is %f \n", heap[i], activity[heap[i]], activity[getParent(i)]);
-        std::swap(heap[i], heap[getParent(i)]);
-        i = getParent(i);
-    }
-};   
-
-int Heap::deleteKey() {
-    if (size <= 0) {
-        std::cerr << "Heap underflow\n";
-        return -1; // Assuming -1 as an invalid value
-    }
-
-    int root = heap[0];
-    heap[0] = heap[size - 1];
-    activity[root] = 0; // Reset the score of the removed variable
-    size--;
-
-    heapify(0);
-
-    return root;
+struct VariableOrderActLT {
+    const IntMap<int, double>& activity;
+    bool operator () (int x, int y) const { return activity[x] > activity[y]; }
+    VariableOrderActLT(const IntMap<int, double>& act) : activity(act) { }
 };  
 
-void Heap::heapify(int i) {
-    int l = getLChild(i);
-    int r = getRChild(i);
-    int largest = i;
+template<class K, class Comp, class MkIndex = MkIndexDefault<K> >
+class Heap {
+    vec<K> heap;               //currently as int but can be Variable, probably should be too.
+    IntMap<K,int,MkIndex>  indices;      //double for the scores of the variables
+    Comp  lt;              //Comparator for the heap
+    
+    static inline int getLChild(int i)  { return i * 2 + 1; }
+    static inline int getRChild(int i)  { return (i + 1) * 2; }
+    static inline int getParent(int i)  { return (i - 1) >> 1; }
 
-    //find biggest elem
-
-    //check if left child is bigger
-    if (( l < size) && (activity[heap[l]] > activity[heap[largest]])){
-        largest = l;
-    }
-
-    if ((r < size) && (activity[heap[r]] > activity[heap[largest]])){
-        largest = r;
-    }
-
-    if (largest != i){
-        std::swap(heap[i], heap[largest]);
-        heapify(largest);
-    }
-};
-
-int Heap::popMax( ) {
-    printf("%d size\n", getHeapSize());
-    if (getHeapSize() == 0){
-        std::cerr << "Empty Heap\n";
-        return -1;
-    } else if (size == 1) {
-        size--;
-        return heap[0];
-    }else {
-        int root = heap[0];
+    void heapUp(int i){
+        K x = heap[i];
+        int p = getParent(i);
         
-        heap[0] = heap[size - 1];
-        size--;
-        heapify(0);
-        
-        return root;
+        while (i != 0 && lt(x, heap[p])){
+            heap[i] = heap[p];
+            indices[heap[p]] = i;
+            i = p;
+            p = getParent(p);
+        }
+        heap[i] = x;
+        indices[x] = i;
     }
-};
 
-void Heap::display()  {
+    void heapDown(int i) {
+        K x = heap[i];
+        while (getLChild(i) < heap.size()){
+            int child = getRChild(i) < heap.size() && lt(heap[getRChild(i)], heap[getLChild(i)]) ? getRChild(i) : getLChild(i);
+            if (!lt(heap[child], x)) break;
+            heap[i] = heap[child];
+            indices[heap[i]] = i;
+            i = child;
+        }
+        heap[i] = x;
+        indices[x] = i;
+    }
+    
+public:
+    Heap(const Comp& c, MkIndex _index = MkIndex()): indices(_index), lt(c) { }
+    
+    int getHeapSize() const { return heap.size(); } 
+    bool empty() const { return heap.size() == 0; }
+    bool inHeap(int var) const { return indices.has(var) && indices[var] >= 0; }
 
-    int power = 0;
-    int value = 1;
-    for (int i = 0; i < size; ++i) {
-        if(i == value){
-            printf("\n");
-            power += 1;
-            value += (1 << power);
+    int operator[](int ind) const {assert(ind < heap.size()); return heap[ind]; } 
+
+    void decrease (int i) { assert(inHeap(i)); heapUp(indices[i]); } 
+    void increase (int i) { assert(inHeap(i)); heapDown(indices[i]); }
+
+    void insert (K i) {
+        indices.reserve(i, -1);
+        assert(!inHeap(i));
+
+        indices[i] = heap.size();
+        heap.push(i);
+        heapUp(indices[i]);
+    }
+
+    void update (K i) {
+        if(!inHeap(i))  insert(i);
+        else {
+            heapUp(indices[i]);
+            heapDown(indices[i]);
+        }
+    }
+
+    void remove (K i) {
+        assert(inHeap(i));
+
+        int i_pos = indices[i];
+        indices[i] = -1;
+
+        if (i_pos < heap.size() - 1) {
+            heap[i_pos] = heap.last();
+            indices[heap[i_pos]] = i_pos;
+            heap.pop();
+            heapDown(i_pos);
+        } else {
+            heap.pop();
+        }
+    }
+
+    K removeMin() {
+        int i = heap[0];
+        heap[0] = heap.last();
+        indices[heap[0]] = 0;
+        indices[i] = -1;
+        heap.pop();
+        if (heap.size() > 1) heapDown(0);
+        return i;
+    }
+
+    void createHeap(const vec<int>& newVars) {
+        for (int i = 0; i < heap.size(); i++) 
+            indices[heap[i]] = -1;
+        heap.clear();
+
+        for(int i = 0; i < newVars.size(); i++) {
+            assert(indices.has[newVars[i]]);
+            indices[newVars[i]] = i;
+            heap.push(newVars[i]);
+        }
+
+        for (int i = heap.size() / 2; i >= 0; i--) 
+            heapDown(i);
+    }
+
+    void clear(bool dispose = false) {
+        for (int i = 0; i < heap.size(); i++) 
+            indices[heap[i]] = -1;
+        heap.clear(dispose);
+    }
+
+    /*void display() {
+        int power = 0;
+        int value = 1;
+        for (int i = 0; i < heap.size; ++i) {
+            if(i == value){
+                printf("\n");
+                power += 1;
+                value += (1 << power);
         }
         printf("(%i, %f) ", heap[i], activity[heap[i]]);
-        
     }
     printf("\n");
-};
-
-void Heap::initHeap(){
-
-    for (int i = 1; i < vars.size(); i++) {
-        
-        this->insertKey(i);
-        this->display();
-
-        printf("\n");
-};
-}
-
+    }; */
+}; 
 
 #endif
