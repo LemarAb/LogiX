@@ -50,8 +50,6 @@ int Heap::getHeapSize()  {
 
 void Heap::insertKey(int k) {
 
-    std::vector<double> occs (1);
-
     if (size == capacity){
         std::cerr << "Heap Overflow\n";
         return;
@@ -68,10 +66,7 @@ void Heap::insertKey(int k) {
 
     printf("inserting element %i \n", k);
 
-    occs[0] = vars[k].pos_occ + vars[k].neg_occ;
-        
-
-    activity[k] = occs[0]; 
+    activity[k] = vars[k].pos_occ + vars[k].neg_occ;
     printf("score for %i is %f \n", heap[i], activity[k]);
 
     
