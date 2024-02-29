@@ -20,12 +20,20 @@ int main() {
 
     Heap vsidsheap(N);
 
-    vsidsheap.initHeap(vsidsheap);
-    vsidsheap.display();
+    for (int i = 1; i < vars.size(); i++) {
+    
+        vsidsheap.insertKey(i);
+        vsidsheap.display();
+            printf("act %i \n", vars[i].pos_occ + vars[i].neg_occ);
+
+
+    printf("\n");
+    }
+
     int heapsize = vsidsheap.getHeapSize();
     printf("This is the size after init %i \n", vsidsheap.getHeapSize());
 
-    int max = vsidsheap.extractMax();
+    int max = vsidsheap.popMax();
     printf("This is the max %i\n", max);
     vsidsheap.display();
     return 0;

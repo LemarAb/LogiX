@@ -11,19 +11,18 @@
 #ifndef K_Heap_hpp
 #define K_Heap_hpp
 
-// A MinHeap for VSIDS Branching Heuristic
-
+// A MaxHeap for VSIDS Branching Heuristic
 
 class Heap {
 private:
     
     int capacity;
     std::vector<int> heap;                              // int vector for the order of elems (0-indexed)
-    std::vector<double> score;                          // double vector for the scores of elems. score[1] == score of the 1st elem
+    std::vector<double> activity;                          // double vector for the scores of elems. score[1] == score of the 1st elem
     
-    int getLChild(int i) const { return i * 2 + 1; }
-    int getRChild(int i) const { return (i + 1) * 2; }
-    int getParent(int i) const { return (i - 1) / 2; }
+    int getLChild(int i)  { return i * 2 + 1; }
+    int getRChild(int i)  { return (i + 1) * 2; }
+    int getParent(int i)  { return (i - 1) / 2; }
 
     
 public:
@@ -31,18 +30,18 @@ public:
     Heap(int capacity);
     void insertKey(int);
     int getHeapSize() ;
-    void display() const;
+    void display() ;
     int deleteKey();
-    void initHeap(Heap);
+    void initHeap();
     void heapify(int);
-    int extractMax();
+    int popMax();
 };
 
 //Constructor
 Heap::Heap(int capacity): capacity(capacity){ 
     size = 0;
     heap.resize(capacity);
-    score.resize(capacity);
+    activity.resize(capacity);
 };
 
 int Heap::getHeapSize()  {
@@ -72,18 +71,17 @@ void Heap::insertKey(int k) {
     occs[0] = vars[k].pos_occ + vars[k].neg_occ;
         
 
-    score[k] = occs[0]; 
-    printf("score for %i is %f \n", heap[i], score[k]);
+    activity[k] = occs[0]; 
+    printf("score for %i is %f \n", heap[i], activity[k]);
 
     
     //score[k] = TODO : number of occs of k in cnf
     
     //Fix the tree property
     //Move the element up until i => parent or root
-    while (i != 0 && score[heap[getParent(i)]] < score[heap[i]]) {
+    while (i != 0 && activity[heap[getParent(i)]] < activity[heap[i]]) {
         printf("get parent results %i\n", heap[getParent(i)]);
-        printf("elem %i has score %f and its parents score is %f \n", heap[i], score[heap[i]], score[getParent(i)]);
-        if(score[getParent(i)] < score[i]) printf("they should change positions\n");
+        printf("elem %i has score %f and its parents score is %f \n", heap[i], activity[heap[i]], activity[getParent(i)]);
         std::swap(heap[i], heap[getParent(i)]);
         i = getParent(i);
     }
@@ -97,7 +95,7 @@ int Heap::deleteKey() {
 
     int root = heap[0];
     heap[0] = heap[size - 1];
-    score[root] = 0; // Reset the score of the removed variable
+    activity[root] = 0; // Reset the score of the removed variable
     size--;
 
     heapify(0);
@@ -113,11 +111,11 @@ void Heap::heapify(int i) {
     //find biggest elem
 
     //check if left child is bigger
-    if (( l < size) && (score[heap[l]] > score[heap[largest]])){
+    if (( l < size) && (activity[heap[l]] > activity[heap[largest]])){
         largest = l;
     }
 
-    if ((r < size) && (score[heap[r]] > score[heap[largest]])){
+    if ((r < size) && (activity[heap[r]] > activity[heap[largest]])){
         largest = r;
     }
 
@@ -127,7 +125,7 @@ void Heap::heapify(int i) {
     }
 };
 
-int Heap::extractMax( ) {
+int Heap::popMax( ) {
     printf("%d size\n", getHeapSize());
     if (getHeapSize() == 0){
         std::cerr << "Empty Heap\n";
@@ -146,7 +144,7 @@ int Heap::extractMax( ) {
     }
 };
 
-void Heap::display() const {
+void Heap::display()  {
 
     int power = 0;
     int value = 1;
@@ -156,18 +154,18 @@ void Heap::display() const {
             power += 1;
             value += (1 << power);
         }
-        printf("(%i, %f) ", heap[i], score[heap[i]]);
+        printf("(%i, %f) ", heap[i], activity[heap[i]]);
         
     }
     printf("\n");
 };
 
-void Heap::initHeap(Heap heap){
+void Heap::initHeap(){
 
     for (int i = 1; i < vars.size(); i++) {
         
-        heap.insertKey(i);
-        heap.display();
+        this->insertKey(i);
+        this->display();
 
         printf("\n");
 };
