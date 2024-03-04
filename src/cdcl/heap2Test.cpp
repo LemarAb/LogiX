@@ -1,5 +1,5 @@
-#include "heap.hpp"
-#include "vector.hpp"
+
+#include "dataStructs/vsids.hpp"
 #include "../../include/cdcl.hpp"
 
 int numOfVars;
@@ -43,7 +43,9 @@ int main() {
 
     vsidsheap.display();
 
-    vsidsheap.varIncActivity(12);
+    varIncActivity(12);
+
+    
 
     printf("\n");
     return 0;

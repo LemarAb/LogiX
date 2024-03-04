@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <map>
-#include "../../include/cdcl.hpp"
+#include "../../../include/cdcl.hpp"
 #include "intmap.hpp"
 #include "vector.hpp"
 #include <cassert>
@@ -16,16 +16,13 @@
 #define K_Heap_hpp
 
 // A MaxHeap for VSIDS Branching Heuristic
-
-IntMap<int, double> act;
+// The heap is implemented as a binary tree, with the root of the tree being the variable with the highest activity.
 
 struct VariableOrderActLT {
     const IntMap<int, double>& activity;
     bool operator () (int x, int y) const { return activity[x] > activity[y]; }
     VariableOrderActLT(const IntMap<int, double>& act) : activity(act) { }
-};  
-
-VariableOrderActLT lt(act);
+}; 
 
 template<class K, class Comp, class MkIndex = MkIndexDefault<K> >
 class Heap {
@@ -140,13 +137,6 @@ public:
         heap.clear(dispose);
     }
 
-    double var_inc = 5.0;
-    
-    void varIncActivity(int var) {
-        act[var] += var_inc;
-        if (vsidsheap.inHeap(var)) vsidsheap.decrease(var); 
-    };
-
     void display() const {
         displayHelper(0, "");
     }; 
@@ -168,11 +158,6 @@ public:
         }
     }
 }; 
-
-Heap<int, VariableOrderActLT> vsidsheap(lt); 
-
-
-
 #endif
 
 
