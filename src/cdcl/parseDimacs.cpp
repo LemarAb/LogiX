@@ -49,6 +49,7 @@ void parseDIMACS(std::string filename) {
                 // not precise if the literal appears multiple times in the
                 // clause (unlikely)
                 (literal > 0) ? vars[std::abs(literal)].pos_occ++ : vars[std::abs(literal)].neg_occ++;
+                vars[std::abs(literal)].tot_occ++;
 
                 clause.push_back(literal);
 

@@ -35,6 +35,7 @@ $(TEST): $(TESTSOURCES)
 
 clean:
 	del main.exe
+	del test.exe
 
 run: $(EXECUTABLE) 
 	$(EXECUTABLE) $(arg) $(heur=0)

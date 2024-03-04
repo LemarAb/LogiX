@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <vector>
 #include <unordered_set>
+#include "../src/cdcl/intmap.hpp"
 
 #ifndef MYHEADER_HPP
 #define MYHEADER_HPP
@@ -19,6 +20,7 @@ typedef int Var;
 #else
 const Var var_Undef = -1;
 #endif
+
 
 struct Lit {
   int x;
@@ -33,7 +35,7 @@ struct Lit {
   } // '<' makes p, ~p adjacent in the ordering.
 };
 
-inline Lit mkLit(Var var, bool sign) {
+inline Lit mkLit(Var var, bool sign = false) {
   Lit p;
   p.x = var + var + (int)sign;
   return p;
@@ -95,6 +97,7 @@ struct Variable {
     bool forced = false;
     int pos_occ;  // number of clauses var appears as pos literal
     int neg_occ;  // number of clauses var appears as neg literal
+    int tot_occ;  // total number of clauses var appears in
     bool enqueued = false;
     void setValue(Assig _assig) {
         // int assertedLit = unitProp ? curProp : curVar;

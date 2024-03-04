@@ -24,16 +24,26 @@ int main() {
 
     VariableOrderActLT lt(act);
 
+    for (int i = 1; i < N; i++) {
+        act.insert(i, vars[i].tot_occ);
+        printf("%d: %f\n", i, act[i]);
+    }
+
     Heap<int, VariableOrderActLT> vsidsheap(lt); 
 
-    for (int i = 1; i <= N; i++) {
-        act.insert(i, vars[i].pos_occ + vars[i].neg_occ);
+    for (int i = 1; i < N; i++) {
         vsidsheap.insert(i);
     }
+
+    vsidsheap.display();
 
     
     int test = vsidsheap.removeMin();
     printf("%d\n", test);
+
+    vsidsheap.display();
+
+    vsidsheap.varIncActivity(12);
 
     printf("\n");
     return 0;

@@ -17,11 +17,15 @@
 
 // A MaxHeap for VSIDS Branching Heuristic
 
+IntMap<int, double> act;
+
 struct VariableOrderActLT {
     const IntMap<int, double>& activity;
     bool operator () (int x, int y) const { return activity[x] > activity[y]; }
     VariableOrderActLT(const IntMap<int, double>& act) : activity(act) { }
 };  
+
+VariableOrderActLT lt(act);
 
 template<class K, class Comp, class MkIndex = MkIndexDefault<K> >
 class Heap {
@@ -136,8 +140,44 @@ public:
         heap.clear(dispose);
     }
 
-    /*void display() {
-        int power = 0;
+    double var_inc = 5.0;
+    
+    void varIncActivity(int var) {
+        act[var] += var_inc;
+        if (vsidsheap.inHeap(var)) vsidsheap.decrease(var); 
+    };
+
+    void display() const {
+        displayHelper(0, "");
+    }; 
+
+    private:
+    void displayHelper(int i, const std::string& prefix) const {
+        if (i < heap.size()) {
+            if (i != 0) {
+                std::cout << prefix << "|--";
+            }
+
+            std::cout << "(" << heap[i] << ")\n'";
+
+            int left = getLChild(i);
+            int right = getRChild(i);
+
+            displayHelper(left, prefix + (right < heap.size() ? "|   " : "    "));
+            displayHelper(right, prefix + "    ");
+        }
+    }
+}; 
+
+Heap<int, VariableOrderActLT> vsidsheap(lt); 
+
+
+
+#endif
+
+
+
+/*int power = 0;
         int value = 1;
         for (int i = 0; i < heap.size; ++i) {
             if(i == value){
@@ -145,10 +185,7 @@ public:
                 power += 1;
                 value += (1 << power);
         }
-        printf("(%i, %f) ", heap[i], activity[heap[i]]);
+        printf("(%i, %f) ", i, activity[i].second);
     }
     printf("\n");
-    }; */
-}; 
-
-#endif
+    */
