@@ -16,41 +16,41 @@ void updateWatchedLiterals(int assertedVar) {
     bool found = false;
 
     if (clause.size() == 1)
-      goto UP_Backtrack;
+      goto conflict_detection;
 
     if (eval(clause[0]) || eval(clause[1]))
       continue;
 
     // swap false literal to index 1
-    if (std::abs(clause[1]) != assertedVar) {
+    if (index(clause[1]) != assertedVar) {
       int tmp = clause[1];
       clause[1] = clause[0];
       clause[0] = tmp;
     }
 
     for (int i = 2; i < clause.size(); i++) {
-      if (eval(clause[i]) || vars[std::abs(clause[i])].getValue() == FREE) {
+      if (eval(clause[i]) || vars[index(clause[i])].getValue() == FREE) {
         int tmp = clause[i];
         clause[i] = clause[1];
         clause[1] = tmp;
 
         clausesToUpdatePointers->erase(*clauseIndex);
-        tmp > 0 ? vars[std::abs(tmp)].pos_watched.insert(*clauseIndex)
-                : vars[std::abs(tmp)].neg_watched.insert(*clauseIndex);
+        tmp > 0 ? vars[index(tmp)].pos_watched.insert(*clauseIndex)
+                : vars[index(tmp)].neg_watched.insert(*clauseIndex);
         found = true;
         break;
       }
     }
 
-  UP_Backtrack:
+  conflict_detection:
     if (found)
       continue;
 
     int otherPointer = clause[0];
-    if (vars[std::abs(otherPointer)].getValue() == FREE) {
-      if (!vars[std::abs(otherPointer)].enqueued) {
+    if (vars[index(otherPointer)].getValue() == FREE) {
+      if (!vars[index(otherPointer)].enqueued) {
         unitQueue.push(otherPointer);
-        vars[std::abs(otherPointer)].enqueued = true;
+        vars[index(otherPointer)].enqueued = true;
       }
     } else {
       backtrack();
@@ -63,5 +63,9 @@ void updateWatchedLiterals(int assertedVar) {
 }
 
 bool eval(int literal) {
-  return !(vars[std::abs(literal)].getValue() ^ (literal > 0));
+  return !(vars[index(literal)].getValue() ^ (literal > 0));
+}
+
+int index(int literal){
+  return std::abs(literal);
 }

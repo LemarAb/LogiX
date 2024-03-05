@@ -185,6 +185,8 @@ void backtrack();
 // evaluates the literal under its current assignment
 bool eval(int literal);
 
+int index(int literal);
+
 void printModel(int res);
 
 void verifyModel();
