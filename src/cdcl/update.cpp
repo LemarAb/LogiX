@@ -22,21 +22,17 @@ void updateWatchedLiterals(int assertedVar) {
       continue;
 
     // swap false literal to index 1
-    if (index(clause[1]) != assertedVar) {
-      int tmp = clause[1];
-      clause[1] = clause[0];
-      clause[0] = tmp;
-    }
+    if (index(clause[1]) != assertedVar) 
+      std::swap(clause[0], clause[1]);
+    
 
     for (int i = 2; i < clause.size(); i++) {
       if (eval(clause[i]) || vars[index(clause[i])].getValue() == FREE) {
-        int tmp = clause[i];
-        clause[i] = clause[1];
-        clause[1] = tmp;
-
+        int swapee = clause[i];
+        std::swap(clause[1], clause[i]);
         clausesToUpdatePointers->erase(*clauseIndex);
-        tmp > 0 ? vars[index(tmp)].pos_watched.insert(*clauseIndex)
-                : vars[index(tmp)].neg_watched.insert(*clauseIndex);
+        swapee > 0 ? vars[index(swapee)].pos_watched.insert(*clauseIndex)
+                : vars[index(swapee)].neg_watched.insert(*clauseIndex);
         found = true;
         break;
       }
