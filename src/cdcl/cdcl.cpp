@@ -3,7 +3,21 @@
 void* dpll(void* arg) {  // TODO: We should implement the more optimised appproach of checking the satisfaction of every clause
     while (true) {
         unitPropagate();
-        chooseLiteral();
+        // if (conflict) {
+        //     if (statistics.decNum == 0)
+        //         state = State::UNSAT;
+        //     else {
+        //         conflict_analysis
+        //     }
+        // } else {
+        //     if (trail.size() == statistics.varNum)
+        //         state = State::SAT;
+        //     else {
+        //         if (statistics.conRes > statistics.resTrs) restart();
+                chooseLiteral();
+        //     }
+        // }
+        
     }
 }
 
