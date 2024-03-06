@@ -4,16 +4,16 @@ void* dpll(void* arg) {  // TODO: We should implement the more optimised appproa
     while (true) {
         unitPropagate();
         // if (conflict) {
-        //     if (statistics.decNum == 0)
-        //         state = State::UNSAT;
+        //     if (decLevel == 0)
+        //         unsat;
         //     else {
-        //         conflict_analysis
+        //         conflict_analysis + backtrack
         //     }
         // } else {
-        //     if (trail.size() == statistics.varNum)
-        //         state = State::SAT;
+        //     if (trail.size() == numofvars)
+        //         unsat
         //     else {
-        //         if (statistics.conRes > statistics.resTrs) restart();
+        //         if (restarts) restart();
                 chooseLiteral();
         //     }
         // }
