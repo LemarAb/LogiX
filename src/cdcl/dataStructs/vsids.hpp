@@ -20,9 +20,11 @@ void varIncActivity(int var) {
 };
 
 void afterExtractOrderAct(int i) {
-    for (int j = i; j < vsidsheap.getHeapSize() - 1; j++) {
-        act[j] = act[j + 1];
-    }
+
+    act[i] = -1;
+    //for (int j = i; j < vsidsheap.getHeapSize() - 1; j++) {
+    //    act[j] = act[j + 1];
+    //}
 
     for (int j = vsidsheap.getHeapSize() / 2; j >= 0; --j) {
         vsidsheap.update(j);
@@ -32,6 +34,13 @@ void afterExtractOrderAct(int i) {
 void varDecActivity(int var) {
     act[var] -= var_inc;
     vsidsheap.increase(var);
+};
+
+void allVarsHalfActivity() {
+    for (int i = 1; i <= numOfVars; i++) {
+        act[i] *= 0.5;
+        vsidsheap.update(i);
+    }
 };
 
 #endif

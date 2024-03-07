@@ -56,6 +56,13 @@ int main() {
 
     vsidsheap.display(act);
 
+    varDecActivity(12);
+
+    vsidsheap.display(act);
+
+    allVarsHalfActivity();
+
+    vsidsheap.display(act);
     printf("\n");
     return 0;
 }
