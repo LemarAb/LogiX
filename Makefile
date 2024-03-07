@@ -1,7 +1,7 @@
 # Compiler and flags
 # g++ src/*.cpp  -o main -std=c++11 -Wall -Wno-sign-compare -Wno-format -g -O3 //--Manual run
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Wno-sign-compare -Wno-format -g -O3 
+CXXFLAGS = -std=c++11 -Wall -Wno-sign-compare -Wno-format -g -O3
 
 # Directories
 SRCDIR = src
@@ -16,7 +16,7 @@ OBJ = $(SRC:.cpp=.o)
 EXECUTABLE = main
 
 TEST = test
-TESTSOURCES = $(wildcard $(SRCDIR)/$(SOLVERDIR)/heap2Test.cpp)  $(wildcard $(SRCDIR)/$(SOLVERDIR)/parseDIMACS.cpp)
+TESTSOURCES = heap2Test.cpp $(wildcard $(SRCDIR)/$(SOLVERDIR)/parseDimacs.cpp)
 
 # Build target
 all: $(EXECUTABLE)

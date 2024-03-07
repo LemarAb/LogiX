@@ -1,6 +1,6 @@
 
-#include "dataStructs/vsids.hpp"
-#include "../../include/cdcl.hpp"
+#include "src/cdcl/dataStructs/vsids.hpp"
+#include "include/cdcl.hpp"
 
 int numOfVars;
 int numOfClauses;
@@ -18,20 +18,21 @@ int main() {
 
     parseDIMACS(filename);
     
-    int N = vars.size();
+    int n = numOfVars;
+    printf("Number of Variables: %i\n", n);
 
     IntMap<int, double> act;
 
     VariableOrderActLT lt(act);
 
-    for (int i = 1; i < N; i++) {
+    for (int i = 1; i < n; i++) {
         act.insert(i, vars[i].tot_occ);
         printf("%d: %f\n", i, act[i]);
     }
 
     Heap<int, VariableOrderActLT> vsidsheap(lt); 
 
-    for (int i = 1; i < N; i++) {
+    for (int i = 1; i < n; i++) {
         vsidsheap.insert(i);
     }
 
