@@ -141,6 +141,23 @@ public:
         displayHelper(0, "");
     }; 
 
+    void displayIndices() const {
+        for (int i = 0; i < indices.size(); ++i) {
+            if (indices.has(i)) {
+                std::cout << "Key: " << i << ", Value: " << indices[i] << '\n';
+            }
+        }
+    }
+
+    void displayIndEntry (int key) const {
+        indices.displayEntry(key);
+    }
+
+    void displaySize() const {
+        std::cout << "Size of heap: " << heap.size() << '\n';
+        std::cout << "Size of indices: " << indices.size() << '\n';
+    }
+
     private:
     void displayHelper(int i, const std::string& prefix) const {
         if (i < heap.size()) {

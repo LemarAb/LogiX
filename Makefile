@@ -40,5 +40,7 @@ clean:
 run: $(EXECUTABLE) 
 	$(EXECUTABLE) $(arg) $(heur=0)
 
+buildtest: $(TEST)
+
 testrun: $(TEST)
 	$(TEST)
