@@ -1,5 +1,7 @@
 <div style="text-align: justify;">
 
+- weird behaviour note: Mingw alone has a problem with getting data that is stored in a different hpp file (vars.tot_occ) where it assign the occurances in a random positive block. The differences between occs stay the same so no problem, however weird. Debug function and run through json functions as expected.
+
 - use watched literals during backtracking with learned clauses differenlty
 
 - Leave preprocessing to the end of implementation, start woth backtracking + Deletion and watched
