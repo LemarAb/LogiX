@@ -1,6 +1,7 @@
 
 #include "src/cdcl/dataStructs/vsids.hpp"
 #include "include/cdcl.hpp"
+#include <cassert> 
 
 int numOfVars;
 int numOfClauses;
@@ -21,16 +22,10 @@ int main() {
     int n = numOfVars;
     printf("Number of Variables: %i\n", n);
 
-    IntMap<int, double> act;
-
-    VariableOrderActLT lt(act);
-
-    for (int i = 1; i < n; i++) {
+    for (int i = 1; i <= n; i++) {
         act.insert(i, vars[i].tot_occ);
         printf("%d: %f\n", i, act[i]);
     }
-
-    Heap<int, VariableOrderActLT> vsidsheap(lt); 
 
     for (int i = 1; i < n; i++) {
         vsidsheap.insert(i);
@@ -42,11 +37,20 @@ int main() {
     int test = vsidsheap.removeMin();
     printf("%d\n", test);
 
+    
+    vsidsheap.displayIndices();
+
     vsidsheap.display();
 
-    varIncActivity(12);
+    vsidsheap.displayIndEntry(12);
 
-    
+    printf("checking if assertion is true: %i  \n", vsidsheap.inHeap(12));
+    assert(vsidsheap.inHeap(12));
+    printf("true\n");
+
+    vsidsheap.displaySize();
+
+    varIncActivity(12);
 
     printf("\n");
     return 0;
