@@ -36,7 +36,7 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
         bool     has       (K k) const { return index(k) < map.size(); }
 
         const V& operator[](K k) const { assert(has(k)); return map[index(k)]; }
-        V&       operator[](K k)       { printf("%i k, %i has(k), %i index(k), %i mapsize", k, has(k), index(k), map.size()); assert(has(k)); return map[index(k)]; }
+        V&       operator[](K k)       { assert(has(k)); return map[index(k)]; }
 
         const V* begin  () const { return &map[0]; }
         const V* end    () const { return &map[map.size()]; }

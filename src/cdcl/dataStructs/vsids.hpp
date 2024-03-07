@@ -16,7 +16,22 @@ double var_inc = 5.0;
     
 void varIncActivity(int var) {
     act[var] += var_inc;
-    vsidsheap.decrease(var); 
+    vsidsheap.decrease(var);
+};
+
+void afterExtractOrderAct(int i) {
+    for (int j = i; j < vsidsheap.getHeapSize() - 1; j++) {
+        act[j] = act[j + 1];
+    }
+
+    for (int j = vsidsheap.getHeapSize() / 2; j >= 0; --j) {
+        vsidsheap.update(j);
+    }
+};
+
+void varDecActivity(int var) {
+    act[var] -= var_inc;
+    vsidsheap.increase(var);
 };
 
 #endif

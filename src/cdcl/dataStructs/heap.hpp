@@ -17,6 +17,7 @@
 
 // A MaxHeap for VSIDS Branching Heuristic
 // The heap is implemented as a binary tree, with the root of the tree being the variable with the highest activity.
+void afterExtractOrderAct(int i);
 
 struct VariableOrderActLT {
     const IntMap<int, double>& activity;
@@ -106,13 +107,14 @@ public:
         }
     }
 
-    K removeMin() {
+    K removeMax() {
         int i = heap[0];
         heap[0] = heap.last();
         indices[heap[0]] = 0;
         indices[i] = -1;
         heap.pop();
         if (heap.size() > 1) heapDown(0);
+        afterExtractOrderAct(i);
         return i;
     }
 
@@ -137,10 +139,6 @@ public:
         heap.clear(dispose);
     }
 
-    void display() const {
-        displayHelper(0, "");
-    }; 
-
     void displayIndices() const {
         for (int i = 0; i < indices.size(); ++i) {
             if (indices.has(i)) {
@@ -158,20 +156,24 @@ public:
         std::cout << "Size of indices: " << indices.size() << '\n';
     }
 
+    void display(const IntMap<int, double>& act) const {
+        displayHelper(0, "", act);
+    }; 
+
     private:
-    void displayHelper(int i, const std::string& prefix) const {
+    void displayHelper(int i, const std::string& prefix, const IntMap<int, double>& act) const {
         if (i < heap.size()) {
             if (i != 0) {
                 std::cout << prefix << "|--";
             }
 
-            std::cout << "(" << heap[i] << ")\n'";
+            std::cout << "(" << heap[i] <<", " << act[heap[i]] << ")\n'";
 
             int left = getLChild(i);
             int right = getRChild(i);
 
-            displayHelper(left, prefix + (right < heap.size() ? "|   " : "    "));
-            displayHelper(right, prefix + "    ");
+            displayHelper(left, prefix + (right < heap.size() ? "|   " : "    "), act);
+            displayHelper(right, prefix + "    ", act);
         }
     }
 }; 

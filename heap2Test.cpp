@@ -29,18 +29,20 @@ int main() {
 
     for (int i = 1; i < n; i++) {
         vsidsheap.insert(i);
+        vsidsheap.display(act);
     }
 
-    vsidsheap.display();
+    vsidsheap.display(act);
 
+    vsidsheap.displayIndices();
     
-    int test = vsidsheap.removeMin();
+    int test = vsidsheap.removeMax();
     printf("%d\n", test);
 
     
     vsidsheap.displayIndices();
 
-    vsidsheap.display();
+    vsidsheap.display(act);
 
     vsidsheap.displayIndEntry(12);
 
@@ -51,6 +53,8 @@ int main() {
     vsidsheap.displaySize();
 
     varIncActivity(12);
+
+    vsidsheap.display(act);
 
     printf("\n");
     return 0;
