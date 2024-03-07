@@ -159,12 +159,12 @@ extern std::unordered_set<int> pos_pol;
 
 void parseDIMACS(std::string filename);
 
-void* dpll(void* arg);
+void* cdcl(void* arg);
 
 void unitPropagate();
 
 // chooses literals according to the used heuristic
-void chooseLiteral();
+void pickDecisionLit();
 
 void chooseINC();
 

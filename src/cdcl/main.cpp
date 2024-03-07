@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 
   pthread_t thread;
 
-  if (pthread_create(&thread, NULL, dpll, NULL)) {
+  if (pthread_create(&thread, NULL, cdcl, NULL)) {
     std::cerr << "Error: Unable to create thread." << std::endl;
     return -1;
   }

@@ -54,15 +54,15 @@ int main(int argc, char* argv[]) {
 
     void* res;
 
-    // start dpll
-    if (pthread_create(&thread, NULL, dpll, NULL)) {
+    // start cdcl
+    if (pthread_create(&thread, NULL, cdcl, NULL)) {
         std::cerr << "Error: Unable to create thread."
                   << "\n";
         std::cout.flush();
         return -1;
     }
 
-    // wait for dpll to finish
+    // wait for cdcl to finish
     pthread_join(thread, &res);
 
     printModel((intptr_t)res);

@@ -75,7 +75,7 @@ extern std::stack<int> assig;
 
 void parseDIMACS(std::string filename);
 
-void* dpll(void* arg);
+void* cdcl(void* arg);
 
 // asserts pure and unit literals
 void propagate();

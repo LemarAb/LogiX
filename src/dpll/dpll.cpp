@@ -1,6 +1,6 @@
 #include "../../include/cnf.hpp"
 
-void* dpll(void* arg) {
+void* cdcl(void* arg) {
     while (true) {
         propagate();
         decide();
