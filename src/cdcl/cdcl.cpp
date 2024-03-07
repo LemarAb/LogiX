@@ -1,6 +1,10 @@
 #include "../../include/cdcl.hpp"
 #include <cmath>
 
+std::vector<int> trail;
+bool conflict;
+std::vector<int> conflict_clause;
+
 void* cdcl(void* arg) {  // TODO: We should implement the more optimised appproach of checking the satisfaction of every clause
     while (true) {
         unitPropagate();
@@ -89,13 +93,28 @@ void updateWatchedLiterals(int assertedVar) {
     if (found)
       continue;
 
-    int otherPointer = clause[0];
-    if (vars[index(otherPointer)].getValue() == FREE) {
-      if (!vars[index(otherPointer)].enqueued) {
-        unitQueue.push(otherPointer);
-        vars[index(otherPointer)].enqueued = true;
+    // If the first literal of the clause is free, push unitProp else conflict found
+    auto & firstLit = vars[index(clause[0])];
+    if (firstLit.getValue() == FREE) {
+      if (!firstLit.enqueued) {
+        unitQueue.push(clause[0]);
+        firstLit.enqueued = true;
+        firstLit.reason = *clauseIndex;      
       }
     } else {
+      // build conflict clause from the two immediate conflicting clauses
+      conflict = true;
+      conflict_clause.clear();
+
+      for(int lit : clause) {
+        if(index(lit) != assertedVar)
+          conflict_clause.push_back(lit);
+      }
+
+      for(int lit : cnf[vars[assertedVar].reason]) {
+        if(index(lit) != assertedVar)
+          conflict_clause.push_back(lit);
+      }
       backtrack();
       return;
     }
@@ -129,6 +148,7 @@ void backtrack() {
     int b = assig.top();
     // Assign negated val
     vars[b].forced = true;
+    vars[b].reason = -1;
     vars[b].setValue(Assig(int(2 - std::pow(2.0, vars[b].getValue()))));
     // std::cout << "New branch var" << b << ", OLD: " << oldval << ", NEW: " << vars[b].getValue();
     curVar = b;
