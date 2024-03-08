@@ -27,9 +27,8 @@ int main() {
         printf("%d: %f\n", i, act[i]);
     }
 
-    for (int i = 1; i < n; i++) {
+    for (int i = 1; i <= n; i++) {
         vsidsheap.insert(i);
-        vsidsheap.display(act);
     }
 
     vsidsheap.display(act);
@@ -46,10 +45,6 @@ int main() {
 
     vsidsheap.displayIndEntry(12);
 
-    printf("checking if assertion is true: %i  \n", vsidsheap.inHeap(12));
-    assert(vsidsheap.inHeap(12));
-    printf("true\n");
-
     vsidsheap.displaySize();
 
     varIncActivity(12);
@@ -61,6 +56,14 @@ int main() {
     vsidsheap.display(act);
 
     allVarsHalfActivity();
+
+    vsidsheap.display(act);
+
+    vsidsheap.remove(15);
+
+    vsidsheap.display(act);
+
+    vsidsheap.insert(15);
 
     vsidsheap.display(act);
     printf("\n");
