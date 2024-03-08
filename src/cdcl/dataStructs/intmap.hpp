@@ -20,6 +20,7 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #define Minisat_IntMap_h
 
 #include "vector.hpp"
+#include <iostream>
 
     template<class T> struct MkIndexDefault {
         typename vec<T>::Size operator()(T t) const { return (typename vec<T>::Size)t; }
@@ -50,6 +51,16 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
         void     clear  (bool dispose = false) { map.clear(dispose); }
         void     moveTo (IntMap& to)           { map.moveTo(to.map); to.index = index; }
         void     copyTo (IntMap& to) const     { map.copyTo(to.map); to.index = index; }
+
+        std::size_t size() const               { return map.size(); }
+
+        void displayEntry(const K& key) const {
+            if ((index(key) < map.size())) {
+                std::cout << "Key: " << key << ", Value: " << map[index(key)] << '\n';
+            } else {
+                std::cout << "Key: " << key << " does not exist in the map.\n";
+            }
+        }
     };
 
 

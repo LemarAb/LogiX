@@ -1,6 +1,7 @@
 
 #include "src/cdcl/dataStructs/vsids.hpp"
 #include "include/cdcl.hpp"
+#include <cassert> 
 
 int numOfVars;
 int numOfClauses;
@@ -21,33 +22,50 @@ int main() {
     int n = numOfVars;
     printf("Number of Variables: %i\n", n);
 
-    IntMap<int, double> act;
-
-    VariableOrderActLT lt(act);
-
-    for (int i = 1; i < n; i++) {
+    for (int i = 1; i <= n; i++) {
         act.insert(i, vars[i].tot_occ);
         printf("%d: %f\n", i, act[i]);
     }
 
-    Heap<int, VariableOrderActLT> vsidsheap(lt); 
-
-    for (int i = 1; i < n; i++) {
+    for (int i = 1; i <= n; i++) {
         vsidsheap.insert(i);
     }
 
-    vsidsheap.display();
+    vsidsheap.display(act);
 
+    vsidsheap.displayIndices();
     
-    int test = vsidsheap.removeMin();
+    int test = vsidsheap.removeMax();
     printf("%d\n", test);
 
-    vsidsheap.display();
+    
+    vsidsheap.displayIndices();
+
+    vsidsheap.display(act);
+
+    vsidsheap.displayIndEntry(12);
+
+    vsidsheap.displaySize();
 
     varIncActivity(12);
 
-    
+    vsidsheap.display(act);
 
+    varDecActivity(12);
+
+    vsidsheap.display(act);
+
+    allVarsHalfActivity();
+
+    vsidsheap.display(act);
+
+    vsidsheap.remove(15);
+
+    vsidsheap.display(act);
+
+    vsidsheap.insert(15);
+
+    vsidsheap.display(act);
     printf("\n");
     return 0;
 }
