@@ -4,8 +4,10 @@
 std::vector<int> trail;
 bool conflict;
 std::vector<int> conflict_clause;
+std::set<int> UIP_set;
+int curDecisionLevel = 0;
 
-void* cdcl(void* arg) {  // TODO: We should implement the more optimised appproach of checking the satisfaction of every clause
+void* cdcl(void* arg) {
     while (true) {
         unitPropagate();
         // if (conflict) {
@@ -38,7 +40,7 @@ void unitPropagate() {
         //  std::cout << "UP variable " << unitLiteral << " set to " << vars[std::abs(unitLiteral)].getValue() << "\n";
 
         assig.push(std::abs(unitLiteral));
-
+        trail.push_back(std::abs(unitLiteral));
         updateWatchedLiterals(std::abs(unitLiteral));
     }
 }
@@ -49,6 +51,8 @@ void pickDecisionLit() {
   vars[curVar].setValue(TRUE);
   vars[curVar].forced = false;
   assig.push(curVar);
+  trail.push_back(curVar);
+  curDecisionLevel++;
     updateWatchedLiterals(curVar);
 }
 
@@ -102,18 +106,28 @@ void updateWatchedLiterals(int assertedVar) {
         firstLit.reason = *clauseIndex;      
       }
     } else {
-      // build conflict clause from the two immediate conflicting clauses
       conflict = true;
       conflict_clause.clear();
 
+      /*_________________________________________________________________________________________________
+      |
+      | Upon conflict, we first want to identify all of the vertices of the current decision level
+      | adjacent to the conflict vertex.
+      | 
+      | This will be the set of literals except for 'assertedVar' that occur in the falsified clause  
+      | and the propagated clauses carrying the 'assertedVar' and that share the current decision level.
+      | 
+      | The resulting 'UIP_set' will be used in the conflict analysis step to determine the 1-UIP.
+      |_________________________________________________________________________________________________*/ 
+
       for(int lit : clause) {
-        if(index(lit) != assertedVar)
-          conflict_clause.push_back(lit);
+        if(index(lit) != assertedVar && vars[index(lit)].level == curDecisionLevel)
+          UIP_set.insert(lit);
       }
 
       for(int lit : cnf[vars[assertedVar].reason]) {
-        if(index(lit) != assertedVar)
-          conflict_clause.push_back(lit);
+        if(index(lit) != assertedVar && vars[index(lit)].level == curDecisionLevel)
+          UIP_set.insert(lit);
       }
       backtrack();
       return;
@@ -154,6 +168,20 @@ void backtrack() {
     curVar = b;
     updateWatchedLiterals(b);
     unitPropagate();
+}
+
+void build_conflict_clause(){
+  
+  int uip = findUIP();
+
+}
+
+int findUIP(){
+  int toPop = trail.size();
+  while(UIP_set.size()>1){
+    if(UIP_set.find(trail[toPop]) != UIP_set.end())
+      trail[toPop] = 0;
+  }
 }
 
 bool eval(int literal) {
