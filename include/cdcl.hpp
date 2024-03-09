@@ -158,6 +158,20 @@ extern std::unordered_set<int> neg_pol;
 // set of variables occuring only in positive polarity
 extern std::unordered_set<int> pos_pol;
 
+// conflict counter 
+extern int conflict_count;
+
+// fixed restart policy global value
+extern int fix_no_of_conflicts;
+
+// geometric restart policy conflict limiter
+extern int geom_conf_lim;
+
+// geometric restart policy factor
+extern double geom_factor;
+
+
+
 void parseDIMACS(std::string filename);
 
 void* cdcl(void* arg);
@@ -191,5 +205,12 @@ int index(int literal);
 void printModel(int res);
 
 void verifyModel();
+
+//Luby Sequence finding
+int luby(int i);
+
+extern int luby_index;
+
+extern int luby_unit;
 
 #endif

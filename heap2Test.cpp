@@ -1,5 +1,5 @@
 
-#include "src/cdcl/dataStructs/vsids.hpp"
+//#include "src/cdcl/dataStructs/vsids.hpp"
 #include "include/cdcl.hpp"
 #include <cassert> 
 
@@ -15,14 +15,14 @@ std::queue<int> unitQueue;
 int main() {
     // Example usage
 
-    std::string filename = "benchmarks/test/025_tent4_4_s.cnf";
+    std::string filename = "benchmarks/comp/001_aim-100-1_6-no-1_u.cnf";
 
-    parseDIMACS(filename);
+    //parseDIMACS(filename);
     
-    int n = numOfVars;
-    printf("Number of Variables: %i\n", n);
+    //int n = numOfVars;
+    //printf("Number of Variables: %i\n", n);
 
-    for (int i = 1; i <= n; i++) {
+    /* for (int i = 1; i <= n; i++) {
         act.insert(i, vars[i].tot_occ);
         printf("%d: %f\n", i, act[i]);
     }
@@ -65,7 +65,12 @@ int main() {
 
     vsidsheap.insert(15);
 
-    vsidsheap.display(act);
+    vsidsheap.display(act); */
+
+    for (int i = 0; i < 10; i++) {
+        printf("%d\n", luby(i));
+        luby_index++;
+    }
     printf("\n");
     return 0;
 }

@@ -1,4 +1,5 @@
 #include "../../include/cdcl.hpp"
+#include "../../src/cdcl/dataStructs/vsids.hpp"
 #include <cmath>
 
 std::vector<int> trail;
@@ -162,4 +163,51 @@ bool eval(int literal) {
 
 int index(int literal){
   return std::abs(literal);
+}
+
+//unfinished restart function
+void restart () {
+  trail.clear();
+  //vsidsheap.clear();
+}
+
+
+int fix_no_of_conflicts = 600;
+
+void fixed_restart () {
+  if (conflict_count == fix_no_of_conflicts) {
+    restart();
+  }
+}
+
+int geom_conf_lim = 150;
+
+double geom_factor = 1.5;
+
+void geom_restart() {
+  if (conflict_count == geom_conf_lim) {
+    geom_conf_lim *= geom_factor;
+    restart();
+  }
+}
+
+int luby_index = 1;
+
+int luby_unit = 32;
+
+int luby(int i) {
+  int k;
+  for (k = 1; k < 32; k <<= 1)
+    if (i == (1 << k) - 1) return (1 << (k - 1));
+
+  for (k = 1;; k++ )
+    if ((1 << (k - 1)) <= i && i < (1 << k) - 1)
+      return luby(i - (1 << (k - 1)) + 1);
+};
+
+void luby_restart() {
+    if (conflict_count == luby(luby_index) * luby_unit) {
+        luby_index++;
+        restart();
+    }
 }
