@@ -1,4 +1,5 @@
 #include "../../include/cdcl.hpp"
+#include "../../src/cdcl/dataStructs/vsids.hpp"
 #include <cmath>
 
 std::vector<std::pair<int, int>> trail;
@@ -184,3 +185,5 @@ bool eval(int literal) {
 int index(int literal){
   return std::abs(literal);
 }
+
+

@@ -53,6 +53,33 @@
                 }
             ],
             "preLaunchTask": "heap test"
+        },
+
+        {
+            "name": "niver test",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/niver2test.exe",
+            "args": [ ],
+            "stopAtEntry": false,
+            "cwd": "C:\\Users\\boras\\projects\\group_k_project_2",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:\\Users\\boras\\Desktop\\winlibs-x86_64-posix-seh-gcc-13.2.0-llvm-17.0.5-mingw-w64ucrt-11.0.1-r3\\mingw64\\bin\\gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "niver test"
         }
     ]
 }
