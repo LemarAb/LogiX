@@ -15,9 +15,11 @@ SELECTED_SOURCES =  $(wildcard $(SRCDIR)/main.cpp) $(wildcard $(SRCDIR)/parseDIM
 OBJ = $(SRC:.cpp=.o)
 EXECUTABLE = main
 
-TEST = test
-TESTSOURCES = heap2Test.cpp $(wildcard $(SRCDIR)/$(SOLVERDIR)/parseDimacs.cpp)
+TEST1 = test
+TESTHEAP = heap2Test.cpp $(wildcard $(SRCDIR)/$(SOLVERDIR)/parseDimacs.cpp)
 
+TEST2 = test2
+TESTNIVER = niver.cpp $(wildcard $(SRCDIR)/$(SOLVERDIR)/parseDimacs.cpp)
 # Build target
 all: $(EXECUTABLE)
 
@@ -25,7 +27,10 @@ all: $(EXECUTABLE)
 $(EXECUTABLE): $(SOURCES)
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $@ $^
 
-$(TEST): $(TESTSOURCES)
+$(TEST1): $(TESTHEAP)
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $@ $^
+
+$(TEST2): $(TESTNIVER)
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $@ $^
 	
 %.o: %.cpp
@@ -40,7 +45,12 @@ clean:
 run: $(EXECUTABLE) 
 	$(EXECUTABLE) $(arg) $(heur=0)
 
-buildtest: $(TEST)
+buildheaptest: $(TEST)
 
-testrun: $(TEST)
-	$(TEST)
+test1run: $(TEST1)
+	$(TEST1)
+
+buildnivertest: $(TEST2)
+
+test2run: $(TEST2)
+	$(TEST2)	
