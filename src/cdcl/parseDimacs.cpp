@@ -85,12 +85,13 @@ void parseDIMACS(std::string filename) {
                     //     std::cout << " " << clause.literals[i];
                     // }
                     // std::cout << "\n";
-
+  
                     clause = {};
                     count++;
                 }
             }
         }
+
         file.close();
     } else {
         printf("Unable to open file");
