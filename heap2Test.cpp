@@ -1,7 +1,9 @@
 
-#include "src/cdcl/dataStructs/vsids.hpp"
 #include "include/cdcl.hpp"
-#include <cassert> 
+#include "src/cdcl/dataStructs/vsids.hpp"
+#include <cassert>
+#include <cstdlib>
+#include <ctime>
 
 int numOfVars;
 int numOfClauses;
@@ -11,17 +13,39 @@ std::vector<Variable> vars;
 std::set<int> satClauses;
 std::queue<int> unitQueue;
 int conflict_count = 0;
+std::vector<int> trail(numOfVars + 1, -1);
+std::vector<int> phase(numOfVars + 1, -1);
 
-//unfinished restart function
-void restart () {
-  //trail.clear();
-  //vsidsheap.clear();
+// unfinished restart function
+void restart() {
+  // phase saving
+  trail.resize(numOfVars + 1);
+  phase.resize(numOfVars + 1);
+  srand(static_cast<unsigned>(time(0)));
+  for (int i = 1; i <= numOfVars; i++) {
+    trail[i] = rand() % 2;
+  }
+  printf("\ntrail is equal to ");
+  for (int i = 0; i <= numOfVars; i++) {
+    printf(" %i", trail[i]);
+  };
+  printf("\n");
+  phase = trail;
+  printf("phase is equal to ");
+  for (int i = 0; i <= numOfVars; i++) {
+    printf(" %i", phase[i]);
+  };
+  printf("\n");
+  trail.clear();
+  printf("trail size %i \n", trail.size());
+  printf("phase size %i \n", phase.size());
+  vsidsheap.clear();
+  
 }
-
 
 int fix_no_of_conflicts = 600;
 
-void fixed_restart () {
+void fixed_restart() {
   if (conflict_count == fix_no_of_conflicts) {
     restart();
   }
@@ -43,80 +67,84 @@ int luby_index = 1;
 int luby_unit = 32;
 
 int luby(int i) {
-    int k;
-    for (k = 0; (1 << (k + 1) <= (i + 1)); k++);
-    if ((1 << k) == (i + 1)) return (1 << (k - 1));
-    else return luby((i + 1) - (1 << k));
+  int k;
+  for (k = 0; (1 << (k + 1) <= (i + 1)); k++)
+    ;
+  if ((1 << k) == (i + 1))
+    return (1 << (k - 1));
+  else
+    return luby((i + 1) - (1 << k));
 }
 
 void luby_restart() {
-    if (conflict_count == luby(luby_index) * luby_unit) {
-        luby_index++;
-        restart();
-    }
+  if (conflict_count == luby(luby_index) * luby_unit) {
+    luby_index++;
+    restart();
+  }
 }
 
-
 int main() {
-    // Example usage
+  // Example usage
 
-    std::string filename = "benchmarks/comp/001_aim-100-1_6-no-1_u.cnf";
+  std::string filename = "benchmarks/test/025_tent4_4_s.cnf";
 
-    parseDIMACS(filename);
-    
-    int n = numOfVars;
-    printf("Number of Variables: %i\n", n);
+  parseDIMACS(filename);
 
-    for (int i = 1; i <= n; i++) {
-        act.insert(i, vars[i].tot_occ);
-        printf("%d: %f\n", i, act[i]);
-    }
+  int n = numOfVars;
+  printf("Number of Variables: %i\n", n);
 
-    for (int i = 1; i <= n; i++) {
-        vsidsheap.insert(i);
-    }
+  for (int i = 1; i <= n; i++) {
+    act.insert(i, vars[i].tot_occ);
+    printf("%d: %f\n", i, act[i]);
+  }
 
-    vsidsheap.display(act);
+  for (int i = 1; i <= n; i++) {
+    vsidsheap.insert(i);
+  }
 
-    vsidsheap.displayIndices();
-    
-    int test = vsidsheap.removeMax();
-    printf("%d\n", test);
+  vsidsheap.display(act);
 
-    
-    vsidsheap.displayIndices();
+  vsidsheap.displayIndices();
 
-    vsidsheap.display(act);
+  int test = vsidsheap.removeMax();
+  printf("%d\n", test);
 
-    vsidsheap.displayIndEntry(12);
+  vsidsheap.displayIndices();
 
-    vsidsheap.displaySize();
+  vsidsheap.display(act);
 
-    varIncActivity(12);
+  vsidsheap.displayIndEntry(12);
 
-    vsidsheap.display(act);
+  vsidsheap.displaySize();
 
-    varDecActivity(12);
+  varIncActivity(12);
 
-    vsidsheap.display(act);
+  vsidsheap.display(act);
 
-    allVarsHalfActivity();
+  varDecActivity(12);
 
-    vsidsheap.display(act);
+  vsidsheap.display(act);
 
-    vsidsheap.remove(15);
+  allVarsHalfActivity();
 
-    vsidsheap.display(act);
+  vsidsheap.display(act);
 
-    vsidsheap.insert(15);
+  vsidsheap.remove(15);
 
-    vsidsheap.display(act);
+  vsidsheap.display(act);
 
-    for (int i = 1; i <= 64; i++) {
-        printf("%d ", luby(i));
-        luby_index++;
-    }
-    printf("\n");
-    return 0;
+  vsidsheap.insert(15);
+
+  vsidsheap.display(act);
+
+  for (int i = 1; i <= 64; i++) {
+    printf("%d ", luby(i));
+    luby_index++;
+  }
+
+  restart();
+
+  printf("\n");
+  return 0;
 }
 // **************************************************************************************************/
