@@ -59,8 +59,11 @@ bool resolve(std::vector<int> with, std::vector<int> without, int var) {
                    });
 
       std::copy_if(cnf[without[j]].begin(), cnf[without[j]].end(),
-                   std::back_inserter(tmp_clause), [var](int x) {
-                     return x != var && x != -var;
+                   std::back_inserter(tmp_clause), [var, &tmp_clause](int x) {
+                     return x != var && x != -var &&
+                            (std::find(tmp_clause.begin(), tmp_clause.end(),
+                                       x) == tmp_clause.end());
+                     ;
                      ;
                    });
 
@@ -105,6 +108,12 @@ bool resolve(std::vector<int> with, std::vector<int> without, int var) {
     toRemove.insert(toRemove.end(), without.begin(), without.end());
     std::sort(toRemove.begin(), toRemove.end());
 
+    // clauses to be deleted
+    for (int i = 0; i < toRemove.size(); i++) {
+      printf("To Remove: %i ", toRemove[i]);
+    }
+    printf("\n");
+
     for (int i = toRemove.size() - 1; i >= 0; i--) {
       cnf.erase(cnf.begin() + toRemove[i]);
     }
@@ -122,6 +131,12 @@ bool resolve(std::vector<int> with, std::vector<int> without, int var) {
       toRemove.insert(toRemove.end(), with.begin(), with.end());
       toRemove.insert(toRemove.end(), without.begin(), without.end());
       std::sort(toRemove.begin(), toRemove.end());
+
+      // clauses to be deleted
+      for (int i = 0; i < toRemove.size(); i++) {
+        printf("To Remove: %i ", toRemove[i]);
+      }
+      printf("\n");
 
       for (int i = toRemove.size() - 1; i >= 0; i--) {
         cnf.erase(cnf.begin() + toRemove[i]);
@@ -150,11 +165,11 @@ bool resolve(std::vector<int> with, std::vector<int> without, int var) {
 }
 
 void clauseDecomp(int var) {
-  std::vector<int> withVarPos;
-  std::vector<int> withVarNeg;
-  std::vector<int> remaining;
+  std::vector<int> withVarPos(0);
+  std::vector<int> withVarNeg(0);
+  std::vector<int> remaining(0);
 
-  for (int i = 1; i <= numOfClauses; i++) {
+  for (int i = 1; i < cnf.size(); i++) {
     if (find(cnf[i].begin(), cnf[i].end(), var) != cnf[i].end()) {
       withVarPos.push_back(i);
     } else if (find(cnf[i].begin(), cnf[i].end(), -var) != cnf[i].end()) {
@@ -201,7 +216,7 @@ int main() {
   int n = numOfVars;
   printf("Number of Variables: %i\n", n);
 
-  for (int i = 1; i <= 1; i++) {
+  for (int i = 1; i <= 2; i++) {
     clauseDecomp(i);
   }
   return 0;
