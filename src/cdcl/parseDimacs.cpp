@@ -25,6 +25,7 @@ void parseDIMACS(std::string filename) {
         numOfVars = std::stoi(tokens[2]);
         numOfClauses = std::stoi(tokens[3]);
         numOfUnassigned = numOfVars;
+        Assig *unit = new Assig[numOfVars];
         std::cout << "Number of Variables: " << numOfVars << std::endl;
         std::cout << "Number of Clauses: " << numOfClauses << std::endl <<"\n";
 
@@ -52,25 +53,25 @@ void parseDIMACS(std::string filename) {
                 vars[std::abs(literal)].tot_occ++;
 
                 clause.push_back(literal);
-
-                // std::cout << "Literal: " << literal << std::endl;
             }
 
             if (literal == 0) {
                 if (!clause.empty()) {
-                    // std::cout << "Literal: " << clause.literals[0] << "in if" << std::endl;
 
                     clause[0] > 0 ? vars[std::abs(clause[0])].pos_watched.insert(count)
                                            : vars[std::abs(clause[0])].neg_watched.insert(count);
                     // if unit clause, push to unit queue
                     if (clause.size() == 1) {
-                        // std::cout << "Literal: " << clause.literals[0] << "in if22" << std::endl;
 
                         if (!vars[std::abs(clause[0])].enqueued) {
+                            unit[index(clause[0])] = Assig((clause[0] > 0));
                             unitQueue.push(clause[0]);
-                            // std::cout << "Pushing " << clause.literals[0] << " on unit queue" << std::endl;
                             vars[std::abs(clause[0])].enqueued = true;
                         }
+
+                        // else
+                        //     if(unit[index(clause[0])] != Assig((clause[0] > 0)))
+                        //         // return false;
                     }
 
                     // else also link the second watched literal to their respective entry in variables

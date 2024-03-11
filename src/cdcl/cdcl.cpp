@@ -40,7 +40,7 @@ void *cdcl(void *arg) {
       backtrack();
     }
     else {
-        pickDecisionLit();
+      pickDecisionLit();
     }
   }
 }
