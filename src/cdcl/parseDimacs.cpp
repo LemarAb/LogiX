@@ -57,37 +57,34 @@ bool parseDIMACS(std::string filename) {
 
             if (literal == 0) {
                 if (!clause.empty()) {
-
-                    clause[0] > 0 ? vars[std::abs(clause[0])].pos_watched.insert(count)
-                                           : vars[std::abs(clause[0])].neg_watched.insert(count);
                     // if unit clause, push to unit queue
                     if (clause.size() == 1) {
 
-                        if (!vars[std::abs(clause[0])].enqueued) {
-                            unit[index(clause[0])] = Assig((clause[0] > 0));
+                        if (!vars[index(clause[0])].enqueued) {
+                            unit[index(clause[0])] = Assig(clause[0] > 0);
                             unitQueue.push(clause[0]);
-                            vars[std::abs(clause[0])].enqueued = true;
+                            vars[index(clause[0])].enqueued = true;
                         }
 
                         else
                             if(unit[index(clause[0])] != Assig((clause[0] > 0)))
                                 return true;
-
                     }
 
-                    // else also link the second watched literal to their respective entry in variables
 
-                    if (clause.size() > 1)
-                        clause[1] > 0 ? vars[std::abs(clause[1])].pos_watched.insert(count)
-                                               : vars[std::abs(clause[1])].neg_watched.insert(count);
+                    if (clause.size() > 1) {
 
+                        clause[0] > 0 ? vars[index(clause[0])].pos_watched.insert(count)
+                                            : vars[index(clause[0])].neg_watched.insert(count);
+
+                        clause[1] > 0 ? vars[index(clause[1])].pos_watched.insert(count)
+                                            : vars[index(clause[1])].neg_watched.insert(count);
+
+                        // Only add non unit clauses to cnf
+                        
+                    }
                     cnf.push_back(clause);
-                    // std::cout << "for clause " << count <<":";
-                    // for (int i = 0; i < clause.literals.size(); i++) {
-                    //     std::cout << " " << clause.literals[i];
-                    // }
-                    // std::cout << "\n";
-  
+                    
                     clause = {};
                     count++;
                 }
