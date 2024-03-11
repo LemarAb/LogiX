@@ -170,7 +170,7 @@ extern int geom_conf_lim;
 // geometric restart policy factor
 extern double geom_factor;
 
-void parseDIMACS(std::string filename);
+bool parseDIMACS(std::string filename);
 
 void* cdcl(void* arg);
 

@@ -1,6 +1,6 @@
 #include "../../include/cdcl.hpp"
 
-void parseDIMACS(std::string filename) {
+bool parseDIMACS(std::string filename) {
     std::ifstream file(filename);
     std::string line;
 
@@ -69,9 +69,10 @@ void parseDIMACS(std::string filename) {
                             vars[std::abs(clause[0])].enqueued = true;
                         }
 
-                        // else
-                        //     if(unit[index(clause[0])] != Assig((clause[0] > 0)))
-                        //         // return false;
+                        else
+                            if(unit[index(clause[0])] != Assig((clause[0] > 0)))
+                                return true;
+
                     }
 
                     // else also link the second watched literal to their respective entry in variables
@@ -97,4 +98,5 @@ void parseDIMACS(std::string filename) {
     } else {
         printf("Unable to open file");
     }
+    return false;
 }
