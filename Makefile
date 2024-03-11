@@ -19,7 +19,7 @@ TEST1 = test
 TESTHEAP = heap2Test.cpp $(wildcard $(SRCDIR)/$(SOLVERDIR)/parseDimacs.cpp)
 
 TEST2 = test2
-TESTNIVER = niver.cpp $(wildcard $(SRCDIR)/$(SOLVERDIR)/parseDimacs.cpp)
+TESTNIVER = niver.cpp $(wildcard $(SRCDIR)/$(SOLVERDIR)/parseDimacs.cpp) $(wildcard $(SRCDIR)/$(SOLVERDIR)/cdcl.cpp)
 # Build target
 all: $(EXECUTABLE)
 
