@@ -12,7 +12,7 @@ std::vector<std::vector<int>> cnf;
 std::vector<Variable> vars;
 std::set<int> satClauses;
 std::queue<int> unitQueue;
-bool niverChange = false;
+bool niverChange = true;
 
 bool totalLitsinClausesComp(std::vector<std::vector<int>> resolvents,
                             std::vector<int> with, std::vector<int> without) {
@@ -66,11 +66,6 @@ bool resolve(std::vector<int> with, std::vector<int> without, int var) {
                      ;
                      ;
                    });
-
-      for (int l = 0; l < tmp_clause.size(); l++) {
-        printf("%i ", tmp_clause[l]);
-      }
-      printf("\n");
 
       // Check for tautologies in each tmp_clause, push to resolvents if not
 
@@ -147,6 +142,13 @@ bool resolve(std::vector<int> with, std::vector<int> without, int var) {
         niverChange = true;
       }
     }
+  } else {
+    niverChange = false;
+    printf("Resolvents are not less or equal than clauses\n");
+    printf("No change\n");
+    printf("clauses size %i and resolvents size %i\n",
+           with.size() + without.size(), resolvents.size());
+    totalLitsinClausesComp(resolvents, with, without);
   }
 
   // print cnf
@@ -182,14 +184,14 @@ void clauseDecomp(int var) {
   std::cout << "Var= " << var << std::endl;
 
   // Print all elements of withVar
-  std::cout << "withVar: ";
+  std::cout << "withVarPos: ";
   for (int i = 0; i < withVarPos.size(); i++) {
     std::cout << withVarPos[i] << " ";
   }
   std::cout << std::endl;
 
   // Print all elements of woutVar
-  std::cout << "woutVar: ";
+  std::cout << "withVarNeg: ";
   for (int i = 0; i < withVarNeg.size(); i++) {
     std::cout << withVarNeg[i] << " ";
   }
@@ -201,23 +203,25 @@ void clauseDecomp(int var) {
     std::cout << remaining[i] << " ";
   }
   std::cout << std::endl;
-
+  
   resolve(withVarPos, withVarNeg, var);
-
+  
   printf("\n");
 }
 
 int main() {
 
-  std::string filename = "benchmarks/test/001_count4_2_s.cnf";
+  std::string filename = "benchmarks/comp/076_hole9_u.cnf";
 
   parseDIMACS(filename);
 
   int n = numOfVars;
   printf("Number of Variables: %i\n", n);
 
-  for (int i = 1; i <= 2; i++) {
-    clauseDecomp(i);
+  for (int i = 1; i <= numOfVars; i++) {
+
+    if (niverChange) clauseDecomp(i);
+    
   }
   return 0;
 }
