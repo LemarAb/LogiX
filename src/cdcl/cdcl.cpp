@@ -2,6 +2,13 @@
 #include "../../src/cdcl/dataStructs/vsids.hpp"
 #include <cmath>
 
+std::vector<std::pair<int, int>> trail;
+bool conflict;
+std::vector<int> conflict_clause;
+int count_lits_highest_dec_level = 1;
+int curDecisionLevel = 0;
+int* seen = new int[numOfVars];
+
 bool eval(int literal) {
   return !(vars[index(literal)].getValue() ^ (literal > 0));
 }
@@ -10,31 +17,30 @@ int index(int literal){
   return std::abs(literal);
 }
 
-std::vector<std::pair<int, int>> trail;
-bool conflict;
-std::vector<int> conflict_clause;
-int count_lits_highest_dec_level = 1;
-int curDecisionLevel = 0;
-int* seen = new int[numOfVars];
+void assertLit(int literal, bool forced) {
+  auto& lit = vars[std::abs(literal)]; 
+  (literal > 0) ? lit.setValue(TRUE) : lit.setValue(FALSE);
+
+  if (forced) {
+    lit.forced = true;
+    trail.push_back(std::make_pair(literal, curDecisionLevel));
+    lit.enqueued = false;
+    assig.push(std::abs(literal));
+    updateWatchedLiterals(std::abs(literal));
+  }
+  else {
+    lit.forced = false;
+    trail.push_back(std::make_pair(literal, ++curDecisionLevel));
+    assig.push(literal);
+    updateWatchedLiterals(literal);
+  }
+
+}
 
 void* cdcl(void* arg) {
     while (true) {
-        unitPropagate();
-        // if (conflict) {
-        //     if (decLevel == 0)
-        //         unsat;
-        //     else {
-        //         conflict_analysis + backtrack
-        //     }
-        // } else {
-        //     if (trail.size() == numofvars)
-        //         sat
-        //     else {
-        //         if (restarts) restart();
-                pickDecisionLit();
-        //     }
-        // }
-        
+      unitPropagate();
+      pickDecisionLit();
     }
 }
 
@@ -42,36 +48,23 @@ void unitPropagate() {
     int unitLiteral;
     while (!unitQueue.empty()) {
         unitLiteral = unitQueue.front();
-        //  std::cout << "current queue elm = " << unitLiteral << "\n";
         unitQueue.pop();
-        vars[std::abs(unitLiteral)].enqueued = false;
-        vars[std::abs(unitLiteral)].forced = true;
-        (unitLiteral > 0) ? vars[std::abs(unitLiteral)].setValue(TRUE) : vars[std::abs(unitLiteral)].setValue(FALSE);
-        //  std::cout << "UP variable " << unitLiteral << " set to " << vars[std::abs(unitLiteral)].getValue() << "\n";
-        vars[index(unitLiteral)].tloc = trail.size();
-        trail.push_back(std::make_pair(unitLiteral, curDecisionLevel));
-        assig.push(std::abs(unitLiteral));
-        updateWatchedLiterals(std::abs(unitLiteral));
+        assertLit(unitLiteral, true);
     }
 }
 
 void pickDecisionLit() {
   while (vars[curVar].getValue() != FREE)
     curVar++;
-  vars[curVar].setValue(TRUE);
-  vars[curVar].forced = false;
-  assig.push(curVar);
-  vars[index(curVar)].tloc = trail.size();
-  trail.push_back(std::make_pair(curVar, ++curDecisionLevel));
-  updateWatchedLiterals(curVar);
+  assertLit(curVar, false);
 }
 
-void updateWatchedLiterals(int assertedVar) {
+void updateWatchedLiterals(int assertedLit) {
   
-  auto clausesToUpdatePointers = &vars[assertedVar].neg_watched;
+  auto clausesToUpdatePointers = &vars[assertedLit].neg_watched;
 
-  if (vars[assertedVar].getValue() == FALSE) {
-    clausesToUpdatePointers = &vars[assertedVar].pos_watched;
+  if (vars[assertedLit].getValue() == FALSE) {
+    clausesToUpdatePointers = &vars[assertedLit].pos_watched;
   }
 
   auto copy = *clausesToUpdatePointers;
@@ -89,7 +82,7 @@ void updateWatchedLiterals(int assertedVar) {
       continue;
 
     // swap false literal to index 1
-    if (index(clause[1]) != assertedVar) 
+    if (index(clause[1]) != assertedLit) 
       std::swap(clause[0], clause[1]);
 
     for (int i = 2; i < clause.size(); i++) {
@@ -114,9 +107,6 @@ void updateWatchedLiterals(int assertedVar) {
       if (!unitLit.enqueued) {
         unitQueue.push(clause[0]);
         unitLit.enqueued = true;
-        // //store incoming edges of the firstLiteral vertex
-        // for(int i = 1; i < clause.size(); i++)
-        //   unitLit.reason.insert(clause[i]);
       }
     } else {
         //CONFLICT!
