@@ -36,13 +36,18 @@ void assertLit(int literal, bool forced) {
 void *cdcl(void *arg) {
   while (true) {
     unitPropagate();
-    pickDecisionLit();
+    if(conflict){
+      backtrack();
+    }
+    else {
+        pickDecisionLit();
+    }
   }
 }
 
 void unitPropagate() {
   int unitLiteral;
-  while (!unitQueue.empty()) {
+  while (!unitQueue.empty() && !conflict) {
     unitLiteral = unitQueue.front();
     unitQueue.pop();
     assertLit(unitLiteral, true);
@@ -109,7 +114,8 @@ void updateWatchedLiterals(int assertedLit) {
       // CONFLICT!
       //  int backtrack_lvl = analyze(*clauseIndex);
       //  backjump();
-      backtrack();
+      conflict = true;
+      // backtrack();
       return;
     }
   }
@@ -174,6 +180,8 @@ void backtrack() {
     assig.pop();
     //  std::cout << "Removed literal " << toUnassign << " from assig stack \n";
   }
+
+  conflict = false;
 
   // clear unit queue
   while (!unitQueue.empty()) {
