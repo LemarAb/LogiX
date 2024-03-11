@@ -17,7 +17,7 @@
 
 // A MaxHeap for VSIDS Branching Heuristic
 // The heap is implemented as a binary tree, with the root of the tree being the variable with the highest activity.
-void afterExtractOrderAct(int i);
+void afterExtractOrderAct(int i); 
 
 struct VariableOrderActLT {
     const IntMap<int, double>& activity;

@@ -68,8 +68,7 @@ int luby_unit = 32;
 
 int luby(int i) {
   int k;
-  for (k = 0; (1 << (k + 1) <= (i + 1)); k++)
-    ;
+  for (k = 0; (1 << (k + 1) <= (i + 1)); k++);
   if ((1 << k) == (i + 1))
     return (1 << (k - 1));
   else
