@@ -74,7 +74,6 @@ void updateWatchedLiterals(int assertedLit) {
        ++clauseIndex) {
 
     std::vector<int> &clause = cnf[*clauseIndex];
-    bool found = false;
 
     if (eval(clause[0]) || eval(clause[1]))
       continue;

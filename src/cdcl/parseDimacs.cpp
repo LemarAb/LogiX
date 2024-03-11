@@ -81,12 +81,12 @@ bool parseDIMACS(std::string filename) {
                                             : vars[index(clause[1])].neg_watched.insert(count);
 
                         // Only add non unit clauses to cnf
-                        
+                        cnf.push_back(clause);
+                        count++;
                     }
-                    cnf.push_back(clause);
-                    
+
                     clause = {};
-                    count++;
+                    
                 }
             }
         }
@@ -95,5 +95,6 @@ bool parseDIMACS(std::string filename) {
     } else {
         printf("Unable to open file");
     }
+    numOfClauses = cnf.size() - 1;
     return false;
 }
