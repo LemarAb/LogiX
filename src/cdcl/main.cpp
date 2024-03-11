@@ -44,8 +44,14 @@ int main(int argc, char *argv[]) {
 
   //   if (argc > 2)
   //     heuristic = Heuristics(std::stoi(argv[2]));
+  void *res;
 
-  parseDIMACS(fileName);
+  // if we find a conflict upon parsing the DIMACS, skip the solver
+  if(parseDIMACS(fileName)) {
+    res = (void *)1;
+    goto postprocessing;
+  }
+  // preprocess();
 
   pthread_t thread;
 
@@ -54,8 +60,10 @@ int main(int argc, char *argv[]) {
     return -1;
   }
   // Wait for the child thread to finish
-  void *res;
+  
   pthread_join(thread, &res);
+
+  postprocessing:
 
   printModel((intptr_t)res);
 
@@ -67,12 +75,7 @@ int main(int argc, char *argv[]) {
     verifyModel();
 
   printf("\nCPU time used: %.6f seconds\n\n", duration.count());
-  // for (auto it = satClauses.begin(); it != satClauses.end(); ++it) {
-  //     std::cout << *it << std::endl;  // Perform operations with each element
-  // }
 
-  // std::cout << "\nCPU time used: " << duration.count() << " seconds\n" <<
-  // std::endl;
   std::cout.flush();
 
   printf("-------------------------------------\n\n", duration.count());

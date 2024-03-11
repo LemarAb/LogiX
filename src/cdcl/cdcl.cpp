@@ -74,10 +74,6 @@ void updateWatchedLiterals(int assertedLit) {
        ++clauseIndex) {
 
     std::vector<int> &clause = cnf[*clauseIndex];
-    bool found = false;
-
-    if (clause.size() == 1)
-      goto conflict_detection;
 
     if (eval(clause[0]) || eval(clause[1]))
       continue;
@@ -85,7 +81,7 @@ void updateWatchedLiterals(int assertedLit) {
     // swap false literal to index 1
     if (index(clause[1]) != assertedLit)
       std::swap(clause[0], clause[1]);
-
+    auto &unitLit = vars[index(clause[0])];
     for (int i = 2; i < clause.size(); i++) {
       if (eval(clause[i]) || vars[index(clause[i])].getValue() == FREE) {
         int swapee = clause[i];
@@ -93,18 +89,13 @@ void updateWatchedLiterals(int assertedLit) {
         clausesToUpdatePointers->erase(*clauseIndex);
         swapee > 0 ? vars[index(swapee)].pos_watched.insert(*clauseIndex)
                    : vars[index(swapee)].neg_watched.insert(*clauseIndex);
-        found = true;
-        break;
+        goto nextIter;
       }
     }
 
-  conflict_detection:
-    if (found)
-      continue;
-
     // If the first literal of the clause is free, push unitProp else conflict
     // found
-    auto &unitLit = vars[index(clause[0])];
+    
     if (unitLit.getValue() == FREE) {
       if (!unitLit.enqueued) {
         unitQueue.push(clause[0]);
@@ -118,6 +109,7 @@ void updateWatchedLiterals(int assertedLit) {
       // backtrack();
       return;
     }
+  nextIter:;
   }
 
   if (numOfUnassigned == 0 && unitQueue.empty())
