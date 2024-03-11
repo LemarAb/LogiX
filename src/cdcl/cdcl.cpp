@@ -2,18 +2,22 @@
 #include "../../src/cdcl/dataStructs/vsids.hpp"
 #include <cmath>
 
+bool eval(int literal) {
+  return !(vars[index(literal)].getValue() ^ (literal > 0));
+}
+
+int index(int literal){
+  return std::abs(literal);
+}
+
 std::vector<std::pair<int, int>> trail;
 bool conflict;
 std::vector<int> conflict_clause;
-std::set<int> conflict_set;
 int count_lits_highest_dec_level = 1;
 int curDecisionLevel = 0;
-int tloc_curDecLev;
-int tloc_firstDecLev;
+int* seen = new int[numOfVars];
 
 void* cdcl(void* arg) {
-tloc_firstDecLev = unitQueue.size();
-printf("%i", tloc_firstDecLev);
     while (true) {
         unitPropagate();
         // if (conflict) {
@@ -57,13 +61,13 @@ void pickDecisionLit() {
   vars[curVar].setValue(TRUE);
   vars[curVar].forced = false;
   assig.push(curVar);
-  tloc_curDecLev = trail.size();
   vars[index(curVar)].tloc = trail.size();
   trail.push_back(std::make_pair(curVar, ++curDecisionLevel));
   updateWatchedLiterals(curVar);
 }
 
 void updateWatchedLiterals(int assertedVar) {
+  
   auto clausesToUpdatePointers = &vars[assertedVar].neg_watched;
 
   if (vars[assertedVar].getValue() == FALSE) {
@@ -115,35 +119,63 @@ void updateWatchedLiterals(int assertedVar) {
         //   unitLit.reason.insert(clause[i]);
       }
     } else {
-      conflict = true;
-
-      // stamp 0
-      for(int i = 1; i < clause.size(); i++){
-        // TODO: stamp procedure
-
-        
-        if(vars[index(clause[i])].tloc < tloc_curDecLev
-        && vars[index(clause[i])].tloc >= tloc_firstDecLev)
-          conflict_set.insert(clause[i]);
-        else
-          if(vars[index(clause[i])].tloc >= tloc_curDecLev)
-            count_lits_highest_dec_level++;
-
-
-      }
-      printf("COUNT: %i\n", count_lits_highest_dec_level);
-      for(int i : conflict_set){
-        printf("%i\n", i);
-      }
-      pthread_exit(0);
-      backtrack();
-      return;
+        //CONFLICT!
+        // int backtrack_lvl = analyze(*clauseIndex);
+        // backjump();
+        backtrack();
+        return;
     }
   }
 
   if (numOfUnassigned == 0 && unitQueue.empty())
     pthread_exit(0);
 }
+
+// int analyze(int conf_clause_id){
+  
+//   int numOfLits = 1; // number of literals of current decision level in our conflict clause
+//   int trailIndex   = trail.size() - 1;
+//   conflict_clause.push_back(-1); // push dummy, replaced after loop
+//   std::pair<int, int> seenLit;
+//   while(numOfLits > 1){
+//     std::vector<int>& conf = cnf[conf_clause_id];
+//     for(int i = 1; i < conf.size(); i++){
+//       int lit = conf[i];
+//       if (!seen[index(lit)] && vars[index(lit)].level > 0){
+//                 // varBumpActivity(var(q));
+//                 seen[index(lit)] = 1;
+//                 if (vars[index(lit)].level >= curDecisionLevel)
+//                     numOfLits++;
+//                 else
+//                     conflict_clause.push_back(lit);
+//         }
+//     }
+
+//     // traverse trail until we encounter a seen lit
+//     while (!seen[trail[trailIndex].first])
+//       trailIndex--;
+    
+//     seenLit = trail[trailIndex];
+//     conf_clause_id = seenLit.second;
+//     seen[seenLit.first] = 0;
+//     numOfLits--;
+//   }
+
+//   conflict_clause[0] = seenLit.first;
+//   int btlvl;
+//   if (conflict_clause.size() == 1)
+//         btlvl = 0;
+//     else{
+//         // index of the second highest dec level literal
+//         int max = 1;
+//         // Find the first literal assigned at the second highest level:
+//         for (int i = 2; i < conflict_clause.size(); i++)
+//             if (vars[index(conflict_clause[i])].level > vars[index(conflict_clause[max])].level)
+//                 max = i;
+//         btlvl = vars[index(conflict_clause[max])].level;
+//     }
+//   return btlvl;
+// }
 
 void backtrack() {
     while (!assig.empty() && vars[assig.top()].forced) {  // until the last branching variable.
@@ -178,12 +210,6 @@ void backtrack() {
 }
 
 
-bool eval(int literal) {
-  return !(vars[index(literal)].getValue() ^ (literal > 0));
-}
 
-int index(int literal){
-  return std::abs(literal);
-}
 
 
