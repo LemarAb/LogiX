@@ -7,18 +7,16 @@ bool conflict;
 std::vector<int> conflict_clause;
 int count_lits_highest_dec_level = 1;
 int curDecisionLevel = 0;
-int* seen = new int[numOfVars];
+int *seen = new int[numOfVars];
 
 bool eval(int literal) {
   return !(vars[index(literal)].getValue() ^ (literal > 0));
 }
 
-int index(int literal){
-  return std::abs(literal);
-}
+int index(int literal) { return std::abs(literal); }
 
 void assertLit(int literal, bool forced) {
-  auto& lit = vars[std::abs(literal)]; 
+  auto &lit = vars[std::abs(literal)];
   (literal > 0) ? lit.setValue(TRUE) : lit.setValue(FALSE);
 
   if (forced) {
@@ -27,30 +25,28 @@ void assertLit(int literal, bool forced) {
     lit.enqueued = false;
     assig.push(std::abs(literal));
     updateWatchedLiterals(std::abs(literal));
-  }
-  else {
+  } else {
     lit.forced = false;
     trail.push_back(std::make_pair(literal, ++curDecisionLevel));
     assig.push(literal);
     updateWatchedLiterals(literal);
   }
-
 }
 
-void* cdcl(void* arg) {
-    while (true) {
-      unitPropagate();
-      pickDecisionLit();
-    }
+void *cdcl(void *arg) {
+  while (true) {
+    unitPropagate();
+    pickDecisionLit();
+  }
 }
 
 void unitPropagate() {
-    int unitLiteral;
-    while (!unitQueue.empty()) {
-        unitLiteral = unitQueue.front();
-        unitQueue.pop();
-        assertLit(unitLiteral, true);
-    }
+  int unitLiteral;
+  while (!unitQueue.empty()) {
+    unitLiteral = unitQueue.front();
+    unitQueue.pop();
+    assertLit(unitLiteral, true);
+  }
 }
 
 void pickDecisionLit() {
@@ -60,7 +56,7 @@ void pickDecisionLit() {
 }
 
 void updateWatchedLiterals(int assertedLit) {
-  
+
   auto clausesToUpdatePointers = &vars[assertedLit].neg_watched;
 
   if (vars[assertedLit].getValue() == FALSE) {
@@ -82,7 +78,7 @@ void updateWatchedLiterals(int assertedLit) {
       continue;
 
     // swap false literal to index 1
-    if (index(clause[1]) != assertedLit) 
+    if (index(clause[1]) != assertedLit)
       std::swap(clause[0], clause[1]);
 
     for (int i = 2; i < clause.size(); i++) {
@@ -91,7 +87,7 @@ void updateWatchedLiterals(int assertedLit) {
         std::swap(clause[1], clause[i]);
         clausesToUpdatePointers->erase(*clauseIndex);
         swapee > 0 ? vars[index(swapee)].pos_watched.insert(*clauseIndex)
-                : vars[index(swapee)].neg_watched.insert(*clauseIndex);
+                   : vars[index(swapee)].neg_watched.insert(*clauseIndex);
         found = true;
         break;
       }
@@ -101,19 +97,20 @@ void updateWatchedLiterals(int assertedLit) {
     if (found)
       continue;
 
-    // If the first literal of the clause is free, push unitProp else conflict found
-    auto & unitLit = vars[index(clause[0])];
+    // If the first literal of the clause is free, push unitProp else conflict
+    // found
+    auto &unitLit = vars[index(clause[0])];
     if (unitLit.getValue() == FREE) {
       if (!unitLit.enqueued) {
         unitQueue.push(clause[0]);
         unitLit.enqueued = true;
       }
     } else {
-        //CONFLICT!
-        // int backtrack_lvl = analyze(*clauseIndex);
-        // backjump();
-        backtrack();
-        return;
+      // CONFLICT!
+      //  int backtrack_lvl = analyze(*clauseIndex);
+      //  backjump();
+      backtrack();
+      return;
     }
   }
 
@@ -122,9 +119,9 @@ void updateWatchedLiterals(int assertedLit) {
 }
 
 // int analyze(int conf_clause_id){
-  
-//   int numOfLits = 1; // number of literals of current decision level in our conflict clause
-//   int trailIndex   = trail.size() - 1;
+
+//   int numOfLits = 1; // number of literals of current decision level in our
+//   conflict clause int trailIndex   = trail.size() - 1;
 //   conflict_clause.push_back(-1); // push dummy, replaced after loop
 //   std::pair<int, int> seenLit;
 //   while(numOfLits > 1){
@@ -144,7 +141,7 @@ void updateWatchedLiterals(int assertedLit) {
 //     // traverse trail until we encounter a seen lit
 //     while (!seen[trail[trailIndex].first])
 //       trailIndex--;
-    
+
 //     seenLit = trail[trailIndex];
 //     conf_clause_id = seenLit.second;
 //     seen[seenLit.first] = 0;
@@ -160,7 +157,8 @@ void updateWatchedLiterals(int assertedLit) {
 //         int max = 1;
 //         // Find the first literal assigned at the second highest level:
 //         for (int i = 2; i < conflict_clause.size(); i++)
-//             if (vars[index(conflict_clause[i])].level > vars[index(conflict_clause[max])].level)
+//             if (vars[index(conflict_clause[i])].level >
+//             vars[index(conflict_clause[max])].level)
 //                 max = i;
 //         btlvl = vars[index(conflict_clause[max])].level;
 //     }
@@ -168,38 +166,36 @@ void updateWatchedLiterals(int assertedLit) {
 // }
 
 void backtrack() {
-    while (!assig.empty() && vars[assig.top()].forced) {  // until the last branching variable.
-        int toUnassign = assig.top();
-        vars[toUnassign].setValue(FREE);
-        vars[toUnassign].forced = false;
-        assig.pop();
-        //  std::cout << "Removed literal " << toUnassign << " from assig stack \n";
-    }
+  while (!assig.empty() &&
+         vars[assig.top()].forced) { // until the last branching variable.
+    int toUnassign = assig.top();
+    vars[toUnassign].setValue(FREE);
+    vars[toUnassign].forced = false;
+    assig.pop();
+    //  std::cout << "Removed literal " << toUnassign << " from assig stack \n";
+  }
 
-    // clear unit queue
-    while (!unitQueue.empty()) {
-        // std::cout << "Element to be popped from queue: " << unitQueue.front() << "\n";
-        vars[std::abs(unitQueue.front())].enqueued = false;
-        unitQueue.pop();
-    }
+  // clear unit queue
+  while (!unitQueue.empty()) {
+    // std::cout << "Element to be popped from queue: " << unitQueue.front() <<
+    // "\n";
+    vars[std::abs(unitQueue.front())].enqueued = false;
+    unitQueue.pop();
+  }
 
-    if (assig.empty()) {
-        pthread_exit((void *)1);
-    }  // UNSAT
+  if (assig.empty()) {
+    pthread_exit((void *)1);
+  } // UNSAT
 
-    // Most recent branching variable
-    int b = assig.top();
-    // Assign negated val
-    vars[b].forced = true;
-    // vars[b].reason.clear();
-    vars[b].setValue(Assig(int(2 - std::pow(2.0, vars[b].getValue()))));
-    // std::cout << "New branch var" << b << ", OLD: " << oldval << ", NEW: " << vars[b].getValue();
-    curVar = b;
-    updateWatchedLiterals(b);
-    unitPropagate();
+  // Most recent branching variable
+  int b = assig.top();
+  // Assign negated val
+  vars[b].forced = true;
+  // vars[b].reason.clear();
+  vars[b].setValue(Assig(int(2 - std::pow(2.0, vars[b].getValue()))));
+  // std::cout << "New branch var" << b << ", OLD: " << oldval << ", NEW: " <<
+  // vars[b].getValue();
+  curVar = b;
+  updateWatchedLiterals(b);
+  unitPropagate();
 }
-
-
-
-
-
