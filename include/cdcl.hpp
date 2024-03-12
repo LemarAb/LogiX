@@ -92,6 +92,7 @@ struct Variable {
     //             // clause x sat => x is in neg_poll => erase x from neg_poll
     //             // if neg_pol.empty() => pureLiter => set var to 1
     int level;
+    int reason;
     std::set<int> pos_watched;  // All clauses where var appears as pos watched literal
     std::set<int> neg_watched;  // All clauses where var appears as neg watched literal
     bool forced = false;
@@ -179,16 +180,6 @@ void unitPropagate();
 // chooses literals according to the used heuristic
 void pickDecisionLit();
 
-void chooseINC();
-
-void chooseDLIS();
-
-void chooseDLCS();
-
-void chooseMOM();
-
-void chooseJW();
-
 // updates the watched literals after a new assignment is made
 void updateWatchedLiterals(int literal);
 
@@ -202,6 +193,8 @@ bool eval(int literal);
 int index(int literal);
 
 void printModel(int res);
+
+int analyze();
 
 void verifyModel();
 
