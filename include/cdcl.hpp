@@ -92,7 +92,7 @@ struct Variable {
     //             // clause x sat => x is in neg_poll => erase x from neg_poll
     //             // if neg_pol.empty() => pureLiter => set var to 1
     int level;
-    int reason;
+    int reason = -1;
     std::set<int> pos_watched;  // All clauses where var appears as pos watched literal
     std::set<int> neg_watched;  // All clauses where var appears as neg watched literal
     bool forced = false;
@@ -116,7 +116,7 @@ struct Variable {
         // vars[assertedLit].enqueued = false;
         // vars[assertedLit].forced = true;
         // assig.push(assertedLit);
-        // updateWatchedLiterals(assertedLit);
+        // updateWatched(assertedLit);
     }
     Assig getValue() { return val; }
 };
@@ -159,6 +159,11 @@ extern std::unordered_set<int> neg_pol;
 // set of variables occuring only in positive polarity
 extern std::unordered_set<int> pos_pol;
 
+extern std::vector<int> trail;
+
+extern int curDecisionLevel;
+
+
 // conflict counter 
 extern int conflict_count;
 
@@ -181,7 +186,7 @@ void unitPropagate();
 void pickDecisionLit();
 
 // updates the watched literals after a new assignment is made
-void updateWatchedLiterals(int literal);
+void updateWatched(int literal);
 
 // handles conficts and signals UNSAT
 void backtrack();

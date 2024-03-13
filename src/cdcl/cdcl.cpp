@@ -10,32 +10,6 @@ int curDecisionLevel = 0;
 bool *seen = new bool[numOfVars];
 int conflict_clause_id;
 
-bool eval(int literal) {
-  return !(vars[index(literal)].getValue() ^ (literal > 0));
-}
-
-int index(int literal) { return std::abs(literal); }
-
-void assertLit(int literal, bool forced) {
-  auto &lit = vars[std::abs(literal)];
-  (literal > 0) ? lit.setValue(TRUE) : lit.setValue(FALSE);
-  if (forced) {
-    lit.forced = true;
-    trail.push_back(literal);
-    lit.enqueued = false;
-    assig.push(std::abs(literal));
-    updateWatchedLiterals(std::abs(literal));
-    lit.level = curDecisionLevel;
-  } else {
-    curDecisionLevel++;
-    lit.forced = false;
-    trail.push_back(literal);
-    assig.push(literal);
-    lit.level = curDecisionLevel;
-    updateWatchedLiterals(literal);
-  }
-}
-
 void *cdcl(void *arg) {
   while (true) {
     unitPropagate();
@@ -71,15 +45,15 @@ void pickDecisionLit() {
   assertLit(curVar, false);
 }
 
-void updateWatchedLiterals(int assertedLit) {
+void updateWatched(int assertedLit) {
 
-  auto clausesToUpdatePointers = &vars[assertedLit].neg_watched;
+  auto watchedClauses = &vars[assertedLit].neg_watched;
 
   if (vars[assertedLit].getValue() == FALSE) {
-    clausesToUpdatePointers = &vars[assertedLit].pos_watched;
+    watchedClauses = &vars[assertedLit].pos_watched;
   }
 
-  auto copy = *clausesToUpdatePointers;
+  auto copy = *watchedClauses;
 
   for (auto clauseIndex = copy.begin(); clauseIndex != copy.end();
        ++clauseIndex) {
@@ -97,7 +71,7 @@ void updateWatchedLiterals(int assertedLit) {
       if (eval(clause[i]) || vars[index(clause[i])].getValue() == FREE) {
         int swapee = clause[i];
         std::swap(clause[1], clause[i]);
-        clausesToUpdatePointers->erase(*clauseIndex);
+        watchedClauses->erase(*clauseIndex);
         swapee > 0 ? vars[index(swapee)].pos_watched.insert(*clauseIndex)
                    : vars[index(swapee)].neg_watched.insert(*clauseIndex);
         goto nextIter;
@@ -144,7 +118,7 @@ int analyze() {
       if (!seen[index(lit)] && vars[index(lit)].level > 0){
                 // varBumpActivity(var(q));
                 seen[index(lit)] = 1;
-                printf("HIERMITTEEVOR!: %i\n", vars[index(lit)].level);
+                printf("HIERMITTEEVOR!: %i\n", vars[index(stampedLit)].reason);
                 if (vars[index(lit)].level >= curDecisionLevel)
                     {numOfLits++;}
                 else
@@ -217,5 +191,5 @@ void backtrack() {
   // std::cout << "New branch var" << b << ", OLD: " << oldval << ", NEW: " <<
   // vars[b].getValue();
   curVar = b;
-  updateWatchedLiterals(b);
+  updateWatched(b);
 }
