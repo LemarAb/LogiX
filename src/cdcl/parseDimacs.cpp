@@ -1,5 +1,7 @@
 #include "../../include/cdcl.hpp"
 
+std::vector<std::vector<int>> OGcnf;
+
 bool parseDIMACS(std::string filename) {
     std::ifstream file(filename);
     std::string line;
@@ -37,6 +39,7 @@ bool parseDIMACS(std::string filename) {
         }
         std::vector<int> dummy;
         cnf.push_back(dummy);  // push dummy clause on cnf[0] to ensure 1-index.
+        OGcnf.push_back(dummy);  // push dummy clause on cnf[0] to ensure 1-index.
         int count = 1;         // what clause are we processing?
         std::vector<int> clause;
         while (std::getline(file, line)) {
@@ -84,7 +87,7 @@ bool parseDIMACS(std::string filename) {
                         cnf.push_back(clause);
                         count++;
                     }
-
+                    OGcnf.push_back(clause);
                     clause = {};
                     
                 }

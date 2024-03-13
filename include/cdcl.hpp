@@ -128,6 +128,8 @@ struct Variable {
 //     int sat = -1;
 // };
 
+extern std::vector<std::vector<int>> OGcnf;
+
 extern Heuristics heuristic;
 
 // the currently processed variable
