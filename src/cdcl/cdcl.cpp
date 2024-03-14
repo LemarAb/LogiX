@@ -19,7 +19,7 @@ void *cdcl(void *arg) {
       //   printf("%i ", conflict_clause[i]);
       // }
       //   printf("\n");
-      backtrack();
+      backtrack(curDecisionLevel);
 
       // pthread_exit(0);
       //  backjump();
@@ -154,16 +154,23 @@ int analyze() {
   // return btlvl;
 }
 
-void backtrack() {
-  while (!assig.empty() &&
-         vars[assig.top()].forced) { // until the last branching variable.
-    int toUnassign = index(trail.back());;
+void backtrack(int btlvl) {
+  int toUnassign = index(trail.back());
+  int penultimate = trail.size()-2;
+
+  // std::cout << "btleevel" << btlvl << "\n";
+
+  while (trail.size() > 1 && vars[index(trail[penultimate--])].level >= btlvl) { // until the last branching variable.
+    toUnassign = index(trail.back());
+    // std::cout << "Removed literal " << toUnassign << "on lvl"<< vars[toUnassign].level <<" from assig stack  \n";
     vars[toUnassign].setValue(FREE);
     vars[toUnassign].forced = false;
-    assig.pop();
+    vars[toUnassign].level = -1;
+    vars[toUnassign].reason = -1;
+    // assig.pop();
     trail.pop_back();
-    //  std::cout << "Removed literal " << toUnassign << " from assig stack \n";
   }
+
 
   conflict = false;
 
@@ -173,23 +180,22 @@ void backtrack() {
     // "\n";
     int toDiscard = index(unitQueue.front());
     vars[toDiscard].enqueued = false;
-    unitQueue.pop();
     vars[toDiscard].reason = 0;
+    unitQueue.pop();
   }
 
-  if (assig.empty()) {
+  // UNSAT
+  if (trail.size()==1 && vars[index(trail.front())].level == 0)
     pthread_exit((void *)1);
-  } // UNSAT
 
   // Most recent branching variable
   int b = index(trail.back());
+  // trail.push_back();
   // Assign negated val
   vars[b].forced = true;
-  curDecisionLevel--;
   vars[b].reason = 0;
-  vars[b].setValue(Assig(int(2 - std::pow(2.0, vars[b].getValue()))));
-  // std::cout << "New branch var" << b << ", OLD: " << oldval << ", NEW: " <<
-  // vars[b].getValue();
+  vars[b].setValue(Assig(vars[b].getValue() == 1 ? 0 : 1));
+  curDecisionLevel = --vars[b].level;
   curVar = b;
   updateWatched(b);
 }

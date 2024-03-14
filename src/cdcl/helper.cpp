@@ -13,14 +13,14 @@ void assertLit(int literal, bool forced) {
     lit.forced = true;
     trail.push_back(literal);
     lit.enqueued = false;
-    assig.push(std::abs(literal));
+    // assig.push(std::abs(literal));
     updateWatched(std::abs(literal));
     lit.level = curDecisionLevel;
   } else {
     curDecisionLevel++;
     lit.forced = false;
     trail.push_back(literal);
-    assig.push(literal);
+    // assig.push(literal);
     lit.level = curDecisionLevel;
     updateWatched(literal);
   }

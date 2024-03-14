@@ -91,7 +91,7 @@ struct Variable {
     //             //    (1 2 -3) (1 -2 3 4) (-1 2 -4) (-1 3 -4)
     //             // clause x sat => x is in neg_poll => erase x from neg_poll
     //             // if neg_pol.empty() => pureLiter => set var to 1
-    int level;
+    int level = -1;
     int reason = -1;
     std::set<int> pos_watched;  // All clauses where var appears as pos watched literal
     std::set<int> neg_watched;  // All clauses where var appears as neg watched literal
@@ -191,7 +191,7 @@ void pickDecisionLit();
 void updateWatched(int literal);
 
 // handles conficts and signals UNSAT
-void backtrack();
+void backtrack(int btlvl);
 
 int findUIP();
 // evaluates the literal under its current assignment
