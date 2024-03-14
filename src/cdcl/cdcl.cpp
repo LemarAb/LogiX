@@ -155,32 +155,25 @@ int analyze() {
 }
 
 void backtrack(int btlvl) {
-  int toUnassign = index(trail.back());
   int penultimate = trail.size()-2;
 
   // std::cout << "btleevel" << btlvl << "\n";
 
-  while (trail.size() > 1 && vars[index(trail[penultimate--])].level >= btlvl) { // until the last branching variable.
-    toUnassign = index(trail.back());
+  while (trail.size() > 1 && vars[index(trail[penultimate--])].level >= btlvl)
+    unassignLit(trail.back());
     // std::cout << "Removed literal " << toUnassign << "on lvl"<< vars[toUnassign].level <<" from assig stack  \n";
-    vars[toUnassign].setValue(FREE);
-    vars[toUnassign].forced = false;
-    vars[toUnassign].level = -1;
-    vars[toUnassign].reason = -1;
-    // assig.pop();
-    trail.pop_back();
-  }
-
 
   conflict = false;
 
   // clear unit queue
-  while (!unitQueue.empty()) {
+  while (!unitQueue.empty())
+    {
     // std::cout << "Element to be popped from queue: " << unitQueue.front() <<
     // "\n";
     int toDiscard = index(unitQueue.front());
     vars[toDiscard].enqueued = false;
-    vars[toDiscard].reason = 0;
+    vars[toDiscard].reason = -1;
+    vars[toDiscard].level = -1;
     unitQueue.pop();
   }
 
@@ -188,14 +181,12 @@ void backtrack(int btlvl) {
   if (trail.size()==1 && vars[index(trail.front())].level == 0)
     pthread_exit((void *)1);
 
-  // Most recent branching variable
-  int b = index(trail.back());
-  // trail.push_back();
-  // Assign negated val
-  vars[b].forced = true;
+  int b = index(trail.back()); // Most recent branching variable
+
   vars[b].reason = 0;
-  vars[b].setValue(Assig(vars[b].getValue() == 1 ? 0 : 1));
+  vars[b].setValue(Assig(vars[b].getValue() == 1 ? 0 : 1)); //  Flip assignment
   curDecisionLevel = --vars[b].level;
   curVar = b;
+
   updateWatched(b);
 }

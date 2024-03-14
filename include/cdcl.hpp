@@ -95,7 +95,6 @@ struct Variable {
     int reason = -1;
     std::set<int> pos_watched;  // All clauses where var appears as pos watched literal
     std::set<int> neg_watched;  // All clauses where var appears as neg watched literal
-    bool forced = false;
     int pos_occ;  // number of clauses var appears as pos literal
     int neg_occ;  // number of clauses var appears as neg literal
     int tot_occ;  // total number of clauses var appears in
@@ -177,6 +176,8 @@ extern int geom_conf_lim;
 
 // geometric restart policy factor
 extern double geom_factor;
+
+void unassignLit(int literal);
 
 bool parseDIMACS(std::string filename);
 

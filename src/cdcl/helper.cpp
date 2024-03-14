@@ -10,7 +10,6 @@ void assertLit(int literal, bool forced) {
   auto &lit = vars[std::abs(literal)];
   (literal > 0) ? lit.setValue(TRUE) : lit.setValue(FALSE);
   if (forced) {
-    lit.forced = true;
     trail.push_back(literal);
     lit.enqueued = false;
     // assig.push(std::abs(literal));
@@ -18,10 +17,24 @@ void assertLit(int literal, bool forced) {
     lit.level = curDecisionLevel;
   } else {
     curDecisionLevel++;
-    lit.forced = false;
     trail.push_back(literal);
     // assig.push(literal);
     lit.level = curDecisionLevel;
     updateWatched(literal);
   }
+}
+
+void unassignLit(int literal){
+  int toUnassign = index(literal);
+  vars[toUnassign].level = -1;
+  vars[toUnassign].reason = -1;
+  if(vars[toUnassign].getValue() != FREE)
+    {
+    vars[toUnassign].setValue(FREE);
+    trail.pop_back();
+    }
+  else
+    {vars[literal].enqueued = false;
+      unitQueue.pop();}
+
 }
