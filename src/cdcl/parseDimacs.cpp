@@ -1,7 +1,7 @@
 #include "../../include/cdcl.hpp"
 
 std::vector<std::vector<int>> OGcnf;
-
+int countu = 0;
 bool parseDIMACS(std::string filename) {
     std::ifstream file(filename);
     std::string line;
@@ -68,6 +68,7 @@ bool parseDIMACS(std::string filename) {
                             unitQueue.push(clause[0]);
                             vars[index(clause[0])].enqueued = true;
                             unitTrail.push_back(clause[0]);
+                            countu++;
                         }
 
                         else

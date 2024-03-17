@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
   std::chrono::duration<double> duration =
       std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
 
-  if ((intptr_t)res == 0)
+  // if ((intptr_t)res == 0)
     verifyModel();
 
   printf("\nCPU time used: %.6f seconds\n\n", duration.count());

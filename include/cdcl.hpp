@@ -21,6 +21,7 @@ typedef int Var;
 const Var var_Undef = -1;
 #endif
 
+
 struct Lit {
   int x;
 
@@ -77,7 +78,7 @@ enum Assig {
     TRUE,
     FREE,
 };
-
+extern int countu;
 enum Polarity { NEG, POS, MIX, UNSET };
 
 struct Variable {
@@ -127,6 +128,8 @@ struct Variable {
 //     int sat = -1;
 // };
 
+extern std::vector<int> unitTrail;
+
 extern std::vector<std::vector<int>> OGcnf;
 
 extern Heuristics heuristic;
@@ -162,6 +165,8 @@ extern std::unordered_set<int> pos_pol;
 
 extern std::vector<int> trail;
 
+extern std::vector<int> seen;
+
 extern int curDecisionLevel;
 
 
@@ -194,9 +199,12 @@ void updateWatched(int literal);
 // handles conficts and signals UNSAT
 void backtrack(int btlvl);
 
-int findUIP();
+void backtrack2();
+
 // evaluates the literal under its current assignment
 bool eval(int literal);
+
+void addClause(std::vector<int> & clause);
 
 int index(int literal);
 
