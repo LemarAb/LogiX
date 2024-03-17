@@ -66,7 +66,9 @@ void updateWatched(int assertedLit) {
     // swap false literal to index 1
     if (index(clause[1]) != assertedLit)
       std::swap(clause[0], clause[1]);
+
     auto &unitLit = vars[index(clause[0])];
+    
     for (int i = 2; i < clause.size(); i++) {
       if (eval(clause[i]) || vars[index(clause[i])].getValue() == FREE) {
         int swapee = clause[i];

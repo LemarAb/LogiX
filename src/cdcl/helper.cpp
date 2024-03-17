@@ -6,6 +6,18 @@ bool eval(int literal) {
 
 int index(int literal) { return std::abs(literal); }
 
+void addClause(std::vector<int> & clause){
+
+  cnf.push_back(clause);
+
+  clause[0] > 0 ? vars[index(clause[0])].pos_watched.insert(cnf.size()-1)
+                      : vars[index(clause[0])].neg_watched.insert(cnf.size()-1);
+
+  clause[1] > 0 ? vars[index(clause[1])].pos_watched.insert(cnf.size()-1)
+                      : vars[index(clause[1])].neg_watched.insert(cnf.size()-1);
+}
+
+
 void assertLit(int literal, bool forced) {
   auto &lit = vars[std::abs(literal)];
   (literal > 0) ? lit.setValue(TRUE) : lit.setValue(FALSE);

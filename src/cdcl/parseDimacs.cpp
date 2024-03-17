@@ -67,6 +67,7 @@ bool parseDIMACS(std::string filename) {
                             unit[index(clause[0])] = Assig(clause[0] > 0);
                             unitQueue.push(clause[0]);
                             vars[index(clause[0])].enqueued = true;
+                            unitTrail.push_back(clause[0]);
                         }
 
                         else
@@ -99,5 +100,9 @@ bool parseDIMACS(std::string filename) {
         printf("Unable to open file");
     }
     numOfClauses = cnf.size() - 1;
+    for (int i = 0; i < numOfVars+1; i++) {
+    // printf("%i ", i);
+      seen.push_back(false);
+  }
     return false;
 }
