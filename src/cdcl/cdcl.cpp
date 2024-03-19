@@ -49,7 +49,7 @@ void unitPropagate() {
   while (!unitQueue.empty() && !conflict) {
     unitLiteral = unitQueue.front().literal;
     assertLit(unitLiteral, true);
-    unitQueue.pop(); 
+    
     // printf("unit queu: %i", unitLiteral);
 
   }
