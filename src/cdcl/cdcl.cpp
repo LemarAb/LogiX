@@ -15,20 +15,20 @@ void *cdcl(void *arg) {
   while (true) {
     unitPropagate();
     // printf("unit");
-            // printf("%i", trail.size());
+    // printf("%i", trail.size());
 
-        // printf("past unit");
+    // printf("past unit");
 
-    if(conflict){
-        // printf("enter conf");
+    if (conflict) {
+      // printf("enter conf");
 
-      if(curDecisionLevel==0)
+      if (curDecisionLevel == 0)
         pthread_exit((void *)1);
 
-      // int backtrack_lvl = analyze();
+      int backtrack_lvl = analyze();
       // if(backtrack_lvl == 0 )
       //   backtrack2();
-        
+
       //                            }
       // else{
       // addClause(conflict_clause);
@@ -37,8 +37,7 @@ void *cdcl(void *arg) {
       // pthread_exit(0);
       //  backjump();
       // }
-    }
-    else {
+    } else {
       pickDecisionLit();
     }
   }
@@ -49,9 +48,8 @@ void unitPropagate() {
   while (!unitQueue.empty() && !conflict) {
     unitLiteral = unitQueue.front().literal;
     assertLit(unitLiteral, true);
-    
-    // printf("unit queu: %i", unitLiteral);
 
+    // printf("unit queu: %i", unitLiteral);
   }
 }
 
@@ -98,7 +96,7 @@ void updateWatched(int assertedLit) {
 
     // If the first literal of the clause is free, push unitProp else conflict
     // found
-    
+
     if (unitLit.getValue() == FREE) {
       if (!unitLit.enqueued) {
         unitQueue.push(Unit(clause[0], *clauseIndex));
@@ -110,7 +108,8 @@ void updateWatched(int assertedLit) {
       //   printf("ASSIG!: %i,", (trail[i]));
 
       // printf("\n");
-      // for(int lit : cnf[*clauseIndex]) printf("%i: %i ,", lit, vars[index(lit)].getValue());
+      // for(int lit : cnf[*clauseIndex]) printf("%i: %i ,", lit,
+      // vars[index(lit)].getValue());
       //         printf("\n");
 
       conflict_clause_id = *clauseIndex;
@@ -127,76 +126,82 @@ void updateWatched(int assertedLit) {
 int analyze() {
 
   conflict_clause.clear();
-  int numOfLits = 0; // number of literals of current decision level in our
+  int pathC = 0; // number of literals of current decision level in our
   int trailIndex = trail.size() - 1;
   conflict_clause.push_back(-1); // push dummy, replaced after loop
   int stampedLit = -1;
-  do{
-    // printf("nums: %i, dec lev: %i\n", numOfLits, curDecisionLevel );
-    std::vector<int>& learned = cnf[conflict_clause_id];
-    for(int i = (stampedLit == -1) ? 0 : 1; i < learned.size(); i++){
+  do {
+    if (conflict_clause_id <= 0)
+      return -1;
+
+    // printf("nums: %i, dec lev: %i\n", pathC, curDecisionLevel );
+    std::vector<int> &learned = cnf[conflict_clause_id];
+    for (int i = (stampedLit == -1) ? 0 : 1; i < learned.size(); i++) {
       int lit = learned[i];
-                // printf("HIERMITTEEVOR!: %i, %i, %i, %i\n",conflict_clause_id, vars[index(lit)].level, lit, !seen[index(lit)]);
-      if (!seen[index(lit)] && vars[index(lit)].level > 0){
-                // varBumpActivity(var(q));
-                seen[index(lit)] = 1;
-                // printf("Level: %i\n", vars[index(stampedLit)].level);
-                if (vars[index(lit)].level >= curDecisionLevel)
-                    {numOfLits++;}
-                else
-                    {conflict_clause.push_back(lit);}
+      // printf("HIERMITTEEVOR!: %i, %i, %i, %i\n",conflict_clause_id,
+      // vars[index(lit)].level, lit, !seen[index(lit)]);
+      if (!seen[index(lit)] && vars[index(lit)].level > 0) {
+        // varBumpActivity(var(q));
+        seen[index(lit)] = 1;
+        // printf("Level: %i\n", vars[index(stampedLit)].level);
+        if (vars[index(lit)].level >= curDecisionLevel) {
+          pathC++;
+        } else {
+          conflict_clause.push_back(lit);
+        }
       }
       // printf("HIER2!: %i\n", lit);
     }
     // traverse trail until we encounter a seen lit
-    while (!seen[index(trail[trailIndex])])
-      trailIndex--;
-    stampedLit = trail[trailIndex];
+    while (!seen[index(trail[trailIndex--])]);
+    stampedLit = trail[trailIndex + 1];
     seen[index(stampedLit)] = 0;
-    numOfLits--;
+    pathC--;
     conflict_clause_id = vars[index(stampedLit)].reason;
-    if(conflict_clause_id<= 0) break;
-  } while(numOfLits > 0);
+    
+  } while (pathC > 0);
   conflict_clause[0] = -stampedLit;
 
-  if(conflict_clause.size()==1)
- { for(int i : conflict_clause) printf("%i ", i);
-  printf("\n");}
+  if (conflict_clause.size() == 1) {
+    for (int i : conflict_clause)
+      printf("%i ", i);
+    printf("\n");
+  }
 
   int btlvl;
   if (conflict_clause.size() == 1)
-        btlvl = 0;
-    else{
-        // index of the second highest dec level literal
-        int max = 1;
-        // Find the first literal assigned at the second highest level:
-        for (int i = 2; i < conflict_clause.size(); i++)
-            if (vars[index(conflict_clause[i])].level >
-            vars[index(conflict_clause[max])].level)
-                max = i;
-        btlvl = vars[index(conflict_clause[max])].level;
-    }
-  
-  for (auto const& elem : conflict_clause) {
+    btlvl = 0;
+  else {
+    // index of the second highest dec level literal
+    int max = 1;
+    // Find the first literal assigned at the second highest level:
+    for (int i = 2; i < conflict_clause.size(); i++)
+      if (vars[index(conflict_clause[i])].level >
+          vars[index(conflict_clause[max])].level)
+        max = i;
+    btlvl = vars[index(conflict_clause[max])].level;
+  }
+
+  for (auto const &elem : conflict_clause) {
     seen[index(elem)] = 0;
   }
   return btlvl;
 }
 
 void backtrack(int btlvl) {
-  int penultimate = trail.size()-2;
+  int penultimate = trail.size() - 2;
 
   // std::cout << "btleevel" << btlvl << "\n";
-  
+
   while (trail.size() > 1 && vars[index(trail[penultimate--])].level >= btlvl)
     unassignLit(trail.back());
-    // std::cout << "Removed literal " << toUnassign << "on lvl"<< vars[toUnassign].level <<" from assig stack  \n";
+  // std::cout << "Removed literal " << toUnassign << "on lvl"<<
+  // vars[toUnassign].level <<" from assig stack  \n";
 
   conflict = false;
 
   // clear unit queue
-  while (!unitQueue.empty())
-    {
+  while (!unitQueue.empty()) {
     // std::cout << "Element to be popped from queue: " << unitQueue.front() <<
     // "\n";
     int toDiscard = index(unitQueue.front().literal);
@@ -211,8 +216,8 @@ void backtrack(int btlvl) {
   //   pthread_exit((void *)1);
 
   // if(btlvl==0) {
-  // unassignLit(trail.back()); 
-  // curDecisionLevel = 0;   
+  // unassignLit(trail.back());
+  // curDecisionLevel = 0;
   // for(int unit : unitTrail){
   //   unitQueue.push(unit);
   //   vars[index(unit)].enqueued = true;
@@ -235,7 +240,7 @@ void backtrack(int btlvl) {
   updateWatched(b);
 }
 
-void backtrack2(){
+void backtrack2() {
   // printf("HIER %i\n", curDecisionLevel);
   // printf("Trail: %i", trail.size());
 
@@ -243,17 +248,16 @@ void backtrack2(){
     unassignLit(trail.back());
   // printf("Trail: %i", trail.size());
   // for(int lit : trail) printf("%i: %i,", lit, vars[index(lit)].level);
-  
-  while (!unitQueue.empty())
-  {
-  // std::cout << "Element to be popped from queue: " << unitQueue.front() <<
-  // "\n";
-  int toDiscard = index(unitQueue.front().literal);
-  vars[toDiscard].enqueued = false;
-  vars[toDiscard].reason = -1;
-  vars[toDiscard].level = -1;
-  unitQueue.pop();
- }
+
+  while (!unitQueue.empty()) {
+    // std::cout << "Element to be popped from queue: " << unitQueue.front() <<
+    // "\n";
+    int toDiscard = index(unitQueue.front().literal);
+    vars[toDiscard].enqueued = false;
+    vars[toDiscard].reason = -1;
+    vars[toDiscard].level = -1;
+    unitQueue.pop();
+  }
 
   conflict = false;
 
@@ -266,5 +270,4 @@ void backtrack2(){
   curVar = 1;
 
   // printf("HIER %i, %i\n", conflict_clause[0], curVar);
-
 }
