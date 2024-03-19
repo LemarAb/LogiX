@@ -12,7 +12,7 @@ int numOfUnassigned;
 std::vector<std::vector<int>> cnf;
 std::vector<Variable> vars;
 std::set<int> satClauses;
-std::queue<int> unitQueue;
+std::queue<Unit> unitQueue;
 std::stack<int> assig;
 std::vector<int> vsids;
 int curVar = 1;

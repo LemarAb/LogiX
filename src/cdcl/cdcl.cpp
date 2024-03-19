@@ -14,7 +14,7 @@ std::vector<int> unitTrail;
 void *cdcl(void *arg) {
   while (true) {
     unitPropagate();
-    if(curDecisionLevel == 0) for(int lit : trail) printf("%i: %i,", lit, vars[index(lit)].level);
+    printf("unit");
             // printf("%i", trail.size());
 
         // printf("past unit");
@@ -25,7 +25,7 @@ void *cdcl(void *arg) {
       if(curDecisionLevel==0)
         pthread_exit((void *)1);
 
-      int backtrack_lvl = analyze();
+      // int backtrack_lvl = analyze();
       // if(backtrack_lvl == 0 )
       //   backtrack2();
         
@@ -47,9 +47,9 @@ void *cdcl(void *arg) {
 void unitPropagate() {
   int unitLiteral;
   while (!unitQueue.empty() && !conflict) {
-    unitLiteral = unitQueue.front();
-    unitQueue.pop(); 
+    unitLiteral = unitQueue.front().literal;
     assertLit(unitLiteral, true);
+    unitQueue.pop(); 
     // printf("unit queu: %i", unitLiteral);
 
   }
@@ -101,9 +101,8 @@ void updateWatched(int assertedLit) {
     
     if (unitLit.getValue() == FREE) {
       if (!unitLit.enqueued) {
-        unitQueue.push(clause[0]);
+        unitQueue.push(Unit(clause[0], *clauseIndex));
         unitLit.enqueued = true;
-        unitLit.reason = *clauseIndex;
       }
     } else {
       // CONFLICT!
@@ -160,9 +159,9 @@ int analyze() {
   } while(numOfLits > 0);
   conflict_clause[0] = -stampedLit;
 
-  if(conflict_clause.size()>1)
-  for(int i : conflict_clause) printf("%i ", i);
-  printf("0\n");
+  if(conflict_clause.size()==1)
+ { for(int i : conflict_clause) printf("%i ", i);
+  printf("\n");}
 
   int btlvl;
   if (conflict_clause.size() == 1)
@@ -200,7 +199,7 @@ void backtrack(int btlvl) {
     {
     // std::cout << "Element to be popped from queue: " << unitQueue.front() <<
     // "\n";
-    int toDiscard = index(unitQueue.front());
+    int toDiscard = index(unitQueue.front().literal);
     vars[toDiscard].enqueued = false;
     vars[toDiscard].reason = -1;
     vars[toDiscard].level = -1;
@@ -249,7 +248,7 @@ void backtrack2(){
   {
   // std::cout << "Element to be popped from queue: " << unitQueue.front() <<
   // "\n";
-  int toDiscard = index(unitQueue.front());
+  int toDiscard = index(unitQueue.front().literal);
   vars[toDiscard].enqueued = false;
   vars[toDiscard].reason = -1;
   vars[toDiscard].level = -1;
@@ -258,7 +257,7 @@ void backtrack2(){
 
   conflict = false;
 
-  unitQueue.push(conflict_clause[0]);
+  unitQueue.push(Unit(conflict_clause[0], -1));
   vars[index(conflict_clause[0])].enqueued = true;
   unitTrail.push_back(conflict_clause[0]);
 

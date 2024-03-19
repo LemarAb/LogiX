@@ -25,6 +25,7 @@ void assertLit(int literal, bool forced) {
     trail.push_back(literal);
     lit.enqueued = false;
     // assig.push(std::abs(literal));
+    vars[index(literal)].reason = unitQueue.front().reason;
     updateWatched(std::abs(literal));
     lit.level = curDecisionLevel;
   } else {
