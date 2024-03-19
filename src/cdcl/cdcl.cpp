@@ -19,18 +19,18 @@ void *cdcl(void *arg) {
       if(curDecisionLevel==0)
         pthread_exit((void *)1);
 
-      // int backtrack_lvl = analyze();
-      // if(backtrack_lvl == 0 ){
-      //   backtrack2();
+      int backtrack_lvl = analyze();
+      if(backtrack_lvl == 0 )
+        backtrack2();
         
       //                            }
-      // else{
+      else{
       // addClause(conflict_clause);
       backtrack(curDecisionLevel);
 
       // pthread_exit(0);
       //  backjump();
-    
+      }
     }
     else {
       pickDecisionLit();
@@ -148,7 +148,10 @@ int analyze() {
     if(conflict_clause_id<= 0) break;
   } while(numOfLits > 0);
   conflict_clause[0] = -stampedLit;
-  
+
+  for(int i : conflict_clause) printf("%i ", i);
+  printf("0\n");
+
   int btlvl;
   if (conflict_clause.size() == 1)
         btlvl = 0;
@@ -162,6 +165,10 @@ int analyze() {
                 max = i;
         btlvl = vars[index(conflict_clause[max])].level;
     }
+  
+  for (auto const& elem : conflict_clause) {
+    seen[index(elem)] = 0;
+  }
   return btlvl;
 }
 
