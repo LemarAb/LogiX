@@ -2,13 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "makefile build and run",
+            "name": "build solver and run",
             "type": "cppdbg",
             "request": "launch",
-            "program": "test.exe",
-            "args": [ ],
+            "program": "${workspaceFolder}/main.exe",
+            "args": ["t35"],
             "stopAtEntry": false,
-            "cwd": "C:\\Users\\boras\\projects\\group_k_project_2",
+            "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -25,7 +25,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "run the makefile"
+            "preLaunchTask": "compile solver"
         },
 
         {
