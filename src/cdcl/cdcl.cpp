@@ -14,23 +14,29 @@ std::vector<int> unitTrail;
 void *cdcl(void *arg) {
   while (true) {
     unitPropagate();
+    if(curDecisionLevel == 0) for(int lit : trail) printf("%i: %i,", lit, vars[index(lit)].level);
+            // printf("%i", trail.size());
+
+        // printf("past unit");
+
     if(conflict){
+        // printf("enter conf");
 
       if(curDecisionLevel==0)
         pthread_exit((void *)1);
 
       int backtrack_lvl = analyze();
-      if(backtrack_lvl == 0 )
-        backtrack2();
+      // if(backtrack_lvl == 0 )
+      //   backtrack2();
         
       //                            }
-      else{
+      // else{
       // addClause(conflict_clause);
       backtrack(curDecisionLevel);
 
       // pthread_exit(0);
       //  backjump();
-      }
+      // }
     }
     else {
       pickDecisionLit();
@@ -44,6 +50,8 @@ void unitPropagate() {
     unitLiteral = unitQueue.front();
     unitQueue.pop(); 
     assertLit(unitLiteral, true);
+    // printf("unit queu: %i", unitLiteral);
+
   }
 }
 
@@ -103,6 +111,9 @@ void updateWatched(int assertedLit) {
       //   printf("ASSIG!: %i,", (trail[i]));
 
       // printf("\n");
+      // for(int lit : cnf[*clauseIndex]) printf("%i: %i ,", lit, vars[index(lit)].getValue());
+      //         printf("\n");
+
       conflict_clause_id = *clauseIndex;
       conflict = true;
       return;
@@ -149,6 +160,7 @@ int analyze() {
   } while(numOfLits > 0);
   conflict_clause[0] = -stampedLit;
 
+  if(conflict_clause.size()>1)
   for(int i : conflict_clause) printf("%i ", i);
   printf("0\n");
 
@@ -225,10 +237,13 @@ void backtrack(int btlvl) {
 }
 
 void backtrack2(){
-  printf("HIER %i\n", curDecisionLevel);
+  // printf("HIER %i\n", curDecisionLevel);
+  // printf("Trail: %i", trail.size());
+
   while (!trail.empty() && vars[index(trail.back())].level != 0)
     unassignLit(trail.back());
-  // printf("HIER %i", curDecisionLevel);
+  // printf("Trail: %i", trail.size());
+  // for(int lit : trail) printf("%i: %i,", lit, vars[index(lit)].level);
   
   while (!unitQueue.empty())
   {
@@ -251,6 +266,6 @@ void backtrack2(){
 
   curVar = 1;
 
-  printf("HIER %i, %i\n", conflict_clause[0], curVar);
+  // printf("HIER %i, %i\n", conflict_clause[0], curVar);
 
 }
