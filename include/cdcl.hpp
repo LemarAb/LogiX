@@ -121,12 +121,13 @@ struct Variable {
     Assig getValue() { return val; }
 };
 
-// struct Clause {
-//     std::vector<int> literals;
-//     int w1 = 0;
-//     int w2 = 1;
-//     int sat = -1;
-// };
+struct Unit {
+    int literal;
+    int reason = -1;
+
+    Unit(int _literal, int _reason):
+    literal(_literal), reason(_reason){}
+};
 
 extern std::vector<int> unitTrail;
 
@@ -150,7 +151,7 @@ extern std::vector<Variable> vars;
 extern std::set<int> satClauses;
 
 // queue storing unit literals
-extern std::queue<int> unitQueue;
+extern std::queue<Unit> unitQueue;
 
 extern std::vector<int> vsids;
 

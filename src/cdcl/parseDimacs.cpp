@@ -65,7 +65,7 @@ bool parseDIMACS(std::string filename) {
 
                         if (!vars[index(clause[0])].enqueued) {
                             unit[index(clause[0])] = Assig(clause[0] > 0);
-                            unitQueue.push(clause[0]);
+                            unitQueue.push(Unit(clause[0], -1));
                             vars[index(clause[0])].enqueued = true;
                             unitTrail.push_back(clause[0]);
                             countu++;
