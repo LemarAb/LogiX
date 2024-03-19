@@ -14,7 +14,7 @@ std::vector<int> unitTrail;
 void *cdcl(void *arg) {
   while (true) {
     unitPropagate();
-    printf("unit");
+    // printf("unit");
             // printf("%i", trail.size());
 
         // printf("past unit");
