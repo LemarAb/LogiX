@@ -14,6 +14,7 @@ std::vector<int> unitTrail;
 void *cdcl(void *arg) {
   while (true) {
     unitPropagate();
+    printf("post");
     // printf("unit");
     // printf("%i", trail.size());
 
@@ -171,9 +172,9 @@ int analyze() {
     btlvl = 0;
   else {
     // index of the second highest dec level literal
-    int max = 1;
+    int max = 0;
     // Find the first literal assigned at the second highest level:
-    for (int i = 2; i < learned.size(); i++)
+    for (int i = 1; i < learned.size(); i++)
       if (vars[index(learned[i])].level >
           vars[index(learned[max])].level)
         max = i;
@@ -190,6 +191,10 @@ void backtrack(int btlvl) {
   int penultimate = trail.size() - 2;
 
   // std::cout << "btleevel" << btlvl << "\n";
+  // btlvl = 4;
+   for (int i : trail)
+      printf("%i: %i, ", i, vars[index(i)].level);
+    printf("\n");
 
   while (trail.size() > 1 && vars[index(trail[penultimate--])].level >= btlvl)
     unassignLit(trail.back());
@@ -197,7 +202,6 @@ void backtrack(int btlvl) {
   // vars[toUnassign].level <<" from assig stack  \n";
 
   conflict = false;
-
   // clear unit queue
   while (!unitQueue.empty()) {
     // std::cout << "Element to be popped from queue: " << unitQueue.front() <<
@@ -209,33 +213,21 @@ void backtrack(int btlvl) {
     unitQueue.pop();
   }
 
-  // UNSAT
-  // if (trail.size()==1 && vars[index(trail.front())].level == 0)
-  //   pthread_exit((void *)1);
+  int b = trail.back(); // Most recent branching variable
+  unassignLit(trail.back());
+  // vars[b].reason = -1;
+  // vars[b].setValue(Assig(vars[b].getValue() == 1 ? 0 : 1)); //  Flip assignment
 
-  // if(btlvl==0) {
-  // unassignLit(trail.back());
-  // curDecisionLevel = 0;
-  // for(int unit : unitTrail){
-  //   unitQueue.push(unit);
-  //   vars[index(unit)].enqueued = true;
-  //   // unitTrail.push_back(unit);
-  // }
-  // // unitQueue.push(learned[0]);
-  // // vars[index(learned[0])].enqueued = true;
-  // // unitTrail.push_back(learned[0]);
-  // curVar = 1;
-  // }
-  // else{
+  if (!vars[index(b)].enqueued) {
+    unitQueue.push(Unit(-b, -1));
+    vars[index(b)].enqueued = true;
+  }
 
-  int b = index(trail.back()); // Most recent branching variable
-
-  vars[b].reason = -1;
-  vars[b].setValue(Assig(vars[b].getValue() == 1 ? 0 : 1)); //  Flip assignment
-  curDecisionLevel = --vars[b].level;
-  curVar = b;
-
-  updateWatched(b);
+  curDecisionLevel = btlvl-1;
+  curVar = index(trail.back());
+     for (int i : trail)
+      printf("%i: %i, ", i, vars[index(i)].level);
+    printf("\n");
 }
 
 void backtrack2() {

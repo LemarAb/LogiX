@@ -6,6 +6,8 @@ bool eval(int literal) {
 
 int index(int literal) { return std::abs(literal); }
 
+bool isFree(int literal) { return vars[index(literal)].getValue() == FREE; }
+
 void addClause(std::vector<int> & clause){
 
   cnf.push_back(clause);
@@ -27,8 +29,8 @@ void assertLit(int literal, bool forced) {
     // assig.push(std::abs(literal));
     vars[index(literal)].reason = unitQueue.front().reason;
     unitQueue.pop(); 
-    updateWatched(std::abs(literal));
     lit.level = curDecisionLevel;
+    updateWatched(std::abs(literal));
   } else {
     curDecisionLevel++;
     trail.push_back(literal);
