@@ -181,6 +181,8 @@ extern std::vector<std::vector<int>> learnedClauses;
 
 extern std::vector<std::vector<int>> deletedClauses;
 
+extern int learned2power;
+
 
 // conflict counter 
 extern int conflict_count;

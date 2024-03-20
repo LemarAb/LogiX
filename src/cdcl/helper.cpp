@@ -1,5 +1,8 @@
 #include "../../include/cdcl.hpp"
 #include <algorithm>
+#include <cmath>
+
+int learned2power = 0;
 
 bool eval(int literal) {
   return !(vars[index(literal)].getValue() ^ (literal > 0));
@@ -30,30 +33,51 @@ void addClause(std::vector<int> &clause) {
   for (int i = 0; i < clause.size(); i++) {
     vars[index(clause[i])].inlearned = true;
   }
+
+  int learnedClausesSize = learnedClauses.size();
+  if(learnedClausesSize = powerOfTwo(learned2power)) {
+    deleteHalfLearnedClauses(); // or deleteClauses()
+    learned2power++;
+  }
 }
 
 void deleteClauses() { // k-bounded learning
   int k = 3;
 
-  cnf.erase(
-      std::remove_if(cnf.begin(), cnf.end(),
-                     [k](const std::vector<int> &clause) {
-                       if (clause.size() > k) {
-                         int unassignedCount = 0;
-                         for (const auto &literal : clause) {
-                           if (vars[index(literal)].learned_and_unassig == true) {
-                             unassignedCount++;
-                           }
-                         }
-                         if (unassignedCount >= 2) {
-                           deletedClauses.push_back(clause);
-                           return true;
-                         }
-                       }
-                       return false;
-                     }),
-      cnf.end());
+  for (int i = 0; i < learnedClauses.size(); i++) {
+    if (learnedClauses[i].size() > k) {
+      int unassignedCount = 0;
+      for (const auto &literal : learnedClauses[i]) {
+        if (vars[index(literal)].learned_and_unassig) {
+          unassignedCount++;
+        }
+      }
+      if (unassignedCount >= 2) {
+        for (int j = 0; i < numOfVars; i++) {
+          vars[i].pos_watched.erase(numOfClauses + i);
+          vars[i].neg_watched.erase(numOfClauses + i);
+        }
+      deletedClauses.push_back(learnedClauses[i]);
+      }
+    }
+  }
 }
+
+int powerOfTwo(int n) {
+    return std::pow(2, n + 2);
+}
+
+void deleteHalfLearnedClauses() {
+  int half = learnedClauses.size() / 2;
+  for (int i = 0; i < half; i++) {
+    for (int j = 0; i < numOfVars; i++) {
+      vars[i].pos_watched.erase(numOfClauses + i);
+      vars[i].neg_watched.erase(numOfClauses + i);
+    }
+    deletedClauses.push_back(learnedClauses[i]);
+  }
+}
+
 
 
 void assertLit(int literal, bool forced) {
