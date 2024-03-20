@@ -1,4 +1,5 @@
 #include "../../include/cdcl.hpp"
+#include <algorithm>
 
 bool eval(int literal) {
   return !(vars[index(literal)].getValue() ^ (literal > 0));
@@ -8,22 +9,50 @@ int index(int literal) { return std::abs(literal); }
 
 bool isFree(int literal) { return vars[index(literal)].getValue() == FREE; }
 
-void addClause(std::vector<int> & clause){
+void addClause(std::vector<int> &clause) {
 
   cnf.push_back(clause);
+  learnedClauses.push_back(clause);
 
-  clause[0] > 0 ? vars[index(clause[0])].pos_watched.insert(cnf.size()-1)
-                      : vars[index(clause[0])].neg_watched.insert(cnf.size()-1);
+  clause[0] > 0 ? vars[index(clause[0])].pos_watched.insert(cnf.size() - 1)
+                : vars[index(clause[0])].neg_watched.insert(cnf.size() - 1);
 
-  clause[1] > 0 ? vars[index(clause[1])].pos_watched.insert(cnf.size()-1)
-                      : vars[index(clause[1])].neg_watched.insert(cnf.size()-1);
+  clause[1] > 0 ? vars[index(clause[1])].pos_watched.insert(cnf.size() - 1)
+                : vars[index(clause[1])].neg_watched.insert(cnf.size() - 1);
 
   if (vars[index(clause[0])].getValue() == FREE) {
-      if (!vars[index(clause[0])].enqueued) {
-        unitQueue.push(Unit(clause[0], cnf.size()-1));
-        vars[index(clause[0])].enqueued = true;
-      }
-    } 
+    if (!vars[index(clause[0])].enqueued) {
+      unitQueue.push(Unit(clause[0], cnf.size() - 1));
+      vars[index(clause[0])].enqueued = true;
+    }
+  }
+
+  for (int i = 0; i < clause.size(); i++) {
+    vars[index(clause[i])].inlearned = true;
+  }
+}
+
+void deleteClauses() { // k-bounded learning
+  int k = 3;
+
+  cnf.erase(
+      std::remove_if(cnf.begin(), cnf.end(),
+                     [k](const std::vector<int> &clause) {
+                       if (clause.size() > k) {
+                         int unassignedCount = 0;
+                         for (const auto &literal : clause) {
+                           if (vars[index(literal)].learned_and_unassig == true) {
+                             unassignedCount++;
+                           }
+                         }
+                         if (unassignedCount >= 2) {
+                           deletedClauses.push_back(clause);
+                           return true;
+                         }
+                       }
+                       return false;
+                     }),
+      cnf.end());
 }
 
 
@@ -35,7 +64,7 @@ void assertLit(int literal, bool forced) {
     lit.enqueued = false;
     // assig.push(std::abs(literal));
     vars[index(literal)].reason = unitQueue.front().reason;
-    unitQueue.pop(); 
+    unitQueue.pop();
     lit.level = curDecisionLevel;
     updateWatched(std::abs(literal));
   } else {
@@ -48,17 +77,15 @@ void assertLit(int literal, bool forced) {
   }
 }
 
-void unassignLit(int literal){
+void unassignLit(int literal) {
   int toUnassign = index(literal);
   vars[toUnassign].level = -1;
   vars[toUnassign].reason = -1;
-  if(vars[toUnassign].getValue() != FREE)
-    {
+  if (vars[toUnassign].getValue() != FREE) {
     vars[toUnassign].setValue(FREE);
     trail.pop_back();
-    }
-  else
-    {vars[literal].enqueued = false;
-      unitQueue.pop();}
-
+  } else {
+    vars[literal].enqueued = false;
+    unitQueue.pop();
+  }
 }
