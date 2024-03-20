@@ -17,6 +17,13 @@ void addClause(std::vector<int> & clause){
 
   clause[1] > 0 ? vars[index(clause[1])].pos_watched.insert(cnf.size()-1)
                       : vars[index(clause[1])].neg_watched.insert(cnf.size()-1);
+
+  if (vars[clause[0]].getValue() == FREE) {
+      if (!vars[clause[0]].enqueued) {
+        unitQueue.push(Unit(clause[0], cnf.size()-1));
+        vars[clause[0]].enqueued = true;
+      }
+    } 
 }
 
 
