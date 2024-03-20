@@ -14,7 +14,7 @@ std::vector<int> unitTrail;
 void *cdcl(void *arg) {
   while (true) {
     unitPropagate();
-    printf("post");
+    // printf("post");
     // printf("unit");
     // printf("%i", trail.size());
 
@@ -23,7 +23,7 @@ void *cdcl(void *arg) {
     if (conflict) {
       // printf("enter conf");
 
-      if (curDecisionLevel == 0)
+      if (curDecisionLevel <= 0)
         pthread_exit((void *)1);
 
       int backtrack_lvl = analyze();
@@ -192,15 +192,14 @@ void backtrack(int btlvl) {
 
   // std::cout << "btleevel" << btlvl << "\n";
   // btlvl = 4;
-   for (int i : trail)
-      printf("%i: %i, ", i, vars[index(i)].level);
-    printf("\n");
+  //  for (int i : trail)
+  //     printf("%i: %i, ", i, vars[index(i)].level);
+  //   printf("\n");
 
-  while (trail.size() > 1 && vars[index(trail[penultimate--])].level >= btlvl)
+  while (trail.size() > 0 && index(trail.back()) != decision_vars[btlvl])
     unassignLit(trail.back());
   // std::cout << "Removed literal " << toUnassign << "on lvl"<<
   // vars[toUnassign].level <<" from assig stack  \n";
-
   conflict = false;
   // clear unit queue
   while (!unitQueue.empty()) {
@@ -214,20 +213,24 @@ void backtrack(int btlvl) {
   }
 
   int b = trail.back(); // Most recent branching variable
-  unassignLit(trail.back());
+  // printf("\nBBB: %i\n", b);
+  unassignLit(b);
   // vars[b].reason = -1;
   // vars[b].setValue(Assig(vars[b].getValue() == 1 ? 0 : 1)); //  Flip assignment
-
+  curDecisionLevel = btlvl-1;
+  // curVar = decision_vars[curDecisionLevel];
+  if (curDecisionLevel == 0) curVar = 1;
+  else curVar = decision_vars[curDecisionLevel];
+  // if(trail.empty()) return;
   if (!vars[index(b)].enqueued) {
     unitQueue.push(Unit(-b, -1));
     vars[index(b)].enqueued = true;
   }
 
-  curDecisionLevel = btlvl-1;
-  curVar = index(trail.back());
-     for (int i : trail)
-      printf("%i: %i, ", i, vars[index(i)].level);
-    printf("\n");
+  // curVar = index(trail.back());
+    //  for (int i : trail)
+    //   printf("%i: %i, ", i, vars[index(i)].level);
+    // printf("\n CURVAR: %i\n", curVar);
 }
 
 void backtrack2() {

@@ -18,7 +18,7 @@ std::vector<int> vsids;
 int curVar = 1;
 int curProp;
 Heuristics heuristic = INC;
-
+std::vector<int> decision_vars;
 int main(int argc, char *argv[]) {
   // measure CPU time...
   std::chrono::steady_clock::time_point start =
