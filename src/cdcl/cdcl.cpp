@@ -4,7 +4,7 @@
 
 std::vector<int> trail;
 bool conflict;
-std::vector<int> conflict_clause;
+std::vector<int> learned;
 int count_lits_highest_dec_level = 1;
 int curDecisionLevel = 0;
 std::vector<int> seen;
@@ -26,16 +26,16 @@ void *cdcl(void *arg) {
         pthread_exit((void *)1);
 
       int backtrack_lvl = analyze();
-      // if(backtrack_lvl == 0 )
+      // if(backtrack_lvl == 0 ){
       //   backtrack2();
 
       //                            }
       // else{
-      // addClause(conflict_clause);
+      // addClause(learned);
       backtrack(curDecisionLevel);
 
-      // pthread_exit(0);
-      //  backjump();
+      // // pthread_exit(0);
+      // //  backjump();
       // }
     } else {
       pickDecisionLit();
@@ -125,67 +125,65 @@ void updateWatched(int assertedLit) {
 
 int analyze() {
 
-  conflict_clause.clear();
-  int pathC = 0; // number of literals of current decision level in our
-  int trailIndex = trail.size() - 1;
-  conflict_clause.push_back(-1); // push dummy, replaced after loop
-  int stampedLit = -1;
-  do {
-    if (conflict_clause_id <= 0)
-      return -1;
+  learned.clear();
+  // int pathC = 0; // number of literals of current decision level in our
+  // int trailIndex = trail.size() - 1;
+  learned.push_back(-1); // push dummy, replaced after loop
+  // int stampedLit = -1;
 
-    // printf("nums: %i, dec lev: %i\n", pathC, curDecisionLevel );
-    std::vector<int> &learned = cnf[conflict_clause_id];
-    for (int i = (stampedLit == -1) ? 0 : 1; i < learned.size(); i++) {
-      int lit = learned[i];
-      // printf("HIERMITTEEVOR!: %i, %i, %i, %i\n",conflict_clause_id,
-      // vars[index(lit)].level, lit, !seen[index(lit)]);
-      if (!seen[index(lit)] && vars[index(lit)].level > 0) {
-        // varBumpActivity(var(q));
-        seen[index(lit)] = 1;
-        // printf("Level: %i\n", vars[index(stampedLit)].level);
-        if (vars[index(lit)].level >= curDecisionLevel) {
-          pathC++;
-        } else {
-          conflict_clause.push_back(lit);
-        }
+  std::vector<int> &confl = cnf[conflict_clause_id];
+  //   printf("Conflict");
+  //  for (int i : confl)
+  //     printf("%i ", i);
+  //   printf("\n");
+  for(int i =  0 ; i < confl.size(); i++){
+    int lit = confl[i];
+
+    // If decision lit, we learn immediately
+    if(vars[index(lit)].reason <= 0) {
+      if(!seen[index(lit)]){     
+      learned.push_back(lit);
+      seen[index(lit)] = 1;
       }
-      // printf("HIER2!: %i\n", lit);
+      continue;
     }
-    // traverse trail until we encounter a seen lit
-    while (!seen[index(trail[trailIndex--])]);
-    stampedLit = trail[trailIndex + 1];
-    seen[index(stampedLit)] = 0;
-    pathC--;
-    conflict_clause_id = vars[index(stampedLit)].reason;
-    
-  } while (pathC > 0);
-  conflict_clause[0] = -stampedLit;
 
-  if (conflict_clause.size() == 1) {
-    for (int i : conflict_clause)
-      printf("%i ", i);
-    printf("\n");
+    std::vector<int> &reason = cnf[vars[index(lit)].reason];
+    // for (int i : reason)
+    //   printf("%i ", i);
+    // printf("\n");
+    for(int j = 1; j < reason.size(); j++) {
+      // Do not include 0 level literals in the learned
+      int toCache = reason[j];
+      if(!seen[index(toCache)] && vars[index(toCache)].level > 0) {
+        learned.push_back(toCache);
+        seen[index(toCache)] = 1;
+      }
+    }
   }
+    // printf("Ballert: \n");
+    // for (int i : learned)
+    //   printf("%i ", i);
+    // printf("0\n");
 
   int btlvl;
-  if (conflict_clause.size() == 1)
+  if (learned.size() == 1)
     btlvl = 0;
   else {
     // index of the second highest dec level literal
     int max = 1;
     // Find the first literal assigned at the second highest level:
-    for (int i = 2; i < conflict_clause.size(); i++)
-      if (vars[index(conflict_clause[i])].level >
-          vars[index(conflict_clause[max])].level)
+    for (int i = 2; i < learned.size(); i++)
+      if (vars[index(learned[i])].level >
+          vars[index(learned[max])].level)
         max = i;
-    btlvl = vars[index(conflict_clause[max])].level;
+    btlvl = vars[index(learned[max])].level;
   }
 
-  for (auto const &elem : conflict_clause) {
-    seen[index(elem)] = 0;
+  for (int elem = 0; elem < seen.size(); elem++) {
+    seen[index(elem)] = false;
   }
-  return btlvl;
+  return 1;
 }
 
 void backtrack(int btlvl) {
@@ -223,9 +221,9 @@ void backtrack(int btlvl) {
   //   vars[index(unit)].enqueued = true;
   //   // unitTrail.push_back(unit);
   // }
-  // // unitQueue.push(conflict_clause[0]);
-  // // vars[index(conflict_clause[0])].enqueued = true;
-  // // unitTrail.push_back(conflict_clause[0]);
+  // // unitQueue.push(learned[0]);
+  // // vars[index(learned[0])].enqueued = true;
+  // // unitTrail.push_back(learned[0]);
   // curVar = 1;
   // }
   // else{
@@ -261,13 +259,13 @@ void backtrack2() {
 
   conflict = false;
 
-  unitQueue.push(Unit(conflict_clause[0], -1));
-  vars[index(conflict_clause[0])].enqueued = true;
-  unitTrail.push_back(conflict_clause[0]);
+  unitQueue.push(Unit(learned[0], -1));
+  vars[index(learned[0])].enqueued = true;
+  unitTrail.push_back(learned[0]);
 
   curDecisionLevel = 0;
 
   curVar = 1;
 
-  // printf("HIER %i, %i\n", conflict_clause[0], curVar);
+  // printf("HIER %i, %i\n", learned[0], curVar);
 }
