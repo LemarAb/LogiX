@@ -103,6 +103,7 @@ bool parseDIMACS(std::string filename) {
     numOfClauses = cnf.size() - 1;
     for (int i = 0; i < numOfVars+1; i++) {
     // printf("%i ", i);
+      decision_vars.push_back(-1);
       seen.push_back(false);
   }
     return false;

@@ -36,6 +36,7 @@ void assertLit(int literal, bool forced) {
     trail.push_back(literal);
     // assig.push(literal);
     lit.level = curDecisionLevel;
+    decision_vars[curDecisionLevel] = literal;
     updateWatched(literal);
   }
 }

@@ -69,8 +69,6 @@ extern int numOfVars;
 extern int numOfClauses;
 // num of not yet assigned variables;
 extern int numOfUnassigned;
-
-
 enum Heuristics { INC, DLIS, DLCS, MOM, JW };
 
 enum Assig {
@@ -78,6 +76,9 @@ enum Assig {
     TRUE,
     FREE,
 };
+
+extern std::vector<int> decision_vars ;
+
 extern int countu;
 enum Polarity { NEG, POS, MIX, UNSET };
 
