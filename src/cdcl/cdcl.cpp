@@ -128,7 +128,7 @@ int analyze() {
   learned.clear();
   // int pathC = 0; // number of literals of current decision level in our
   // int trailIndex = trail.size() - 1;
-  learned.push_back(-1); // push dummy, replaced after loop
+  // learned.push_back(-1); // push dummy, replaced after loop
   // int stampedLit = -1;
 
   std::vector<int> &confl = cnf[conflict_clause_id];
