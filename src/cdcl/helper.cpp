@@ -1,8 +1,15 @@
 #include "../../include/cdcl.hpp"
 #include <algorithm>
 #include <cmath>
+#include "dataStructs/heap.hpp"
+#include "dataStructs/vsids.hpp"
 
 int learned2power = 0;
+extern std::vector<double> act;
+
+extern VariableOrderActLT lt;
+
+extern Heap<int, VariableOrderActLT> heap;
 
 bool eval(int literal) {
   return !(vars[index(literal)].getValue() ^ (literal > 0));
@@ -63,6 +70,22 @@ void addClause(std::vector<int> &clause) {
 //     return std::pow(2, n + 2);
 // }
 
+int luby_index = 1;
+
+int luby_unit = 32;
+
+int luby(int i) {
+  int k;
+  for (k = 0; (1 << (k + 1) <= (i + 1)); k++)
+    ;
+  if ((1 << k) == (i + 1))
+    return (1 << (k - 1));
+  else
+    return luby((i + 1) - (1 << k));
+}
+
+
+
 void delete_half() {
   int learned_half = (cnf.size() - 1 - learned_begin) / 2 ;
   for (int i = learned_begin; i < learned_half; i++) {
@@ -104,3 +127,46 @@ void unassignLit(int literal) {
     unitQueue.pop();
   }
 }
+
+// double var_inc = 5.0;
+
+// void createHeap() {
+//   act.resize(numOfVars + 1);
+//   for (int i = 1; i <= numOfVars; i++) {
+//     if(i < act.size() && i < vars.size())  // Because of out of bounds access
+//       act[i] = vars[i].tot_occ;
+//     //printf("%d: %f\n", i, act[i]);
+//   }
+
+//   std::vector<int> newVars(numOfVars);
+
+//   heap.createHeap();
+  
+//   //heap.displaySize();
+//   //heap.display(act);
+// }
+
+// void varIncActivity(int var) {
+//     act[var] += var_inc;
+//     heap.update(var);
+//     //heap.display(act);
+// };
+
+// void afterExtractOrderAct(int i) {
+//     for (int j = heap.getHeapSize() / 2; j >= 0; --j) {
+//         heap.update(j);
+//     }
+// };
+
+// void varDecActivity(int var) {
+//     act[var] -= var_inc;
+//     heap.increase(var);
+// };
+
+// void allVarsHalfActivity() {
+//     for (int i = 1; i <= numOfVars; i++) {
+//         act[i] *= 0.5;
+//         heap.update(i); // -> is this really necessary?
+//     }
+//     //heap.display(act);
+// };

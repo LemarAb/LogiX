@@ -14,7 +14,6 @@ std::vector<Variable> vars;
 std::set<int> satClauses;
 std::queue<Unit> unitQueue;
 std::stack<int> assig;
-std::vector<int> vsids;
 int curVar = 1;
 int curProp;
 Heuristics heuristic = INC;

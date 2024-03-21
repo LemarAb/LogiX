@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include <vector>
 #include <unordered_set>
-#include "../src/cdcl/dataStructs/intmap.hpp"
 
 #ifndef MYHEADER_HPP
 #define MYHEADER_HPP
@@ -162,8 +161,6 @@ extern int learned_begin;
 // queue storing unit literals
 extern std::queue<Unit> unitQueue;
 
-extern std::vector<int> vsids;
-
 // stack of variables with assigned values
 extern std::stack<int> assig;
 
@@ -217,6 +214,8 @@ void backtrack(int btlvl);
 
 void backtrack2();
 
+
+void restart();
 // evaluates the literal under its current assignment
 bool eval(int literal);
 

@@ -10,6 +10,7 @@ int curDecisionLevel = 0;
 std::vector<int> seen;
 int conflict_clause_id;
 std::vector<int> unitTrail;
+int conflict_count = 0;
 
 void *cdcl(void *arg) {
   while (true) {
@@ -35,10 +36,16 @@ void *cdcl(void *arg) {
         addClause(learned);
         
       }
+      if (conflict_count == luby(luby_index) * luby_unit) {
+        // printf("%i",luby(luby_index)*luby_unit);
+        luby_index++;
+        // restart();
+        restart();
+        continue;
+      }
+
       backtrack(backtrack_lvl);
-      // // pthread_exit(0);
-      // //  backjump();
-      // }
+
     } else {
       pickDecisionLit();
     }
@@ -263,5 +270,56 @@ else
   //     printf("%i: %i, ", i, vars[index(i)].level);
   // printf("\n CURVAR: %i, %i, %i\n", curVar, curDecisionLevel,  decision_vars.back());
           // pthread_exit((void *)1);
+
+}
+
+void restart() {
+  // printf("RESTART\n");
+
+  // printf("HIER %i\n", curDecisionLevel);
+
+  // printf("trail size %i\n", trail.size());
+  // printf("phase size %i\n", phase.size());
+  // printf("numofvars %i\n", numOfVars);
+  // for (int i = 0; i < phase.size(); i++) {
+  // printf("free");
+  //  phase[i] = FREE;
+  //}
+  // for (int i = 0; i < trail.size(); i++) {
+  //   printf("%i: %i, ", i, trail[i]);
+  // }
+  // printf("\n");
+  // for(int i = 0; i < phase.size(); i++) phase[i] = FREE;
+  while (!trail.empty() && vars[index(trail.back())].reason >= 0) {
+    // heap.insert(index(trail.back()));
+
+    int toSave = index(trail.back());
+    // phase[toSave] = vars[toSave].getValue();
+    unassignLit(trail.back());
+  }
+
+  while (!unitQueue.empty()) {
+    int toDiscard = index(unitQueue.front().literal);
+    vars[toDiscard].enqueued = false;
+    vars[toDiscard].reason = 0;
+    vars[toDiscard].level = -1;
+    unitQueue.pop();
+  }
+
+  conflict = false;
+
+  while (decision_vars.size() > 1) {
+    decision_vars.pop_back();
+  }
+
+  // unitQueue.push(conflict_clause[0]);
+  // vars[index(conflict_clause[0])].enqueued = true;
+  // unitTrail.push_back(conflict_clause[0]);
+
+  conflict_count = 0;
+
+  curDecisionLevel = 0;
+
+  curVar = 1;
 
 }

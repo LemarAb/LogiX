@@ -1,195 +1,219 @@
+#include <algorithm>
+#include <cassert>
 #include <climits>
 #include <iostream>
+#include <map>
+#include <math.h>
 #include <queue>
+#include <stdlib.h>
 #include <unordered_map>
 #include <vector>
-#include <algorithm>
-#include <stdlib.h>
-#include <math.h>
-#include <map>
-#include "../../../include/cdcl.hpp"
-#include "intmap.hpp"
-#include "vector.hpp"
-#include <cassert>
 
 #ifndef K_Heap_hpp
 #define K_Heap_hpp
 
 // A MaxHeap for VSIDS Branching Heuristic
-// The heap is implemented as a binary tree, with the root of the tree being the variable with the highest activity.
-void afterExtractOrderAct(int i); 
+// The heap is implemented as a binary tree, with the root of the tree being the
+// variable with the highest activity.
+void afterExtractOrderAct(int i);
 
 struct VariableOrderActLT {
-    const IntMap<int, double>& activity;
-    bool operator () (int x, int y) const { return activity[x] > activity[y]; }
-    VariableOrderActLT(const IntMap<int, double>& act) : activity(act) { }
-}; 
+  const std::vector<double> &activity;
+  bool operator()(int x, int y) const { return activity[x] > activity[y]; }
+  VariableOrderActLT(const std::vector<double> &act) : activity(act) {}
+};
 
-template<class K, class Comp, class MkIndex = MkIndexDefault<K> >
-class Heap {
-    vec<K> heap;               //currently as int but can be Variable, probably should be too.
-    IntMap<K,int,MkIndex>  indices;      //double for the scores of the variables
-    Comp  lt;              //Comparator for the heap
-    
-    static inline int getLChild(int i)  { return i * 2 + 1; }
-    static inline int getRChild(int i)  { return (i + 1) * 2; }
-    static inline int getParent(int i)  { return (i - 1) >> 1; }
+template <class K, class Comp> class Heap {
+  std::vector<K> heap;      // true heap, first element is always the biggest in
+                            // score, saves them in their order
+  std::vector<int> indices; // Locations of the vars in Heap
+  Comp lt;                  // Comparator for the heap
 
-    void heapUp(int i){
-        K x = heap[i];
-        int p = getParent(i);
-        
-        while (i != 0 && lt(x, heap[p])){
-            heap[i] = heap[p];
-            indices[heap[p]] = i;
-            i = p;
-            p = getParent(p);
-        }
-        heap[i] = x;
-        indices[x] = i;
+  static inline int getLChild(int i) { return i * 2 + 1; }
+  static inline int getRChild(int i) { return (i + 1) * 2; }
+  static inline int getParent(int i) { return (i - 1) >> 1; }
+
+  void heapUp(int i) {
+    K x = heap[i];
+    int p = getParent(i);
+
+    while (i != 0 && lt(x, heap[p])) {
+      heap[i] = heap[p];
+      indices[heap[p]] = i;
+      i = p;
+      p = getParent(p);
     }
+    heap[i] = x;
+    indices[x] = i;
+  }
 
-    void heapDown(int i) {
-        K x = heap[i];
-        while (getLChild(i) < heap.size()){
-            int child = getRChild(i) < heap.size() && lt(heap[getRChild(i)], heap[getLChild(i)]) ? getRChild(i) : getLChild(i);
-            if (!lt(heap[child], x)) break;
-            heap[i] = heap[child];
-            indices[heap[i]] = i;
-            i = child;
-        }
-        heap[i] = x;
-        indices[x] = i;
+  void heapDown(int i) {
+    K x = heap[i];
+    while (getLChild(i) < heap.size()) {
+      int child = getRChild(i) < heap.size() &&
+                          lt(heap[getRChild(i)], heap[getLChild(i)])
+                      ? getRChild(i)
+                      : getLChild(i);
+      if (!lt(heap[child], x))
+        break;
+      heap[i] = heap[child];
+      indices[heap[i]] = i;
+      i = child;
     }
-    
+    heap[i] = x;
+    indices[x] = i;
+  }
+
 public:
-    Heap(const Comp& c, MkIndex _index = MkIndex()): indices(_index), lt(c) { }
-    
-    int getHeapSize() const { return heap.size(); } 
-    bool empty() const { return heap.size() == 0; }
-    bool inHeap(int var) const { return indices.has(var) && indices[var] >= 0; }
+  Heap(const Comp &c) : lt(c) {}
 
-    int operator[](int ind) const {assert(ind < heap.size()); return heap[ind]; } 
+  int peek() const { return heap[0]; }
+  int getHeapSize() const { return heap.size(); }
+  bool empty() const { return heap.size() == 0; }
+  bool inHeap(int var) const {
+    return var < indices.size() && indices.at(var) >= 0;
+  }
 
-    void decrease (int i) { assert(inHeap(i)); heapUp(indices[i]); } 
-    void increase (int i) { assert(inHeap(i)); heapDown(indices[i]); }
+  int operator[](int ind) const {
+    assert(ind < heap.size());
+    return heap[ind];
+  }
 
-    void insert (K i) {
-        indices.reserve(i, -1);
-        assert(!inHeap(i));
+  void decrease(int i) {
+    assert(inHeap(i));
+    heapUp(indices[i]);
+  }
 
-        indices[i] = heap.size();
-        heap.push(i);
-        heapUp(indices[i]);
+  void increase(int i) {
+    assert(inHeap(i));
+    heapDown(indices[i]);
+  }
+
+  void insert(K i) {
+    if (i >= indices.size()) {
+      indices.resize(i + 1, -1);
+    }
+    indices[i] = -1;
+    assert(!inHeap(i));
+
+    indices[i] = heap.size();
+    heap.push_back(i);
+    heapUp(indices[i]);
+  }
+
+  void update(K i) {
+    if (!inHeap(i))
+      insert(i);
+
+    heapUp(indices[i]);
+    heapDown(indices[i]);
+  }
+
+  void remove(K i) {
+    assert(inHeap(i));
+
+    int i_pos = indices[i];
+    indices[i] = -1;
+
+    if (i_pos < heap.size() - 1) {
+      heap[i_pos] = heap.back();
+      indices[heap[i_pos]] = i_pos;
+      heap.pop_back();
+      heapDown(i_pos);
+    } else {
+      heap.pop_back();
+    }
+  }
+
+  K removeMax() {
+    int i = heap[0];
+    heap[0] = heap.back();
+
+    if (heap[0] < indices.size()) {
+      indices[heap[0]] = 0;
     }
 
-    void update (K i) {
-        if(!inHeap(i))  insert(i);
-        else {
-            heapUp(indices[i]);
-            heapDown(indices[i]);
-        }
+    if (i < indices.size()) {
+      indices[i] = -1;
     }
 
-    void remove (K i) {
-        assert(inHeap(i));
+    heap.pop_back();
 
-        int i_pos = indices[i];
-        indices[i] = -1;
-
-        if (i_pos < heap.size() - 1) {
-            heap[i_pos] = heap.last();
-            indices[heap[i_pos]] = i_pos;
-            heap.pop();
-            heapDown(i_pos);
-        } else {
-            heap.pop();
-        }
+    if (heap.size() > 1) {
+      heapDown(0);
     }
 
-    K removeMax() {
-        int i = heap[0];
-        heap[0] = heap.last();
-        indices[heap[0]] = 0;
-        indices[i] = -1;
-        heap.pop();
-        if (heap.size() > 1) heapDown(0);
-        afterExtractOrderAct(i);
-        return i;
+    // afterExtractOrderAct(i);
+    return i;
+  }
+
+  void createHeap() {
+    indices.resize(numOfVars, -1);
+
+    for (int i = 0; i < numOfVars ; i++) {
+      insert(i+1);
     }
 
-    void createHeap(const vec<int>& newVars) {
-        for (int i = 0; i < heap.size(); i++) 
-            indices[heap[i]] = -1;
-        heap.clear();
+    for (int i = heap.size() / 2; i >= 0; i--)
+      heapDown(i);
+  }
 
-        for(int i = 0; i < newVars.size(); i++) {
-            assert(indices.has[newVars[i]]);
-            indices[newVars[i]] = i;
-            heap.push(newVars[i]);
-        }
+  void rebuild() {
+    // Clear the heap and indices
+    heap.clear();
+    indices.clear();
 
-        for (int i = heap.size() / 2; i >= 0; i--) 
-            heapDown(i);
+    // Add variables from 1 to numOfVars to the heap and indices
+    for (int i = 1; i <= numOfVars; ++i) {
+      heap.push_back(i);
+      indices[i] = i - 1;
     }
 
-    void clear(bool dispose = false) {
-        for (int i = 0; i < heap.size(); i++) 
-            indices[heap[i]] = -1;
-        heap.clear(dispose);
+    // Restore the heap property
+    for (int i = heap.size() / 2; i >= 0; --i) {
+      heapDown(i);
     }
+  }
 
-    void displayIndices() const {
-        for (int i = 0; i < indices.size(); ++i) {
-            if (indices.has(i)) {
-                std::cout << "Key: " << i << ", Value: " << indices[i] << '\n';
-            }
-        }
+  void clear(bool dispose = false) {
+    for (int i = 0; i < heap.size(); i++)
+      indices[heap[i]] = -1;
+    heap.clear(dispose);
+  }
+
+  void displayIndices() const {
+    for (int i = 0; i < indices.size(); ++i) {
+      std::cout << "Key: " << i << ", Value: " << indices[i] << '\n';
     }
+  }
 
-    void displayIndEntry (int key) const {
-        indices.displayEntry(key);
+  void displaySize() const {
+    std::cout << "Size of heap: " << heap.size() << '\n';
+    std::cout << "Size of indices: " << indices.size() << '\n';
+  }
+
+  void display(const std::vector<double> &act) const {
+    displayHelper(0, "", act);
+  };
+
+private:
+  void displayHelper(int i, const std::string &prefix,
+                     const std::vector<double> &act) const {
+    if (i < heap.size()) {
+      if (i != 0) {
+        std::cout << prefix << "|--";
+      }
+
+      std::cout << "(" << heap[i] << ", " << act.at(heap[i]) << ", "
+                << vars[heap[i]].getValue() << ")\n'";
+
+      int left = getLChild(i);
+      int right = getRChild(i);
+
+      displayHelper(left, prefix + (right < heap.size() ? "|   " : "    "),
+                    act);
+      displayHelper(right, prefix + "    ", act);
     }
-
-    void displaySize() const {
-        std::cout << "Size of heap: " << heap.size() << '\n';
-        std::cout << "Size of indices: " << indices.size() << '\n';
-    }
-
-    void display(const IntMap<int, double>& act) const {
-        displayHelper(0, "", act);
-    }; 
-
-    private:
-    void displayHelper(int i, const std::string& prefix, const IntMap<int, double>& act) const {
-        if (i < heap.size()) {
-            if (i != 0) {
-                std::cout << prefix << "|--";
-            }
-
-            std::cout << "(" << heap[i] <<", " << act[heap[i]] << ")\n'";
-
-            int left = getLChild(i);
-            int right = getRChild(i);
-
-            displayHelper(left, prefix + (right < heap.size() ? "|   " : "    "), act);
-            displayHelper(right, prefix + "    ", act);
-        }
-    }
-}; 
+  }
+};
 #endif
-
-
-
-/*int power = 0;
-        int value = 1;
-        for (int i = 0; i < heap.size; ++i) {
-            if(i == value){
-                printf("\n");
-                power += 1;
-                value += (1 << power);
-        }
-        printf("(%i, %f) ", i, activity[i].second);
-    }
-    printf("\n");
-    */
