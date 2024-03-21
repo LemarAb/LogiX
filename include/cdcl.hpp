@@ -88,12 +88,6 @@ struct Variable {
     Assig val = FREE;
 
    public:
-    // std::set<int> pos_pol;  // = {1,2};  All clauses where var appears as pos watched literal
-    //     std::set<int>
-    //         neg_poll;  // = {3,4} All clauses where var appears as neg watched literal
-    //             //    (1 2 -3) (1 -2 3 4) (-1 2 -4) (-1 3 -4)
-    //             // clause x sat => x is in neg_poll => erase x from neg_poll
-    //             // if neg_pol.empty() => pureLiter => set var to 1
     int level = -1;
     int reason = 0;
     std::set<int> pos_watched;  // All clauses where var appears as pos watched literal
@@ -102,8 +96,6 @@ struct Variable {
     int neg_occ = 0;  // number of clauses var appears as neg literal
     int tot_occ = 0;  // total number of clauses var appears in
     bool enqueued = false;
-    bool inlearned = false;
-    bool learned_and_unassig = false;
     void setValue(Assig _assig) {
         // int assertedLit = unitProp ? curProp : curVar;
         if (_assig != FREE && val == FREE)
@@ -111,20 +103,9 @@ struct Variable {
         else {
             if (_assig == FREE) {
               numOfUnassigned++;
-              if (inlearned == true)
-                learned_and_unassig = true;
             } 
-
-            // else
-            //     vars[assertedLit].forced = true;
         }
         val = _assig;
-        // printf("num of unassigned: %i \n", numOfUnassigned);
-
-        // vars[assertedLit].enqueued = false;
-        // vars[assertedLit].forced = true;
-        // assig.push(assertedLit);
-        // updateWatched(assertedLit);
     }
     Assig getValue() { return val; }
 };
@@ -161,7 +142,9 @@ extern int learned_begin;
 
 extern int delete_cue;
 
+// forget half of the learned claueses every 
 void delete_half();
+
 // queue storing unit literals
 extern std::queue<Unit> unitQueue;
 
@@ -205,28 +188,30 @@ void backtrack(int btlvl);
 
 void backtrack2();
 
+// rstart according to luby sequence
 void restart();
+
 // evaluates the literal under its current assignment
 bool eval(int literal);
 
+// add the learned clause
 void addClause(std::vector<int> & clause);
 
 int index(int literal);
 
 void printModel(int res);
 
+// delivers the backtrack_lvl and learns the clause
 int analyze();
 
 void verifyModel();
 
 void assertLit(int literal, bool forced);
 
-//Luby Sequence finding
+// find the luby sequence
 int luby(int i);
 
 void preprocess();
-
-void pre_unitPropagate();
 
 extern int luby_index;
 

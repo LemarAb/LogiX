@@ -22,33 +22,24 @@ bool isFree(int literal) { return vars[index(literal)].getValue() == FREE; }
 void addClause(std::vector<int> &clause) {
 
   cnf.push_back(clause);
-  // learnedClauses.push_back(clause);
 
+  // VSIDS: Bump activity scores of all literals of the learned clause
+  for (int lit : clause) varIncActivity(index(lit));
+
+  // assign watched literals for the learned clause
   clause[0] > 0 ? vars[index(clause[0])].pos_watched.insert(cnf.size() - 1)
                 : vars[index(clause[0])].neg_watched.insert(cnf.size() - 1);
 
   clause[1] > 0 ? vars[index(clause[1])].pos_watched.insert(cnf.size() - 1)
                 : vars[index(clause[1])].neg_watched.insert(cnf.size() - 1);
 
+  
+  // The first lit is free due to non-chronological backtracking => enqueue
   if(!vars[index(clause[0])].enqueued)
     {
     unitQueue.push(Unit(clause[0], cnf.size() - 1));
     vars[index(clause[0])].enqueued = true;
   }
-
-  // for (int i = 0; i < clause.size(); i++) {
-  //   vars[index(clause[i])].inlearned = true;
-  // }
-
-  // int learnedClausesSize = learnedClauses.size();
-  // if(learnedClausesSize = powerOfTwo(learned2power)) {
-  //   deleteHalfLearnedClauses(); // or deleteClauses()
-  //   learned2power++;
-  // }
-}
-
-int powerOfTwo(int n) {  //returns 2^n starting from 4
-     return std::pow(2, n + 2);
 }
 
 int luby_index = 1;
@@ -65,9 +56,8 @@ int luby(int i) {  // Luby sequence
     return luby((i + 1) - (1 << k));
 }
 
-
-
-void delete_half() { // Delete half of the learned clauses depending on the 2's power
+void delete_half() { 
+  // Delete half of the learned clauses depending on the 2's power
   int learned_half = (cnf.size() - 1 - learned_begin) / 2 ;
   printf("ANZAHL: %i\n", learned_half);
   for (int i = learned_begin; i < learned_half; i++) {
@@ -113,14 +103,13 @@ void unassignLit(int literal) {
   }
 }
 
-double var_inc = 1.0;
+double var_inc = 5.0;
 
-void createHeap() {   // Main creation of the heap
+void createHeap() {
   act.resize(numOfVars+1);
   for (int i = 1; i <= numOfVars; i++) {
-    if(i < act.size() && i < vars.size())  // Because of out of bounds access
+    if(i < act.size() && i < vars.size())
       act[i] = vars[i].tot_occ;
-    //printf("%d: %f\n", i, act[i]);
   }
 
   heap.createHeap();
@@ -140,6 +129,6 @@ void afterExtractOrderAct(int i) {   // After extracting the order of the variab
 void allVarsHalfActivity() {
     for (int i = 1; i <= numOfVars; i++) {
         act[i] *= 0.5;
-        heap.update(i); // -> is this really necessary?
+        heap.update(i);
     }
 };
