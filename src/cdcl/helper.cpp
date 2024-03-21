@@ -1,6 +1,6 @@
 #include "../../include/cdcl.hpp"
-#include "dataStructs/heap.hpp"
-#include "dataStructs/vsids.hpp"
+#include "Heap/heap.hpp"
+#include "Heap/vsids.hpp"
 #include <algorithm>
 #include <cmath>
 
@@ -35,9 +35,9 @@ void addClause(std::vector<int> &clause) {
                 : vars[index(clause[1])].neg_watched.insert(cnf.size() - 1);
 
   
-  // The first lit is free due to non-chronological backtracking => enqueue
+  // The second lit is free due to non-chronological backtracking => enqueue
   if(!vars[index(clause[0])].enqueued)
-    {
+  {
     unitQueue.push(Unit(clause[0], cnf.size() - 1));
     vars[index(clause[0])].enqueued = true;
   }

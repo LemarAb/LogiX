@@ -1,6 +1,6 @@
 #include "../../include/cdcl.hpp"
 #include "../../src/cdcl/dataStructs/vsids.hpp"
-#include "dataStructs/vsids.hpp"
+#include "Heap/vsids.hpp"
 #include <cmath>
 
 std::vector<int> trail;
@@ -9,7 +9,7 @@ std::vector<int> learned;
 int count_lits_highest_dec_level = 1;
 int curDecisionLevel = 0;
 std::vector<int> seen;
-int conflict_clause_id;
+int conflict_clause_id = 0;
 std::vector<int> unitTrail;
 int conflict_count = 0;
 int delete_cue = 0;
@@ -139,35 +139,54 @@ int analyze() {
 
   learned.clear();
 
+  int num = 0; // number of literals of current decision level in our
+  int trailIndex = trail.size() - 1;
+  learned.push_back(-1); // push dummy, replaced after loop
+  int stampedLit = -1;
+  do {
+    if (conflict_clause_id <= 0)
+      return -1;
+
+    std::vector<int> &conf = cnf[conflict_clause_id];
+    for (int i = (stampedLit == -1) ? 0 : 1; i < conf.size(); i++) {
+      int lit = conf[i];
+      if (!seen[index(lit)] && vars[index(lit)].reason >= 0) {
+        seen[index(lit)] = 1;
+        if (vars[index(lit)].level >= curDecisionLevel) {
+          num++;
+        } else {
+          learned.push_back(lit);
+        }
+      }
+    }
+    // traverse trail in until we encounter a seen lit
+    while (!seen[index(trail[trailIndex--])]);
+    stampedLit = trail[trailIndex + 1];
+    seen[index(stampedLit)] = 0;
+    num--;
+    conflict_clause_id = vars[index(stampedLit)].reason;
+    
+  } while (num > 0);
+  learned[0] = -stampedLit;
+
   int btlvl;
   if (learned.size() == 1)
     btlvl = 0;
   else {
-    // index of the second highest dec level literal
     int max = 1;
     // Find the first literal assigned at the second highest level:
     for (int i = 2; i < learned.size(); i++)
-      if (vars[index(learned[i])].level > vars[index(learned[max])].level)
+      if (vars[index(learned[i])].level >
+          vars[index(learned[max])].level)
         max = i;
     btlvl = vars[index(learned[max])].level;
-
-    std::swap(learned[0], learned[max]); ??
   }
 
-  for (int elem = 0; elem < seen.size(); elem++) {
-    seen[index(elem)] = false;
+  for (auto const &elem : learned) {
+    seen[index(elem)] = 0;
   }
-
-  // empty unit queue
-  while (!unitQueue.empty()) {
-  int toDiscard = index(unitQueue.front().literal);
-  vars[toDiscard].enqueued = false;
-  vars[toDiscard].reason = 0;
-  vars[toDiscard].level = -1;
-  unitQueue.pop();
-}
-
   return btlvl;
+
 }
 
 void backtrack(int btlvl) {
@@ -175,6 +194,7 @@ void backtrack(int btlvl) {
   bool addedClause = btlvl > 0;
   if (btlvl == 0) {
     while (!trail.empty() && vars[index(trail.back())].reason >= 0) {
+      if(index(trail.back()))
       heap.insert(index(trail.back()));
       unassignLit(trail.back());
     }

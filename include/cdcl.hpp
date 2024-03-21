@@ -221,8 +221,6 @@ void proofLogging(std::string filename);
 // find the luby sequence
 int luby(int i);
 
-void preprocess();
-
 extern int luby_index;
 
 extern int luby_unit;
