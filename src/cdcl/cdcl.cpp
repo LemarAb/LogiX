@@ -180,9 +180,11 @@ int analyze() {
           vars[index(learned[max])].level)
         max = i;
     btlvl = vars[index(learned[max])].level;
+
+    std::swap(learned[1], learned[max]);
   }
 
-  for (auto const &elem : learned) {
+  for (int elem : learned) {
     seen[index(elem)] = 0;
   }
   return btlvl;

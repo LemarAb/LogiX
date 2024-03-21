@@ -2,7 +2,9 @@
 
 # Group_K_Project_3
 
-This project implements the CDCL algorithm enhanced with Variable State Independent Decaying Sum (VSIDS) and Non-increasing Variable Elimination Resolution (NiVER). Furthermore, restarts and phase saving have been implemented experimented with.
+This project implements the CDCL algorithm enhanced with Variable State Independent Decaying Sum (VSIDS) and Non-increasing Variable Elimination Resolution (NiVER). Furthermore, restarts and phase saving as well as clause deletion have been implemented and experimented with.
+
+Note: In particular our Heap implementation as well as some minor details are adapted from MiniSat and modified to serve our use case.
 
 ## Build + Run
 To build the project, enter `make`. To run the solver on a test file, enter `./main [testfile]`. To build and run immediately, enter `make run arg=[testfile] [heur]`. To run with preprocessing `./main [testfile] [-pre]` or `make run arg=[testfile] [prepr=-pre]`. A similar approach for proof logging:  `./main [testfile] [-proof]` and  `make run arg=[testfile] [proof=-proof]`
