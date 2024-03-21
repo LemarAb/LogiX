@@ -36,7 +36,7 @@ void *cdcl(void *arg) {
       int backtrack_lvl = analyze();
       // for(int i : learned) printf("%i ", i);
       // printf("0\n");
-      if (backtrack_lvl == 0) {
+      if (backtrack_lvl <= 0) {
         printf("WOW%i", learned[0]);
 
       } else {
@@ -168,50 +168,34 @@ int analyze() {
   // int stampedLit = -1;
 
   std::vector<int> &confl = cnf[conflict_clause_id];
-  //  for (int i : confl){
-  //     printf("%i: ", i);
-  //     if(vars[index(i)].reason > 0){
-  //       for(int j = 0; j < cnf[vars[index(i)].reason].size(); j++){
-  //         printf("%i, %i; ", cnf[vars[index(i)].reason][j], vars[index
-  //         (cnf[vars[index(i)].reason][j])].reason);
-  //       }}
-  //   printf(".....REASON %i\n", vars[index(i)].reason );}
 
-  // printf("%i ", i);
-  for (int i = 0; i < confl.size(); i++) {
-    int lit = confl[i];
+  int lit = confl[0];
 
-    // If decision lit, we learn immediately, if forced literal skip
-    // reason: 
-    // -1 => pre forced
-    // decision: == 0
-    // unit: clauseIndex
-
-    if (vars[index(lit)].reason <= 0) {
+  if (vars[index(lit)].reason <= 0) {
       if (!seen[index(lit) && vars[index(lit)].reason == 0]) {
         learned.push_back(lit);
+        return vars[index(lit)].level;
       }
       seen[index(lit)] = 1;
-      continue;
+      return -1;
     }
+  
+   std::vector<int> &reason = cnf[vars[index(lit)].reason];
 
-    std::vector<int> &reason = cnf[vars[index(lit)].reason];
-    // for (int i : reason)
-    //   printf("%i ", i);
-    // printf("\n");
+  // printf("%i ", i);
     for (int j = 1; j < reason.size(); j++) {
-      // Do not include 0 level literals in the learned
 
-      // printf("Conflict %i\n", reason.size());
       int toCache = reason[j];
       if (!seen[index(toCache)] && vars[index(toCache)].reason >= 0) {
-
         learned.push_back(toCache);
       }
 
       seen[index(toCache)] = 1;
-    }
   }
+    // for (int i : reason)
+    //   printf("%i ", i);
+    // printf("\n");
+  
   //   if(learned.size()==1)
   // {  printf("Ballert: \n");
   //     for (int i : learned)
@@ -288,8 +272,10 @@ void backtrack(int btlvl) {
   }
 
   else {
+    if(btlvl == 0){
     unitQueue.push(Unit(learned[0], -1));
     vars[index(learned[0])].enqueued = true;
+    }
   }
   //  for (int i : trail)
   //     printf("%i: %i, ", i, vars[index(i)].level);
