@@ -1,18 +1,6 @@
 <div style="text-align: justify;">
 
-- weird behaviour note: Mingw alone has a problem with getting data that is stored in a different hpp file (vars.tot_occ) where it assign the occurances in a random positive block. The differences between occs stay the same so no problem, however weird. Debug function and run through json functions as expected.
-
-- use watched literals during backtracking with learned clauses differenlty
-
-- Leave preprocessing to the end of implementation, start woth backtracking + Deletion and watched
-
-- Do NOT use BCE
-
-- NIVER: Do NOT delete the two producing resolvents once a resolved clause is added
-
-
-
-# Group_K_Project_2
+# Group_K_Project_3
 
 This project implements the DPLL algorithm enhanced with Unit Propagation (UP) and Pure Literal Elimination (PLE).   
   
@@ -20,13 +8,6 @@ The solver offers four heuristic options: Incremental (INC=0), Dynamic Largest I
 
 ## Build + Run
 To build the project, enter `make`. To run the solver on a test file, enter `./main [testfile] [heur]`. To build and run immediately, enter `make run arg=[testfile] [heur]`. 
-
-**Batch execution:**
-
-If compiled, you can run a range of test or comp files at once with a chosen heuristic `.\run.ps1 -type [char] -start [int] -end [int] -heur [int]`. 
-By omitting the `-heur` parameter, you can run all heuristics over the specified range.
-
-It is likely that you first have to allow the execution of local scripts by runnning i.e. `Set-ExecutionPolicy -Scope Process Bypass`.
 
 **Examples:**
 

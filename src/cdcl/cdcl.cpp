@@ -25,6 +25,8 @@ void *cdcl(void *arg) {
 
     // printf("past unit");
 
+    // 1 3 5 -7
+
     if (conflict) {
       // printf("enter conf");
       conflict_count++;
@@ -32,25 +34,27 @@ void *cdcl(void *arg) {
         pthread_exit((void *)1);
 
       int backtrack_lvl = analyze();
-      /*if (backtrack_lvl == 0) {
-        printf("WOW%i", learned[0]);
+      for(int i : learned) printf("%i ", learned[i]);
+      printf("0\n");
+      // if (backtrack_lvl == 0) {
+      //   printf("WOW%i", learned[0]);
 
-      } else {
-        addClause(learned);
-      } */
-      if (conflict_count == luby(luby_index) * luby_unit) {
-        //printf("%i RESTART", luby(luby_index) * luby_unit);
-        luby_index++;
-        //   // restart();
-        restart();
-        continue;
-      }
+      // } else {
+      //   addClause(learned);
+      // } 
+      // // if (conflict_count == luby(luby_index) * luby_unit) {
+      // //   //printf("%i RESTART", luby(luby_index) * luby_unit);
+      // //   luby_index++;
+      // //   //   // restart();
+      // //   restart();
+      // //   continue;
+      // // }
 
-      // if (conflict_count >= pow(delete_cue, 2)){
-      //   printf("del%i und 2 hoch %i\n", conflict_count, delete_cue);
-      //   delete_half();
-      //   delete_cue++;
-      // }
+      // // if (conflict_count >= pow(delete_cue, 2)){
+      // //   printf("del%i und 2 hoch %i\n", conflict_count, delete_cue);
+      // //   delete_half();
+      // //   delete_cue++;
+      // // }
 
       backtrack(backtrack_lvl);
 
@@ -129,7 +133,9 @@ void updateWatched(int assertedLit) {
 
     if (unitLit.getValue() == FREE) {
       if (!unitLit.enqueued) {
-        unitQueue.push(Unit(clause[0], *clauseIndex));
+        // printf("CLAUSE %i", *clauseIndex);
+        int ci = *clauseIndex;
+        unitQueue.push(Unit(clause[0], ci));
         unitLit.enqueued = true;
       }
     } else {
@@ -177,6 +183,11 @@ int analyze() {
     int lit = confl[i];
 
     // If decision lit, we learn immediately, if forced literal skip
+    // reason: 
+    // -1 => pre forced
+    // decision: == 0
+    // unit: clauseIndex
+
     if (vars[index(lit)].reason <= 0) {
       if (!seen[index(lit) && vars[index(lit)].reason == 0]) {
         learned.push_back(lit);
@@ -185,6 +196,7 @@ int analyze() {
       continue;
     }
 
+    printf("REASON: %i\n", cnf[vars[index(lit)].reason]);
     std::vector<int> &reason = cnf[vars[index(lit)].reason];
     // for (int i : reason)
     //   printf("%i ", i);
@@ -219,8 +231,8 @@ int analyze() {
       if (vars[index(learned[i])].level > vars[index(learned[max])].level)
         max = i;
     btlvl = vars[index(learned[max])].level;
-    // if(btlvl != curDecisionLevel)
-    // printf("BT: %i, CDL: %i\n", btlvl, curDecisionLevel);
+
+    // std::swap(learned[0], learned[max]);
   }
   // printf("BT: %i, CDL: %i\n", btlvl, curDecisionLevel);
   // for (int i : learned)
@@ -290,10 +302,10 @@ void backtrack(int btlvl) {
   }
 
   curDecisionLevel = decision_vars.size() - 1;
-  if (curDecisionLevel == 0)
-    curVar = 1;
-  else
-    curVar = decision_vars[curDecisionLevel];
+  // if (curDecisionLevel == 0)
+  //   curVar = 1;
+  // else
+  //   curVar = decision_vars[curDecisionLevel];
 
   //    for (int i : trail)
   //     printf("%i: %i, ", i, vars[index(i)].level);
@@ -302,21 +314,7 @@ void backtrack(int btlvl) {
 }
 
 void restart() {
-  // printf("RESTART\n");
 
-  // printf("HIER %i\n", curDecisionLevel);
-
-  // printf("trail size %i\n", trail.size());
-  // printf("phase size %i\n", phase.size());
-  // printf("numofvars %i\n", numOfVars);
-  // for (int i = 0; i < phase.size(); i++) {
-  // printf("free");
-  //  phase[i] = FREE;
-  //}
-  // for (int i = 0; i < trail.size(); i++) {
-  //   printf("%i: %i, ", i, trail[i]);
-  // }
-  // printf("\n");
   for(int i = 0; i < phase.size(); i++) phase[i] = FREE;
   while (!trail.empty() && vars[index(trail.back())].reason >= 0) {
 
@@ -338,10 +336,6 @@ void restart() {
   while (decision_vars.size() > 1) {
     decision_vars.pop_back();
   }
-
-  // unitQueue.push(conflict_clause[0]);
-  // vars[index(conflict_clause[0])].enqueued = true;
-  // unitTrail.push_back(conflict_clause[0]);
 
   conflict_count = 0;
 

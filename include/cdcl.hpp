@@ -95,7 +95,7 @@ struct Variable {
     //             // clause x sat => x is in neg_poll => erase x from neg_poll
     //             // if neg_pol.empty() => pureLiter => set var to 1
     int level = -1;
-    int reason = -1;
+    int reason = 0;
     std::set<int> pos_watched;  // All clauses where var appears as pos watched literal
     std::set<int> neg_watched;  // All clauses where var appears as neg watched literal
     int pos_occ = 0;  // number of clauses var appears as pos literal
@@ -134,7 +134,9 @@ struct Unit {
     int reason = 0;
 
     Unit(int _literal, int _reason):
-    literal(_literal), reason(_reason){}
+    literal(_literal), reason(_reason){
+      printf("REASON CONSTR: %i\n", reason);
+    }
 };
 
 extern std::vector<int> unitTrail;

@@ -107,8 +107,8 @@ void assertLit(int literal, bool forced) {
     lit.level = curDecisionLevel;
     updateWatched(std::abs(literal));
   } else {
-    if (phase[index(literal)] != FREE) vars[index(literal)].setValue(phase[index(literal)]);
-    else lit.setValue(TRUE);
+    // if (phase[index(literal)] != FREE) vars[index(literal)].setValue(phase[index(literal)]);
+    lit.setValue(TRUE);
     curDecisionLevel++;
     trail.push_back(literal);
     lit.level = curDecisionLevel;

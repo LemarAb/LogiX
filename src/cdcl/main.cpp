@@ -68,6 +68,8 @@ int main(int argc, char *argv[]) {
 
   postprocessing:
 
+  printf("SIze %i\n", cnf.size());
+
   printModel((intptr_t)res);
 
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
