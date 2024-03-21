@@ -47,7 +47,7 @@ int luby_index = 1;
 
 int luby_unit = 32;
 
-int luby(int i) { // Luby sequence
+int luby(int i) {
   int k;
   for (k = 0; (1 << (k + 1) <= (i + 1)); k++)
     ;
@@ -58,7 +58,6 @@ int luby(int i) { // Luby sequence
 }
 
 void delete_half() { 
-  // Delete half of the learned clauses depending on the 2's power
   int learned_half = (cnf.size() - 1 - learned_begin) / 2 ;
   printf("ANZAHL: %i\n", learned_half);
   for (int i = learned_begin; i < learned_half; i++) {
@@ -117,16 +116,9 @@ void createHeap() {
   heap.createHeap();
 }
 
-void varIncActivity(int var) { // Increase activity of a variable
+void varIncActivity(int var) {
   act[var] += var_inc;
   heap.update(var);
-};
-
-void afterExtractOrderAct(
-    int i) { // After extracting the order of the variable restore order
-  for (int j = heap.getHeapSize() / 2; j >= 0; --j) {
-    heap.update(j);
-  }
 };
 
 void allVarsHalfActivity() {

@@ -70,7 +70,7 @@ void pickDecisionLit() {
   if ((decision_count % 255) == 0)
     allVarsHalfActivity();
 
-  // get the most 
+  // get the most relevant unassigned var from the max heap 
   while (vars[heap.peek()].getValue() != FREE)
     heap.removeMax();
 
@@ -193,7 +193,8 @@ void backtrack(int btlvl) {
   }
 
   else {
-    // If we learn a unit clause, we did not add it to the CNF and just assert it on dec level 0
+    // If we learn a unit clause, 
+    // we did not add it to the CNF and just assert it on dec level 0
     unitQueue.push(Unit(learned[0], -1));
     vars[index(learned[0])].enqueued = true;
   }

@@ -1,7 +1,6 @@
 #include "../../include/cdcl.hpp"
 
 void printModel(int res) {
-  //for(int i = 0; i < unitTrail.size(); i++) printf("%i, ", unitTrail[i]);
   if (res == 1) {
     printf("\033[31mUNSAT: No model!\n\n[");
     for (int i = 1; i <= numOfVars; i++) {
