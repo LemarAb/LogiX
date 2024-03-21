@@ -12,6 +12,8 @@ To build the project, enter `make`. To run the solver on a test file, enter `./m
 `make run arg=c1` (build and run the .exe on the first competition file )
 
 `./main c1 -pre` (run the compiled .exe on the first competition file with preprocessing)
+
+`./main c2 -proof` (run the compiled .exe on the first competition file with proof logging)
   
 `.\run.ps1 -type 't' -start 1 -end 30 -heur 1` (run the compiled .exe on the first 30 test files with DLIS)
 
