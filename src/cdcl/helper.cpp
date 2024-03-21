@@ -1,8 +1,9 @@
 #include "../../include/cdcl.hpp"
-#include <algorithm>
-#include <cmath>
 #include "dataStructs/heap.hpp"
 #include "dataStructs/vsids.hpp"
+#include <algorithm>
+#include <cmath>
+
 
 int learned2power = 0;
 std::vector<double> act;
@@ -30,8 +31,7 @@ void addClause(std::vector<int> &clause) {
   clause[1] > 0 ? vars[index(clause[1])].pos_watched.insert(cnf.size() - 1)
                 : vars[index(clause[1])].neg_watched.insert(cnf.size() - 1);
 
-  if(!vars[index(clause[0])].enqueued)
-    {
+  if (!vars[index(clause[0])].enqueued) {
     unitQueue.push(Unit(clause[0], cnf.size() - 1));
     vars[index(clause[0])].enqueued = true;
   }
@@ -47,15 +47,15 @@ void addClause(std::vector<int> &clause) {
   // }
 }
 
-int powerOfTwo(int n) {  //returns 2^n starting from 4
-     return std::pow(2, n + 2);
+int powerOfTwo(int n) { // returns 2^n starting from 4
+  return std::pow(2, n + 2);
 }
 
 int luby_index = 1;
 
 int luby_unit = 32;
 
-int luby(int i) {  // Luby sequence
+int luby(int i) { // Luby sequence
   int k;
   for (k = 0; (1 << (k + 1) <= (i + 1)); k++)
     ;
@@ -65,10 +65,9 @@ int luby(int i) {  // Luby sequence
     return luby((i + 1) - (1 << k));
 }
 
-
-
-void delete_half() { // Delete half of the learned clauses depending on the 2's power
-  int learned_half = (cnf.size() - 1 - learned_begin) / 2 ;
+void delete_half() { // Delete half of the learned clauses depending on the 2's
+                     // power
+  int learned_half = (cnf.size() - 1 - learned_begin) / 2;
   printf("ANZAHL: %i\n", learned_half);
   for (int i = learned_begin; i < learned_half; i++) {
     vars[index(cnf[i][0])].pos_watched.erase(i);
@@ -78,17 +77,19 @@ void delete_half() { // Delete half of the learned clauses depending on the 2's 
 
 void assertLit(int literal, bool forced) {
   auto &lit = vars[std::abs(literal)];
-  
+
   if (forced) {
     (literal > 0) ? lit.setValue(TRUE) : lit.setValue(FALSE);
     trail.push_back(literal);
     lit.enqueued = false;
-    vars[index(literal)].reason = curDecisionLevel == 0 ? -1 : unitQueue.front().reason;
-    unitQueue.pop(); 
+    vars[index(literal)].reason =
+        curDecisionLevel == 0 ? -1 : unitQueue.front().reason;
+    unitQueue.pop();
     lit.level = curDecisionLevel;
     updateWatched(std::abs(literal));
   } else {
-    // if (phase[index(literal)] != FREE) vars[index(literal)].setValue(phase[index(literal)]);
+    // if (phase[index(literal)] != FREE)
+    // vars[index(literal)].setValue(phase[index(literal)]);
     lit.setValue(TRUE);
     curDecisionLevel++;
     trail.push_back(literal);
@@ -103,8 +104,7 @@ void unassignLit(int literal) {
   int toUnassign = index(literal);
   vars[toUnassign].level = -1;
   vars[toUnassign].reason = 0;
-  if(vars[toUnassign].getValue() != FREE)
-    {
+  if (vars[toUnassign].getValue() != FREE) {
     vars[toUnassign].setValue(FREE);
     trail.pop_back();
   } else {
@@ -115,31 +115,32 @@ void unassignLit(int literal) {
 
 double var_inc = 1.0;
 
-void createHeap() {   // Main creation of the heap
-  act.resize(numOfVars+1);
+void createHeap() { // Main creation of the heap
+  act.resize(numOfVars + 1);
   for (int i = 1; i <= numOfVars; i++) {
-    if(i < act.size() && i < vars.size())  // Because of out of bounds access
+    if (i < act.size() && i < vars.size()) // Because of out of bounds access
       act[i] = vars[i].tot_occ;
-    //printf("%d: %f\n", i, act[i]);
+    // printf("%d: %f\n", i, act[i]);
   }
 
   heap.createHeap();
 }
 
 void varIncActivity(int var) { // Increase activity of a variable
-    act[var] += var_inc;
-    heap.update(var);
+  act[var] += var_inc;
+  heap.update(var);
 };
 
-void afterExtractOrderAct(int i) {   // After extracting the order of the variable restore order
-    for (int j = heap.getHeapSize() / 2; j >= 0; --j) {
-        heap.update(j);
-    }
+void afterExtractOrderAct(
+    int i) { // After extracting the order of the variable restore order
+  for (int j = heap.getHeapSize() / 2; j >= 0; --j) {
+    heap.update(j);
+  }
 };
 
 void allVarsHalfActivity() {
-    for (int i = 1; i <= numOfVars; i++) {
-        act[i] *= 0.5;
-        heap.update(i); // -> is this really necessary?
-    }
+  for (int i = 1; i <= numOfVars; i++) {
+    act[i] *= 0.5;
+    heap.update(i); // -> is this really necessary?
+  }
 };

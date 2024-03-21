@@ -174,6 +174,10 @@ extern std::unordered_set<int> neg_pol;
 // set of variables occuring only in positive polarity
 extern std::unordered_set<int> pos_pol;
 
+extern std::unordered_map<int, std::vector<std::vector<int>>> niverRemovedClauses;
+
+extern std::vector<int> niverRemovalOrder;
+
 extern std::vector<int> trail;
 
 extern std::vector<int> seen;
@@ -219,17 +223,25 @@ int analyze();
 
 void verifyModel();
 
+int preprocess();
+
 void assertLit(int literal, bool forced);
+
+int niverPostprocess();
+
+void proofLogging(std::string filename);
 
 //Luby Sequence finding
 int luby(int i);
-
-void preprocess();
 
 void pre_unitPropagate();
 
 extern int luby_index;
 
 extern int luby_unit;
+
+extern bool prepr; // bool for preprocessing
+
+extern bool proof; // bool for proof logging
 
 #endif
