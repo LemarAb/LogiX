@@ -27,14 +27,15 @@ void *cdcl(void *arg) {
         pthread_exit((void *)1);
 
       int backtrack_lvl = analyze();
-      // if(backtrack_lvl == 0 ){
-      //   backtrack2();
+      if(backtrack_lvl == 0 ){
+        printf("WOW%i", learned[0]);
 
-      //                            }
-      // else{
-      // addClause(learned);
+                                 }
+      else{
+        addClause(learned);
+        
+      }
       backtrack(backtrack_lvl);
-
       // // pthread_exit(0);
       // //  backjump();
       // }
@@ -173,11 +174,11 @@ int analyze() {
       seen[index(toCache)] = 1;
     }
   }
-    // if(learned.size()==4)
-    // printf("Ballert: \n");
-    //   for (int i : learned)
-    //     printf("ONE!%i ", i);
-    // printf("0\n");
+  //   if(learned.size()==1)
+  // {  printf("Ballert: \n");
+  //     for (int i : learned)
+  //       printf("ONE!%i ", i);
+  //   printf("0\n");}
 
   int btlvl;
   if (learned.size() == 1)
@@ -211,7 +212,7 @@ void backtrack(int btlvl) {
   //     printf("%i: %i, ", i, vars[index(i)].level);
   //   printf("\n\n%i, %i, %i\n\n", decision_vars[btlvl], curDecisionLevel, decision_vars.size());
     
-  bool addClause = btlvl > 0;
+  bool addedClause = btlvl > 0;
   if(btlvl == 0) {
         
 
@@ -236,17 +237,22 @@ else
     vars[toDiscard].level = -1;
     unitQueue.pop();
   }
-  if (addClause) {
+  if (addedClause) {
     int b = trail.back();
     unassignLit(b);
     //TODO
     unitQueue.push(Unit(-b, cnf.size()-1));
     vars[index(b)].enqueued = true;
   }
+
+  else {
+    unitQueue.push(Unit(learned[0], -1));
+    vars[index(learned[0])].enqueued = true;
+  }
   //  for (int i : trail)
   //     printf("%i: %i, ", i, vars[index(i)].level);
   //   printf("%i", trail.size());
-  int diff = curDecisionLevel - btlvl + 1 - !addClause;
+  int diff = curDecisionLevel - btlvl + 1 - !addedClause;
   while(diff > 0) {decision_vars.pop_back(); diff--;}
 
   curDecisionLevel = decision_vars.size()-1;

@@ -15,7 +15,7 @@ bool isFree(int literal) { return vars[index(literal)].getValue() == FREE; }
 void addClause(std::vector<int> &clause) {
 
   cnf.push_back(clause);
-  learnedClauses.push_back(clause);
+  // learnedClauses.push_back(clause);
 
   clause[0] > 0 ? vars[index(clause[0])].pos_watched.insert(cnf.size() - 1)
                 : vars[index(clause[0])].neg_watched.insert(cnf.size() - 1);
@@ -23,60 +23,56 @@ void addClause(std::vector<int> &clause) {
   clause[1] > 0 ? vars[index(clause[1])].pos_watched.insert(cnf.size() - 1)
                 : vars[index(clause[1])].neg_watched.insert(cnf.size() - 1);
 
-  if (vars[index(clause[0])].getValue() == FREE) {
-    if (!vars[index(clause[0])].enqueued) {
-      unitQueue.push(Unit(clause[0], cnf.size() - 1));
-      vars[index(clause[0])].enqueued = true;
-    }
-  }
+      // unitQueue.push(Unit(clause[0], cnf.size() - 1));
+      // vars[index(clause[0])].enqueued = true;
 
-  for (int i = 0; i < clause.size(); i++) {
-    vars[index(clause[i])].inlearned = true;
-  }
+  // for (int i = 0; i < clause.size(); i++) {
+  //   vars[index(clause[i])].inlearned = true;
+  // }
 
-  int learnedClausesSize = learnedClauses.size();
-  if(learnedClausesSize = powerOfTwo(learned2power)) {
-    deleteHalfLearnedClauses(); // or deleteClauses()
-    learned2power++;
-  }
+  // int learnedClausesSize = learnedClauses.size();
+  // if(learnedClausesSize = powerOfTwo(learned2power)) {
+  //   deleteHalfLearnedClauses(); // or deleteClauses()
+  //   learned2power++;
+  // }
 }
 
-void deleteClauses() { // k-bounded learning
-  int k = 3;
+// void deleteClauses() { // k-bounded learning
+//   int k = 3;
 
-  for (int i = 0; i < learnedClauses.size(); i++) {
-    if (learnedClauses[i].size() > k) {
-      int unassignedCount = 0;
-      for (const auto &literal : learnedClauses[i]) {
-        if (vars[index(literal)].learned_and_unassig) {
-          unassignedCount++;
-        }
-      }
-      if (unassignedCount >= 2) {
-        for (int j = 0; i < numOfVars; i++) {
-          vars[i].pos_watched.erase(numOfClauses + i);
-          vars[i].neg_watched.erase(numOfClauses + i);
-        }
-      deletedClauses.push_back(learnedClauses[i]);
-      }
-    }
-  }
-}
+//   for (int i = 0; i < learnedClauses.size(); i++) {
+//     if (learnedClauses[i].size() > k) {
+//       int unassignedCount = 0;
+//       for (const auto &literal : learnedClauses[i]) {
+//         if (vars[index(literal)].learned_and_unassig) {
+//           unassignedCount++;
+//         }
+//       }
+//       if (unassignedCount >= 2) {
+//         for (int j = 0; i < numOfVars; i++) {
+//           vars[i].pos_watched.erase(numOfClauses + i);
+//           vars[i].neg_watched.erase(numOfClauses + i);
+//         }
+//       deletedClauses.push_back(learnedClauses[i]);
+//       }
+//     }
+//   }
+// }
 
-int powerOfTwo(int n) {
-    return std::pow(2, n + 2);
-}
+// int powerOfTwo(int n) {
+//     return std::pow(2, n + 2);
+// }
 
-void deleteHalfLearnedClauses() {
-  int half = learnedClauses.size() / 2;
-  for (int i = 0; i < half; i++) {
-    for (int j = 0; i < numOfVars; i++) {
-      vars[i].pos_watched.erase(numOfClauses + i);
-      vars[i].neg_watched.erase(numOfClauses + i);
-    }
-    deletedClauses.push_back(learnedClauses[i]);
-  }
-}
+// void deleteHalfLearnedClauses() {
+//   int half = learnedClauses.size() / 2;
+//   for (int i = 0; i < half; i++) {
+//     for (int j = 0; i < numOfVars; i++) {
+//       vars[i].pos_watched.erase(numOfClauses + i);
+//       vars[i].neg_watched.erase(numOfClauses + i);
+//     }
+//     deletedClauses.push_back(learnedClauses[i]);
+//   }
+// }
 
 
 
