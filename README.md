@@ -2,18 +2,16 @@
 
 # Group_K_Project_3
 
-This project implements the DPLL algorithm enhanced with Unit Propagation (UP) and Pure Literal Elimination (PLE).   
-  
-The solver offers four heuristic options: Incremental (INC=0), Dynamic Largest Individual Sum (DLIS=1), Dynamic Largest Combined Sum (DLCS=2) and Jeroslow-Wang (JW=3). Both satisfiable and unsatisfiable files (previously found under `./test`, `./sat`, `./unsat`) have been consolidated into two designated `./test` and `./comp` folders respectively, identifiable by their affix (_u = unsat, _s = sat).
+This project implements the CDCL algorithm enhanced with Variable State Independent Decaying Sum (VSIDS) and Non-increasing Variable Elimination Resolution (NiVER). Furthermore, restarts and phase saving have been implemented experimented with.
 
 ## Build + Run
-To build the project, enter `make`. To run the solver on a test file, enter `./main [testfile] [heur]`. To build and run immediately, enter `make run arg=[testfile] [heur]`. 
+To build the project, enter `make`. To run the solver on a test file, enter `./main [testfile]`. To build and run immediately, enter `make run arg=[testfile] [heur]`. To run with preprocessing `./main [testfile] [-pre]` or `make run arg=[testfile] [prepr=-pre]`. A similar approach for proof logging:  `./main [testfile] [-proof]` and  `make run arg=[testfile] [proof=-proof]`
 
 **Examples:**
 
-`make run arg=c1 0` (build and run the .exe on the first competition file with INC)
+`make run arg=c1` (build and run the .exe on the first competition file )
 
-`./main c1 2` (run the compiled .exe on the first competition file with DLCS)
+`./main c1 -pre` (run the compiled .exe on the first competition file with preprocessing)
   
 `.\run.ps1 -type 't' -start 1 -end 30 -heur 1` (run the compiled .exe on the first 30 test files with DLIS)
 
