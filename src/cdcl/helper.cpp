@@ -97,8 +97,9 @@ void delete_half() {
 
 void assertLit(int literal, bool forced) {
   auto &lit = vars[std::abs(literal)];
-  (literal > 0) ? lit.setValue(TRUE) : lit.setValue(FALSE);
+  
   if (forced) {
+    (literal > 0) ? lit.setValue(TRUE) : lit.setValue(FALSE);
     trail.push_back(literal);
     lit.enqueued = false;
     vars[index(literal)].reason = curDecisionLevel == 0 ? -1 : unitQueue.front().reason;
@@ -106,6 +107,8 @@ void assertLit(int literal, bool forced) {
     lit.level = curDecisionLevel;
     updateWatched(std::abs(literal));
   } else {
+    if (phase[index(literal)] != FREE) vars[index(literal)].setValue(phase[index(literal)]);
+    else lit.setValue(TRUE);
     curDecisionLevel++;
     trail.push_back(literal);
     lit.level = curDecisionLevel;

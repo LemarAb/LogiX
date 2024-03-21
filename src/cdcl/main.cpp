@@ -18,8 +18,11 @@ int curVar = 1;
 int curProp;
 Heuristics heuristic = INC;
 std::vector<int> decision_vars;
+std::vector<Assig> phase;
+
 int learned_begin;
 int main(int argc, char *argv[]) {
+  freopen("output.txt", "a", stdout);
   // measure CPU time...
   std::chrono::steady_clock::time_point start =
       std::chrono::steady_clock::now();

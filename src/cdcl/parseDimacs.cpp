@@ -1,6 +1,7 @@
 #include "../../include/cdcl.hpp"
 
 std::vector<std::vector<int>> OGcnf;
+
 int countu = 0;
 bool parseDIMACS(std::string filename) {
     std::ifstream file(filename);
@@ -103,11 +104,12 @@ bool parseDIMACS(std::string filename) {
     }
     numOfClauses = cnf.size() - 1;
     for (int i = 0; i < numOfVars+1; i++) {
-    // printf("%i ", i);
+      phase.push_back(FREE);
 
       seen.push_back(false);
   }
     decision_vars.push_back(-1);
     learned_begin = cnf.size();
+
     return false;
 }

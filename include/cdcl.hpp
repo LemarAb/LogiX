@@ -98,8 +98,8 @@ struct Variable {
     int reason = -1;
     std::set<int> pos_watched;  // All clauses where var appears as pos watched literal
     std::set<int> neg_watched;  // All clauses where var appears as neg watched literal
-    int pos_occ;  // number of clauses var appears as pos literal
-    int neg_occ;  // number of clauses var appears as neg literal
+    int pos_occ = 0;  // number of clauses var appears as pos literal
+    int neg_occ = 0;  // number of clauses var appears as neg literal
     int tot_occ = 0;  // total number of clauses var appears in
     bool enqueued = false;
     bool inlearned = false;
@@ -179,6 +179,8 @@ extern std::vector<int> seen;
 extern int curDecisionLevel;
 // conflict counter 
 extern int conflict_count;
+
+extern std::vector<Assig> phase;
 
 void createHeap();
 

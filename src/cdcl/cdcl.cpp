@@ -317,12 +317,11 @@ void restart() {
   //   printf("%i: %i, ", i, trail[i]);
   // }
   // printf("\n");
-  // for(int i = 0; i < phase.size(); i++) phase[i] = FREE;
+  for(int i = 0; i < phase.size(); i++) phase[i] = FREE;
   while (!trail.empty() && vars[index(trail.back())].reason >= 0) {
-    // heap.insert(index(trail.back()));
 
     int toSave = index(trail.back());
-    // phase[toSave] = vars[toSave].getValue();
+    phase[toSave] = vars[toSave].getValue();
     unassignLit(trail.back());
   }
 
