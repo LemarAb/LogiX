@@ -47,37 +47,15 @@ void addClause(std::vector<int> &clause) {
   // }
 }
 
-// void deleteClauses() { // k-bounded learning
-//   int k = 3;
-
-//   for (int i = 0; i < learnedClauses.size(); i++) {
-//     if (learnedClauses[i].size() > k) {
-//       int unassignedCount = 0;
-//       for (const auto &literal : learnedClauses[i]) {
-//         if (vars[index(literal)].learned_and_unassig) {
-//           unassignedCount++;
-//         }
-//       }
-//       if (unassignedCount >= 2) {
-//         for (int j = 0; i < numOfVars; i++) {
-//           vars[i].pos_watched.erase(numOfClauses + i);
-//           vars[i].neg_watched.erase(numOfClauses + i);
-//         }
-//       deletedClauses.push_back(learnedClauses[i]);
-//       }
-//     }
-//   }
-// }
-
-// int powerOfTwo(int n) {
-//     return std::pow(2, n + 2);
-// }
+int powerOfTwo(int n) {  //returns 2^n starting from 4
+     return std::pow(2, n + 2);
+}
 
 int luby_index = 1;
 
 int luby_unit = 32;
 
-int luby(int i) {
+int luby(int i) {  // Luby sequence
   int k;
   for (k = 0; (1 << (k + 1) <= (i + 1)); k++)
     ;
@@ -89,7 +67,7 @@ int luby(int i) {
 
 
 
-void delete_half() {
+void delete_half() { // Delete half of the learned clauses depending on the 2's power
   int learned_half = (cnf.size() - 1 - learned_begin) / 2 ;
   printf("ANZAHL: %i\n", learned_half);
   for (int i = learned_begin; i < learned_half; i++) {
@@ -137,7 +115,7 @@ void unassignLit(int literal) {
 
 double var_inc = 1.0;
 
-void createHeap() {
+void createHeap() {   // Main creation of the heap
   act.resize(numOfVars+1);
   for (int i = 1; i <= numOfVars; i++) {
     if(i < act.size() && i < vars.size())  // Because of out of bounds access
@@ -146,27 +124,18 @@ void createHeap() {
   }
 
   heap.createHeap();
-  
-//   //heap.displaySize();
-  // heap.display(act);
-// }
 }
-void varIncActivity(int var) {
+
+void varIncActivity(int var) { // Increase activity of a variable
     act[var] += var_inc;
     heap.update(var);
-    //heap.display(act);
 };
 
-// void afterExtractOrderAct(int i) {
-//     for (int j = heap.getHeapSize() / 2; j >= 0; --j) {
-//         heap.update(j);
-//     }
-// };
-
-// void varDecActivity(int var) {
-//     act[var] -= var_inc;
-//     heap.increase(var);
-// };
+void afterExtractOrderAct(int i) {   // After extracting the order of the variable restore order
+    for (int j = heap.getHeapSize() / 2; j >= 0; --j) {
+        heap.update(j);
+    }
+};
 
 void allVarsHalfActivity() {
     for (int i = 1; i <= numOfVars; i++) {

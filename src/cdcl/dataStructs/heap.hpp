@@ -33,7 +33,7 @@ template <class K, class Comp> class Heap {
   static inline int getRChild(int i) { return (i + 1) * 2; }
   static inline int getParent(int i) { return (i - 1) >> 1; }
 
-  void heapUp(int i) {
+  void siftUp(int i) {
     K x = heap[i];
     int p = getParent(i);
 
@@ -47,7 +47,7 @@ template <class K, class Comp> class Heap {
     indices[x] = i;
   }
 
-  void heapDown(int i) {
+  void siftDown(int i) {
     K x = heap[i];
     while (getLChild(i) < heap.size()) {
       int child = getRChild(i) < heap.size() &&
@@ -81,12 +81,12 @@ public:
 
   void decrease(int i) {
     assert(inHeap(i));
-    heapUp(indices[i]);
+    siftUp(indices[i]);
   }
 
   void increase(int i) {
     assert(inHeap(i));
-    heapDown(indices[i]);
+    siftDown(indices[i]);
   }
 
   void insert(K i) {
@@ -98,15 +98,15 @@ public:
 
     indices[i] = heap.size();
     heap.push_back(i);
-    heapUp(indices[i]);
+    siftUp(indices[i]);
   }
 
   void update(K i) {
     if (!inHeap(i))
       insert(i);
 
-    heapUp(indices[i]);
-    heapDown(indices[i]);
+    siftUp(indices[i]);
+    siftDown(indices[i]);
   }
 
   void remove(K i) {
@@ -119,7 +119,7 @@ public:
       heap[i_pos] = heap.back();
       indices[heap[i_pos]] = i_pos;
       heap.pop_back();
-      heapDown(i_pos);
+      siftDown(i_pos);
     } else {
       heap.pop_back();
     }
@@ -137,7 +137,7 @@ public:
     heap.pop_back();
 
     if (heap.size() > 1) {
-      heapDown(0);
+      siftDown(0);
     }
 
     // afterExtractOrderAct(i);
@@ -152,7 +152,7 @@ public:
     }
 
     for (int i = heap.size() / 2; i >= 0; i--)
-      heapDown(i);
+      siftDown(i);
   }
 
   void rebuild() {
@@ -168,7 +168,7 @@ public:
 
     // Restore the heap property
     for (int i = heap.size() / 2; i >= 0; --i) {
-      heapDown(i);
+      siftDown(i);
     }
   }
 

@@ -10,7 +10,7 @@ extern VariableOrderActLT lt;
 
 extern Heap<int, VariableOrderActLT> heap;
     
-extern void varIncActivity(int var);
+extern void varIncActivity(int var);  
 
 extern void afterExtractOrderAct(int i);
 
