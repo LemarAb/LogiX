@@ -129,10 +129,9 @@ public:
     int i = heap[0];
     heap[0] = heap.back();
 
-      indices[heap[0]] = 0;
+    indices[heap[0]] = 0;
 
-    
-      indices[i] = -1;
+    indices[i] = -1;
 
     heap.pop_back();
 
@@ -147,8 +146,8 @@ public:
   void createHeap() {
     indices.resize(numOfVars, -1);
 
-    for (int i = 0; i < numOfVars ; i++) {
-      insert(i+1);
+    for (int i = 0; i < numOfVars; i++) {
+      insert(i + 1);
     }
 
     for (int i = heap.size() / 2; i >= 0; i--)

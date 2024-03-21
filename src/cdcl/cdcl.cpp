@@ -32,7 +32,7 @@ void *cdcl(void *arg) {
 
       if (backtrack_lvl > 0)
         addClause(learned);
-      
+
       if (conflict_count == luby(luby_index) * luby_unit) {
         luby_index++;
         restart();
@@ -41,7 +41,7 @@ void *cdcl(void *arg) {
 
       // Clause deletion: Does not deliver reliable improvement
 
-      // if (conflict_count >= pow(delete_cue, 2)){ 
+      // if (conflict_count >= pow(delete_cue, 2)){
       //   delete_half();
       //   delete_cue++;
       //  }
@@ -70,14 +70,13 @@ void pickDecisionLit() {
   if ((decision_count % 255) == 0)
     allVarsHalfActivity();
 
-  // get the most relevant unassigned var from the max heap 
+  // get the most relevant unassigned var from the max heap
   while (vars[heap.peek()].getValue() != FREE)
     heap.removeMax();
 
   curVar = heap.removeMax();
 
   assertLit(curVar, false);
-
 }
 
 void updateWatched(int assertedLit) {
@@ -116,7 +115,7 @@ void updateWatched(int assertedLit) {
       }
     }
 
-    // 
+    //
     if (unitLit.getValue() == FREE) {
       if (!unitLit.enqueued) {
         int ci = *clauseIndex;
@@ -160,12 +159,13 @@ int analyze() {
       }
     }
     // traverse trail in until we encounter a seen lit
-    while (!seen[index(trail[trailIndex--])]);
+    while (!seen[index(trail[trailIndex--])])
+      ;
     stampedLit = trail[trailIndex + 1];
     seen[index(stampedLit)] = 0;
     num--;
     conflict_clause_id = vars[index(stampedLit)].reason;
-    
+
   } while (num > 0);
   learned[0] = -stampedLit;
 
@@ -176,8 +176,7 @@ int analyze() {
     int max = 1;
     // Find the first literal assigned at the second highest level:
     for (int i = 2; i < learned.size(); i++)
-      if (vars[index(learned[i])].level >
-          vars[index(learned[max])].level)
+      if (vars[index(learned[i])].level > vars[index(learned[max])].level)
         max = i;
     btlvl = vars[index(learned[max])].level;
 
@@ -188,7 +187,6 @@ int analyze() {
     seen[index(elem)] = 0;
   }
   return btlvl;
-
 }
 
 void backtrack(int btlvl) {
@@ -196,8 +194,8 @@ void backtrack(int btlvl) {
   bool addedClause = btlvl > 0;
   if (btlvl == 0) {
     while (!trail.empty() && vars[index(trail.back())].reason >= 0) {
-      if(index(trail.back()))
-      heap.insert(index(trail.back()));
+      if (index(trail.back()))
+        heap.insert(index(trail.back()));
       unassignLit(trail.back());
     }
   } else {
@@ -215,7 +213,7 @@ void backtrack(int btlvl) {
   }
 
   else {
-    // If we learn a unit clause, 
+    // If we learn a unit clause,
     // we did not add it to the CNF and just assert it on dec level 0
     unitQueue.push(Unit(learned[0], -1));
     vars[index(learned[0])].enqueued = true;
@@ -232,7 +230,8 @@ void backtrack(int btlvl) {
 
 void restart() {
 
-  for(int i = 0; i < phase.size(); i++) phase[i] = FREE;
+  for (int i = 0; i < phase.size(); i++)
+    phase[i] = FREE;
   while (!trail.empty() && vars[index(trail.back())].reason >= 0) {
     // save current assigs in the phase vector
     int toSave = index(trail.back());

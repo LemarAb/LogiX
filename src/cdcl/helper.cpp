@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <cmath>
 
-
 int learned2power = 0;
 std::vector<double> act;
 
@@ -25,7 +24,8 @@ void addClause(std::vector<int> &clause) {
   cnf.push_back(clause);
 
   // VSIDS: Bump activity scores of all literals of the learned clause
-  for (int lit : clause) varIncActivity(index(lit));
+  for (int lit : clause)
+    varIncActivity(index(lit));
 
   // assign watched literals for the learned clause
   clause[0] > 0 ? vars[index(clause[0])].pos_watched.insert(cnf.size() - 1)
@@ -34,10 +34,8 @@ void addClause(std::vector<int> &clause) {
   clause[1] > 0 ? vars[index(clause[1])].pos_watched.insert(cnf.size() - 1)
                 : vars[index(clause[1])].neg_watched.insert(cnf.size() - 1);
 
-  
   // The second lit is free due to non-chronological backtracking => enqueue
-  if(!vars[index(clause[0])].enqueued)
-  {
+  if (!vars[index(clause[0])].enqueued) {
     unitQueue.push(Unit(clause[0], cnf.size() - 1));
     vars[index(clause[0])].enqueued = true;
   }
@@ -57,8 +55,8 @@ int luby(int i) {
     return luby((i + 1) - (1 << k));
 }
 
-void delete_half() { 
-  int learned_half = (cnf.size() - 1 - learned_begin) / 2 ;
+void delete_half() {
+  int learned_half = (cnf.size() - 1 - learned_begin) / 2;
   printf("ANZAHL: %i\n", learned_half);
   for (int i = learned_begin; i < learned_half; i++) {
     vars[index(cnf[i][0])].pos_watched.erase(i);
@@ -107,9 +105,9 @@ void unassignLit(int literal) {
 double var_inc = 5.0;
 
 void createHeap() {
-  act.resize(numOfVars+1);
+  act.resize(numOfVars + 1);
   for (int i = 1; i <= numOfVars; i++) {
-    if(i < act.size() && i < vars.size())
+    if (i < act.size() && i < vars.size())
       act[i] = vars[i].tot_occ;
   }
 
@@ -122,8 +120,8 @@ void varIncActivity(int var) {
 };
 
 void allVarsHalfActivity() {
-    for (int i = 1; i <= numOfVars; i++) {
-        act[i] *= 0.5;
-        heap.update(i);
-    }
+  for (int i = 1; i <= numOfVars; i++) {
+    act[i] *= 0.5;
+    heap.update(i);
+  }
 };

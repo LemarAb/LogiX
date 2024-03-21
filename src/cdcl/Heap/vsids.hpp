@@ -1,6 +1,5 @@
 #include "heap.hpp"
 
-
 #ifndef VSIDS_HPP
 #define VSIDS_HPP
 
