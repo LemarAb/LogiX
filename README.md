@@ -19,14 +19,6 @@ To build the project, enter `make`. To run the solver on a test file, enter `./m
 
 `python run.py c 1 30 2` (run the compiled .exe on the first 30 comp files with DLCS)
 
-## Results
-
-We plotted our runtimes by sorting them in increasing order using `mkplot`. For exact runtimes and plots with higher timeout, see folder `./solution/runtime` and `./cactus` respectively.
-
-The number of solved instances within 60 seconds per heuristic (INC: 109, DLIS: 124, DLCS: 126, JW: 124) and their performance curve can be studied below:
-
-![Alt text](cactus/cactusPlot60secs.png/?raw=true "Optional Title")
-
 **Test Environment Specifications:**
 - **Hardware:**
   - Processor: AMD Ryzen 7 5700U @ 1.80 GHz
