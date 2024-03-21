@@ -101,12 +101,18 @@ struct Variable {
     int neg_occ;  // number of clauses var appears as neg literal
     int tot_occ;  // total number of clauses var appears in
     bool enqueued = false;
+    bool inlearned = false;
+    bool learned_and_unassig = false;
     void setValue(Assig _assig) {
         // int assertedLit = unitProp ? curProp : curVar;
         if (_assig != FREE && val == FREE)
             numOfUnassigned--;
         else {
-            if (_assig == FREE) numOfUnassigned++;
+            if (_assig == FREE) {
+              numOfUnassigned++;
+              if (inlearned == true)
+                learned_and_unassig = true;
+            } 
 
             // else
             //     vars[assertedLit].forced = true;
@@ -170,6 +176,12 @@ extern std::vector<int> trail;
 extern std::vector<int> seen;
 
 extern int curDecisionLevel;
+
+extern std::vector<std::vector<int>> learnedClauses;
+
+extern std::vector<std::vector<int>> deletedClauses;
+
+extern int learned2power;
 
 
 // conflict counter 
