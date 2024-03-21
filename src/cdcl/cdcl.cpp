@@ -3,7 +3,6 @@
 #include "dataStructs/vsids.hpp"
 #include <cmath>
 
-
 std::vector<int> trail;
 bool conflict;
 std::vector<int> learned;
@@ -33,19 +32,19 @@ void *cdcl(void *arg) {
         pthread_exit((void *)1);
 
       int backtrack_lvl = analyze();
-      if (backtrack_lvl == 0) {
+      /*if (backtrack_lvl == 0) {
         printf("WOW%i", learned[0]);
 
       } else {
         addClause(learned);
+      } */
+      if (conflict_count == luby(luby_index) * luby_unit) {
+        //printf("%i RESTART", luby(luby_index) * luby_unit);
+        luby_index++;
+        //   // restart();
+        restart();
+        continue;
       }
-      // if (conflict_count == luby(luby_index) * luby_unit) {
-      //   printf("%i",luby(luby_index)*luby_unit);
-      //   luby_index++;
-      //   // restart();
-      //   restart();
-      //   continue;
-      // }
 
       // if (conflict_count >= pow(delete_cue, 2)){
       //   printf("del%i und 2 hoch %i\n", conflict_count, delete_cue);
@@ -78,7 +77,7 @@ void pickDecisionLit() {
   if ((decision_count % 255) == 0)
     allVarsHalfActivity();
 
-  printf("unassigned vals: %i\n", numOfUnassigned);
+  // printf("unassigned vals: %i\n", numOfUnassigned);
 
   while (vars[heap.peek()].getValue() != FREE)
     heap.removeMax();
@@ -245,10 +244,12 @@ void backtrack(int btlvl) {
   if (btlvl == 0) {
 
     while (!trail.empty() && vars[index(trail.back())].reason >= 0) {
+      heap.insert(index(trail.back()));
       unassignLit(trail.back());
     }
   } else {
     while (!trail.empty() && (index(trail.back()) != decision_vars[btlvl])) {
+      heap.insert(index(trail.back()));
       unassignLit(trail.back());
     }
   }
@@ -264,6 +265,11 @@ void backtrack(int btlvl) {
   }
   if (addedClause) {
     int b = trail.back();
+    // heap.insert(index(b));
+    /* printf("%i, trail size\n", trail.size());
+    printf("%i b \n", b);
+    printf("Cur DEc level %i\n", curDecisionLevel);
+    printf("BTLVL %i\n", btlvl); */
     unassignLit(b);
     // TODO
     unitQueue.push(Unit(-b, cnf.size() - 1));
