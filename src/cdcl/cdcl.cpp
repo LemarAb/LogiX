@@ -1,6 +1,7 @@
 #include "../../include/cdcl.hpp"
 #include "../../src/cdcl/dataStructs/vsids.hpp"
 #include <cmath>
+#include "dataStructs/vsids.hpp"
 
 std::vector<int> trail;
 bool conflict;
@@ -11,8 +12,11 @@ std::vector<int> seen;
 int conflict_clause_id;
 std::vector<int> unitTrail;
 int conflict_count = 0;
+int delete_cue = 0;
+int decision_count = 0;
 
 void *cdcl(void *arg) {
+  createHeap();
   while (true) {
     unitPropagate();
     // printf("post");
@@ -23,7 +27,7 @@ void *cdcl(void *arg) {
 
     if (conflict) {
       // printf("enter conf");
-
+      conflict_count++;
       if (curDecisionLevel <= 0)
         pthread_exit((void *)1);
 
@@ -36,13 +40,19 @@ void *cdcl(void *arg) {
         addClause(learned);
         
       }
-      if (conflict_count == luby(luby_index) * luby_unit) {
-        // printf("%i",luby(luby_index)*luby_unit);
-        luby_index++;
-        // restart();
-        restart();
-        continue;
-      }
+      // if (conflict_count == luby(luby_index) * luby_unit) {
+      //   printf("%i",luby(luby_index)*luby_unit);
+      //   luby_index++;
+      //   // restart();
+      //   restart();
+      //   continue;
+      // }
+
+      // if (conflict_count >= pow(delete_cue, 2)){
+      //   printf("del%i und 2 hoch %i\n", conflict_count, delete_cue);
+      //   delete_half();
+      //   delete_cue++;
+      // }
 
       backtrack(backtrack_lvl);
 
@@ -63,8 +73,18 @@ void unitPropagate() {
 }
 
 void pickDecisionLit() {
-  while (vars[curVar].getValue() != FREE)
-    curVar++;
+
+  decision_count++;
+
+  if((decision_count % 255) == 0) allVarsHalfActivity();
+
+  while(vars[ heap.peek() ].getValue() != FREE)
+    heap.removeMax();
+
+  curVar = heap.removeMax();
+
+  // while (vars[curVar].getValue() != FREE)
+  //   curVar++;
   assertLit(curVar, false);
 }
 
@@ -120,7 +140,7 @@ void updateWatched(int assertedLit) {
       // for(int lit : cnf[*clauseIndex]) printf("%i: %i ,", lit,
       // vars[index(lit)].getValue());
       //         printf("\n");
-
+      for(int lit : cnf[*clauseIndex]) varIncActivity(index(lit));
       conflict_clause_id = *clauseIndex;
       conflict = true;
       return;
@@ -321,5 +341,7 @@ void restart() {
   curDecisionLevel = 0;
 
   curVar = 1;
+
+  heap.rebuild();
 
 }

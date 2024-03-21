@@ -81,6 +81,8 @@ extern std::vector<int> decision_vars;
 extern int countu;
 enum Polarity { NEG, POS, MIX, UNSET };
 
+extern int decision_count;
+
 struct Variable {
    private:
     Assig val = FREE;
@@ -98,7 +100,7 @@ struct Variable {
     std::set<int> neg_watched;  // All clauses where var appears as neg watched literal
     int pos_occ;  // number of clauses var appears as pos literal
     int neg_occ;  // number of clauses var appears as neg literal
-    int tot_occ;  // total number of clauses var appears in
+    int tot_occ = 0;  // total number of clauses var appears in
     bool enqueued = false;
     bool inlearned = false;
     bool learned_and_unassig = false;
@@ -153,11 +155,11 @@ extern std::vector<std::vector<int>> cnf;
 // list of variables (1-indexed)
 extern std::vector<Variable> vars;
 
-// set of unsatisfied clauses
-extern std::set<int> satClauses;
-
 extern int learned_begin;
 
+extern int delete_cue;
+
+void delete_half();
 // queue storing unit literals
 extern std::queue<Unit> unitQueue;
 
@@ -175,25 +177,10 @@ extern std::vector<int> trail;
 extern std::vector<int> seen;
 
 extern int curDecisionLevel;
-
-extern std::vector<std::vector<int>> learnedClauses;
-
-extern std::vector<std::vector<int>> deletedClauses;
-
-extern int learned2power;
-
-
 // conflict counter 
 extern int conflict_count;
 
-// fixed restart policy global value
-extern int fix_no_of_conflicts;
-
-// geometric restart policy conflict limiter
-extern int geom_conf_lim;
-
-// geometric restart policy factor
-extern double geom_factor;
+void createHeap();
 
 void unassignLit(int literal);
 
@@ -213,7 +200,6 @@ void updateWatched(int literal);
 void backtrack(int btlvl);
 
 void backtrack2();
-
 
 void restart();
 // evaluates the literal under its current assignment

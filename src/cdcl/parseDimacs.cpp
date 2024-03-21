@@ -54,6 +54,7 @@ bool parseDIMACS(std::string filename) {
                 // clause (unlikely)
                 (literal > 0) ? vars[std::abs(literal)].pos_occ++ : vars[std::abs(literal)].neg_occ++;
                 vars[std::abs(literal)].tot_occ++;
+                // printf("%i", vars[std::abs(literal)].tot_occ);
 
                 clause.push_back(literal);
             }

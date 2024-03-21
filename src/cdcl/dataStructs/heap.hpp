@@ -103,7 +103,7 @@ public:
 
   void update(K i) {
     if (!inHeap(i))
-      insert(i);
+      return;
 
     heapUp(indices[i]);
     heapDown(indices[i]);

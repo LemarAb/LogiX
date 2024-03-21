@@ -5,11 +5,11 @@
 #include "dataStructs/vsids.hpp"
 
 int learned2power = 0;
-extern std::vector<double> act;
+std::vector<double> act;
 
-extern VariableOrderActLT lt;
+VariableOrderActLT lt(act);
 
-extern Heap<int, VariableOrderActLT> heap;
+Heap<int, VariableOrderActLT> heap(lt);
 
 bool eval(int literal) {
   return !(vars[index(literal)].getValue() ^ (literal > 0));
@@ -88,6 +88,7 @@ int luby(int i) {
 
 void delete_half() {
   int learned_half = (cnf.size() - 1 - learned_begin) / 2 ;
+  printf("ANZAHL: %i\n", learned_half);
   for (int i = learned_begin; i < learned_half; i++) {
     vars[index(cnf[i][0])].pos_watched.erase(i);
     vars[index(cnf[i][1])].neg_watched.erase(i);
@@ -128,29 +129,27 @@ void unassignLit(int literal) {
   }
 }
 
-// double var_inc = 5.0;
+double var_inc = 1.0;
 
-// void createHeap() {
-//   act.resize(numOfVars + 1);
-//   for (int i = 1; i <= numOfVars; i++) {
-//     if(i < act.size() && i < vars.size())  // Because of out of bounds access
-//       act[i] = vars[i].tot_occ;
-//     //printf("%d: %f\n", i, act[i]);
-//   }
+void createHeap() {
+  act.resize(numOfVars+1);
+  for (int i = 1; i <= numOfVars; i++) {
+    if(i < act.size() && i < vars.size())  // Because of out of bounds access
+      act[i] = vars[i].tot_occ;
+    //printf("%d: %f\n", i, act[i]);
+  }
 
-//   std::vector<int> newVars(numOfVars);
-
-//   heap.createHeap();
+  heap.createHeap();
   
 //   //heap.displaySize();
-//   //heap.display(act);
+  // heap.display(act);
 // }
-
-// void varIncActivity(int var) {
-//     act[var] += var_inc;
-//     heap.update(var);
-//     //heap.display(act);
-// };
+}
+void varIncActivity(int var) {
+    act[var] += var_inc;
+    heap.update(var);
+    //heap.display(act);
+};
 
 // void afterExtractOrderAct(int i) {
 //     for (int j = heap.getHeapSize() / 2; j >= 0; --j) {
@@ -163,10 +162,9 @@ void unassignLit(int literal) {
 //     heap.increase(var);
 // };
 
-// void allVarsHalfActivity() {
-//     for (int i = 1; i <= numOfVars; i++) {
-//         act[i] *= 0.5;
-//         heap.update(i); // -> is this really necessary?
-//     }
-//     //heap.display(act);
-// };
+void allVarsHalfActivity() {
+    for (int i = 1; i <= numOfVars; i++) {
+        act[i] *= 0.5;
+        heap.update(i); // -> is this really necessary?
+    }
+};
