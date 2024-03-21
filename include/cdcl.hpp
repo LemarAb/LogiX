@@ -157,6 +157,8 @@ extern std::vector<Variable> vars;
 // set of unsatisfied clauses
 extern std::set<int> satClauses;
 
+extern int learned_begin;
+
 // queue storing unit literals
 extern std::queue<Unit> unitQueue;
 

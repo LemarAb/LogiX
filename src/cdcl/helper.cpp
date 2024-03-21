@@ -63,18 +63,13 @@ void addClause(std::vector<int> &clause) {
 //     return std::pow(2, n + 2);
 // }
 
-// void deleteHalfLearnedClauses() {
-//   int half = learnedClauses.size() / 2;
-//   for (int i = 0; i < half; i++) {
-//     for (int j = 0; i < numOfVars; i++) {
-//       vars[i].pos_watched.erase(numOfClauses + i);
-//       vars[i].neg_watched.erase(numOfClauses + i);
-//     }
-//     deletedClauses.push_back(learnedClauses[i]);
-//   }
-// }
-
-
+void delete_half() {
+  int learned_half = (cnf.size() - 1 - learned_begin) / 2 ;
+  for (int i = learned_begin; i < learned_half; i++) {
+    vars[index(cnf[i][0])].pos_watched.erase(i);
+    vars[index(cnf[i][1])].neg_watched.erase(i);
+  }
+}
 
 void assertLit(int literal, bool forced) {
   auto &lit = vars[std::abs(literal)];

@@ -107,5 +107,6 @@ bool parseDIMACS(std::string filename) {
       seen.push_back(false);
   }
     decision_vars.push_back(-1);
+    learned_begin = cnf.size();
     return false;
 }
