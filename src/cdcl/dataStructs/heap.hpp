@@ -103,7 +103,7 @@ public:
 
   void update(K i) {
     if (!inHeap(i))
-      return;
+      insert(i);
 
     heapUp(indices[i]);
     heapDown(indices[i]);
@@ -129,13 +129,10 @@ public:
     int i = heap[0];
     heap[0] = heap.back();
 
-    if (heap[0] < indices.size()) {
       indices[heap[0]] = 0;
-    }
 
-    if (i < indices.size()) {
+    
       indices[i] = -1;
-    }
 
     heap.pop_back();
 

@@ -1,7 +1,8 @@
 #include "../../include/cdcl.hpp"
 #include "../../src/cdcl/dataStructs/vsids.hpp"
-#include <cmath>
 #include "dataStructs/vsids.hpp"
+#include <cmath>
+
 
 std::vector<int> trail;
 bool conflict;
@@ -32,13 +33,11 @@ void *cdcl(void *arg) {
         pthread_exit((void *)1);
 
       int backtrack_lvl = analyze();
-      if(backtrack_lvl == 0 ){
+      if (backtrack_lvl == 0) {
         printf("WOW%i", learned[0]);
 
-                                 }
-      else{
+      } else {
         addClause(learned);
-        
       }
       // if (conflict_count == luby(luby_index) * luby_unit) {
       //   printf("%i",luby(luby_index)*luby_unit);
@@ -76,9 +75,12 @@ void pickDecisionLit() {
 
   decision_count++;
 
-  if((decision_count % 255) == 0) allVarsHalfActivity();
+  if ((decision_count % 255) == 0)
+    allVarsHalfActivity();
 
-  while(vars[ heap.peek() ].getValue() != FREE)
+  printf("unassigned vals: %i\n", numOfUnassigned);
+
+  while (vars[heap.peek()].getValue() != FREE)
     heap.removeMax();
 
   curVar = heap.removeMax();
@@ -140,7 +142,8 @@ void updateWatched(int assertedLit) {
       // for(int lit : cnf[*clauseIndex]) printf("%i: %i ,", lit,
       // vars[index(lit)].getValue());
       //         printf("\n");
-      for(int lit : cnf[*clauseIndex]) varIncActivity(index(lit));
+      for (int lit : cnf[*clauseIndex])
+        varIncActivity(index(lit));
       conflict_clause_id = *clauseIndex;
       conflict = true;
       return;
@@ -165,39 +168,38 @@ int analyze() {
   //     printf("%i: ", i);
   //     if(vars[index(i)].reason > 0){
   //       for(int j = 0; j < cnf[vars[index(i)].reason].size(); j++){
-  //         printf("%i, %i; ", cnf[vars[index(i)].reason][j], vars[index (cnf[vars[index(i)].reason][j])].reason);
+  //         printf("%i, %i; ", cnf[vars[index(i)].reason][j], vars[index
+  //         (cnf[vars[index(i)].reason][j])].reason);
   //       }}
   //   printf(".....REASON %i\n", vars[index(i)].reason );}
 
-
-        // printf("%i ", i);
-  for(int i =  0 ; i < confl.size(); i++){
+  // printf("%i ", i);
+  for (int i = 0; i < confl.size(); i++) {
     int lit = confl[i];
 
     // If decision lit, we learn immediately, if forced literal skip
-    if(vars[index(lit)].reason <= 0) {
-      if(!seen[index(lit) && vars[index(lit)].reason == 0]){     
-      learned.push_back(lit);
+    if (vars[index(lit)].reason <= 0) {
+      if (!seen[index(lit) && vars[index(lit)].reason == 0]) {
+        learned.push_back(lit);
       }
       seen[index(lit)] = 1;
       continue;
-      
     }
-      
+
     std::vector<int> &reason = cnf[vars[index(lit)].reason];
     // for (int i : reason)
     //   printf("%i ", i);
     // printf("\n");
-    for(int j = 1; j < reason.size(); j++) {
+    for (int j = 1; j < reason.size(); j++) {
       // Do not include 0 level literals in the learned
-      
-// printf("Conflict %i\n", reason.size());
+
+      // printf("Conflict %i\n", reason.size());
       int toCache = reason[j];
-      if(!seen[index(toCache)] && vars[index(toCache)].reason >= 0) {
-        
+      if (!seen[index(toCache)] && vars[index(toCache)].reason >= 0) {
+
         learned.push_back(toCache);
       }
-      
+
       seen[index(toCache)] = 1;
     }
   }
@@ -215,17 +217,16 @@ int analyze() {
     int max = 0;
     // Find the first literal assigned at the second highest level:
     for (int i = 1; i < learned.size(); i++)
-      if (vars[index(learned[i])].level >
-          vars[index(learned[max])].level)
+      if (vars[index(learned[i])].level > vars[index(learned[max])].level)
         max = i;
     btlvl = vars[index(learned[max])].level;
-  // if(btlvl != curDecisionLevel)
-  // printf("BT: %i, CDL: %i\n", btlvl, curDecisionLevel);
+    // if(btlvl != curDecisionLevel)
+    // printf("BT: %i, CDL: %i\n", btlvl, curDecisionLevel);
   }
   // printf("BT: %i, CDL: %i\n", btlvl, curDecisionLevel);
-        // for (int i : learned)
-        // printf("%i ", i);
-        //         printf("0\n");
+  // for (int i : learned)
+  // printf("%i ", i);
+  //         printf("0\n");
 
   for (int elem = 0; elem < seen.size(); elem++) {
     seen[index(elem)] = false;
@@ -237,24 +238,21 @@ void backtrack(int btlvl) {
   // btlvl = 0;
   //  for (int i : trail)
   //     printf("%i: %i, ", i, vars[index(i)].level);
-  //   printf("\n\n%i, %i, %i\n\n", decision_vars[btlvl], curDecisionLevel, decision_vars.size());
-    
+  //   printf("\n\n%i, %i, %i\n\n", decision_vars[btlvl], curDecisionLevel,
+  //   decision_vars.size());
+
   bool addedClause = btlvl > 0;
-  if(btlvl == 0) {
-        
+  if (btlvl == 0) {
 
-      while (!trail.empty() && vars[index(trail.back())].reason >= 0)
-    {unassignLit(trail.back());
-
+    while (!trail.empty() && vars[index(trail.back())].reason >= 0) {
+      unassignLit(trail.back());
+    }
+  } else {
+    while (!trail.empty() && (index(trail.back()) != decision_vars[btlvl])) {
+      unassignLit(trail.back());
     }
   }
-else
- { while (!trail.empty() && (index(trail.back()) != decision_vars[btlvl]))
-    {unassignLit(trail.back());
-    
-    }}
   conflict = false;
-
 
   // clear unit queue
   while (!unitQueue.empty()) {
@@ -267,8 +265,8 @@ else
   if (addedClause) {
     int b = trail.back();
     unassignLit(b);
-    //TODO
-    unitQueue.push(Unit(-b, cnf.size()-1));
+    // TODO
+    unitQueue.push(Unit(-b, cnf.size() - 1));
     vars[index(b)].enqueued = true;
   }
 
@@ -280,17 +278,21 @@ else
   //     printf("%i: %i, ", i, vars[index(i)].level);
   //   printf("%i", trail.size());
   int diff = curDecisionLevel - btlvl + 1 - !addedClause;
-  while(diff > 0) {decision_vars.pop_back(); diff--;}
+  while (diff > 0) {
+    decision_vars.pop_back();
+    diff--;
+  }
 
-  curDecisionLevel = decision_vars.size()-1;
-  if (curDecisionLevel == 0) curVar = 1;
-  else curVar = decision_vars[curDecisionLevel];
+  curDecisionLevel = decision_vars.size() - 1;
+  if (curDecisionLevel == 0)
+    curVar = 1;
+  else
+    curVar = decision_vars[curDecisionLevel];
 
   //    for (int i : trail)
   //     printf("%i: %i, ", i, vars[index(i)].level);
-  // printf("\n CURVAR: %i, %i, %i\n", curVar, curDecisionLevel,  decision_vars.back());
-          // pthread_exit((void *)1);
-
+  // printf("\n CURVAR: %i, %i, %i\n", curVar, curDecisionLevel,
+  // decision_vars.back()); pthread_exit((void *)1);
 }
 
 void restart() {
@@ -343,5 +345,4 @@ void restart() {
   curVar = 1;
 
   heap.rebuild();
-
 }
