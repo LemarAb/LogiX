@@ -26,17 +26,16 @@ void assertLit(int literal, bool forced) {
   if (forced) {
     trail.push_back(literal);
     lit.enqueued = false;
-    // assig.push(std::abs(literal));
-    vars[index(literal)].reason = unitQueue.front().reason;
+    vars[index(literal)].reason = curDecisionLevel == 0 ? -1 : unitQueue.front().reason;
     unitQueue.pop(); 
     lit.level = curDecisionLevel;
     updateWatched(std::abs(literal));
   } else {
     curDecisionLevel++;
     trail.push_back(literal);
-    // assig.push(literal);
     lit.level = curDecisionLevel;
-    decision_vars[curDecisionLevel] = literal;
+    lit.reason = 0;
+    decision_vars.push_back(literal);
     updateWatched(literal);
   }
 }
@@ -44,7 +43,7 @@ void assertLit(int literal, bool forced) {
 void unassignLit(int literal){
   int toUnassign = index(literal);
   vars[toUnassign].level = -1;
-  vars[toUnassign].reason = -1;
+  vars[toUnassign].reason = 0;
   if(vars[toUnassign].getValue() != FREE)
     {
     vars[toUnassign].setValue(FREE);

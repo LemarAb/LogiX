@@ -77,7 +77,7 @@ enum Assig {
     FREE,
 };
 
-extern std::vector<int> decision_vars ;
+extern std::vector<int> decision_vars;
 
 extern int countu;
 enum Polarity { NEG, POS, MIX, UNSET };
@@ -124,7 +124,7 @@ struct Variable {
 
 struct Unit {
     int literal;
-    int reason = -1;
+    int reason = 0;
 
     Unit(int _literal, int _reason):
     literal(_literal), reason(_reason){}

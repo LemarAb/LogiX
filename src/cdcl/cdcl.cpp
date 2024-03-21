@@ -16,7 +16,7 @@ void *cdcl(void *arg) {
     unitPropagate();
     // printf("post");
     // printf("unit");
-    // printf("%i", trail.size());
+    // printf("%i", decision_vars.size());
 
     // printf("past unit");
 
@@ -33,7 +33,7 @@ void *cdcl(void *arg) {
       //                            }
       // else{
       // addClause(learned);
-      backtrack(curDecisionLevel);
+      backtrack(backtrack_lvl);
 
       // // pthread_exit(0);
       // //  backjump();
@@ -133,38 +133,50 @@ int analyze() {
   // int stampedLit = -1;
 
   std::vector<int> &confl = cnf[conflict_clause_id];
-  //   printf("Conflict");
-  //  for (int i : confl)
-  //     printf("%i ", i);
-  //   printf("\n");
+  //  for (int i : confl){
+  //     printf("%i: ", i);
+  //     if(vars[index(i)].reason > 0){
+  //       for(int j = 0; j < cnf[vars[index(i)].reason].size(); j++){
+  //         printf("%i, %i; ", cnf[vars[index(i)].reason][j], vars[index (cnf[vars[index(i)].reason][j])].reason);
+  //       }}
+  //   printf(".....REASON %i\n", vars[index(i)].reason );}
+
+
+        // printf("%i ", i);
   for(int i =  0 ; i < confl.size(); i++){
     int lit = confl[i];
 
-    // If decision lit, we learn immediately
+    // If decision lit, we learn immediately, if forced literal skip
     if(vars[index(lit)].reason <= 0) {
-      if(!seen[index(lit)]){     
+      if(!seen[index(lit) && vars[index(lit)].reason == 0]){     
       learned.push_back(lit);
-      seen[index(lit)] = 1;
       }
+      seen[index(lit)] = 1;
       continue;
+      
     }
-
+      
     std::vector<int> &reason = cnf[vars[index(lit)].reason];
     // for (int i : reason)
     //   printf("%i ", i);
     // printf("\n");
     for(int j = 1; j < reason.size(); j++) {
       // Do not include 0 level literals in the learned
+      
+// printf("Conflict %i\n", reason.size());
       int toCache = reason[j];
-      if(!seen[index(toCache)] && vars[index(toCache)].level > 0) {
+      if(!seen[index(toCache)] && vars[index(toCache)].reason >= 0) {
+        
         learned.push_back(toCache);
-        seen[index(toCache)] = 1;
       }
+      
+      seen[index(toCache)] = 1;
     }
   }
+    // if(learned.size()==4)
     // printf("Ballert: \n");
-    // for (int i : learned)
-    //   printf("%i ", i);
+    //   for (int i : learned)
+    //     printf("ONE!%i ", i);
     // printf("0\n");
 
   int btlvl;
@@ -179,88 +191,71 @@ int analyze() {
           vars[index(learned[max])].level)
         max = i;
     btlvl = vars[index(learned[max])].level;
+  // if(btlvl != curDecisionLevel)
+  // printf("BT: %i, CDL: %i\n", btlvl, curDecisionLevel);
   }
+  // printf("BT: %i, CDL: %i\n", btlvl, curDecisionLevel);
+        // for (int i : learned)
+        // printf("%i ", i);
+        //         printf("0\n");
 
   for (int elem = 0; elem < seen.size(); elem++) {
     seen[index(elem)] = false;
   }
-  return 1;
+  return btlvl;
 }
 
 void backtrack(int btlvl) {
-  int penultimate = trail.size() - 2;
-
-  // std::cout << "btleevel" << btlvl << "\n";
-  // btlvl = 4;
+  // btlvl = 0;
   //  for (int i : trail)
   //     printf("%i: %i, ", i, vars[index(i)].level);
-  //   printf("\n");
+  //   printf("\n\n%i, %i, %i\n\n", decision_vars[btlvl], curDecisionLevel, decision_vars.size());
+    
+  bool addClause = btlvl > 0;
+  if(btlvl == 0) {
+        
 
-  while (trail.size() > 0 && index(trail.back()) != decision_vars[btlvl])
-    unassignLit(trail.back());
-  // std::cout << "Removed literal " << toUnassign << "on lvl"<<
-  // vars[toUnassign].level <<" from assig stack  \n";
+      while (!trail.empty() && vars[index(trail.back())].reason >= 0)
+    {unassignLit(trail.back());
+
+    }
+  }
+else
+ { while (!trail.empty() && (index(trail.back()) != decision_vars[btlvl]))
+    {unassignLit(trail.back());
+    
+    }}
   conflict = false;
+
+
   // clear unit queue
   while (!unitQueue.empty()) {
-    // std::cout << "Element to be popped from queue: " << unitQueue.front() <<
-    // "\n";
     int toDiscard = index(unitQueue.front().literal);
     vars[toDiscard].enqueued = false;
-    vars[toDiscard].reason = -1;
+    vars[toDiscard].reason = 0;
     vars[toDiscard].level = -1;
     unitQueue.pop();
   }
-
-  int b = trail.back(); // Most recent branching variable
-  // printf("\nBBB: %i\n", b);
-  unassignLit(b);
-  // vars[b].reason = -1;
-  // vars[b].setValue(Assig(vars[b].getValue() == 1 ? 0 : 1)); //  Flip assignment
-  curDecisionLevel = btlvl-1;
-  // curVar = decision_vars[curDecisionLevel];
-  if (curDecisionLevel == 0) curVar = 1;
-  else curVar = decision_vars[curDecisionLevel];
-  // if(trail.empty()) return;
-  if (!vars[index(b)].enqueued) {
-    unitQueue.push(Unit(-b, -1));
+  if (addClause) {
+    int b = trail.back();
+    unassignLit(b);
+    //TODO
+    unitQueue.push(Unit(-b, cnf.size()-1));
     vars[index(b)].enqueued = true;
   }
+  //  for (int i : trail)
+  //     printf("%i: %i, ", i, vars[index(i)].level);
+  //   printf("%i", trail.size());
+  int diff = curDecisionLevel - btlvl + 1 - !addClause;
+  while(diff > 0) {decision_vars.pop_back(); diff--;}
 
-  // curVar = index(trail.back());
-    //  for (int i : trail)
-    //   printf("%i: %i, ", i, vars[index(i)].level);
-    // printf("\n CURVAR: %i\n", curVar);
-}
+  curDecisionLevel = decision_vars.size()-1;
+  if (curDecisionLevel == 0) curVar = 1;
+  else curVar = decision_vars[curDecisionLevel];
 
-void backtrack2() {
-  // printf("HIER %i\n", curDecisionLevel);
-  // printf("Trail: %i", trail.size());
+  //    for (int i : trail)
+  //     printf("%i: %i, ", i, vars[index(i)].level);
+  // printf("\n CURVAR: %i, %i, %i\n", curVar, curDecisionLevel,  decision_vars.back());
+          // pthread_exit((void *)1);
 
-  while (!trail.empty() && vars[index(trail.back())].level != 0)
-    unassignLit(trail.back());
-  // printf("Trail: %i", trail.size());
-  // for(int lit : trail) printf("%i: %i,", lit, vars[index(lit)].level);
-
-  while (!unitQueue.empty()) {
-    // std::cout << "Element to be popped from queue: " << unitQueue.front() <<
-    // "\n";
-    int toDiscard = index(unitQueue.front().literal);
-    vars[toDiscard].enqueued = false;
-    vars[toDiscard].reason = -1;
-    vars[toDiscard].level = -1;
-    unitQueue.pop();
-  }
-
-  conflict = false;
-
-  unitQueue.push(Unit(learned[0], -1));
-  vars[index(learned[0])].enqueued = true;
-  unitTrail.push_back(learned[0]);
-
-  curDecisionLevel = 0;
-
-  curVar = 1;
-
-  // printf("HIER %i, %i\n", learned[0], curVar);
 }
