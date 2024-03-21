@@ -1,8 +1,9 @@
 #include "../../include/cdcl.hpp"
-#include <algorithm>
-#include <cmath>
 #include "dataStructs/heap.hpp"
 #include "dataStructs/vsids.hpp"
+#include <algorithm>
+#include <cmath>
+
 
 int learned2power = 0;
 std::vector<double> act;
@@ -46,7 +47,7 @@ int luby_index = 1;
 
 int luby_unit = 32;
 
-int luby(int i) {  // Luby sequence
+int luby(int i) { // Luby sequence
   int k;
   for (k = 0; (1 << (k + 1) <= (i + 1)); k++)
     ;
@@ -68,17 +69,19 @@ void delete_half() {
 
 void assertLit(int literal, bool forced) {
   auto &lit = vars[std::abs(literal)];
-  
+
   if (forced) {
     (literal > 0) ? lit.setValue(TRUE) : lit.setValue(FALSE);
     trail.push_back(literal);
     lit.enqueued = false;
-    vars[index(literal)].reason = curDecisionLevel == 0 ? -1 : unitQueue.front().reason;
-    unitQueue.pop(); 
+    vars[index(literal)].reason =
+        curDecisionLevel == 0 ? -1 : unitQueue.front().reason;
+    unitQueue.pop();
     lit.level = curDecisionLevel;
     updateWatched(std::abs(literal));
   } else {
-    // if (phase[index(literal)] != FREE) vars[index(literal)].setValue(phase[index(literal)]);
+    // if (phase[index(literal)] != FREE)
+    // vars[index(literal)].setValue(phase[index(literal)]);
     lit.setValue(TRUE);
     curDecisionLevel++;
     trail.push_back(literal);
@@ -93,8 +96,7 @@ void unassignLit(int literal) {
   int toUnassign = index(literal);
   vars[toUnassign].level = -1;
   vars[toUnassign].reason = 0;
-  if(vars[toUnassign].getValue() != FREE)
-    {
+  if (vars[toUnassign].getValue() != FREE) {
     vars[toUnassign].setValue(FREE);
     trail.pop_back();
   } else {
@@ -116,14 +118,15 @@ void createHeap() {
 }
 
 void varIncActivity(int var) { // Increase activity of a variable
-    act[var] += var_inc;
-    heap.update(var);
+  act[var] += var_inc;
+  heap.update(var);
 };
 
-void afterExtractOrderAct(int i) {   // After extracting the order of the variable restore order
-    for (int j = heap.getHeapSize() / 2; j >= 0; --j) {
-        heap.update(j);
-    }
+void afterExtractOrderAct(
+    int i) { // After extracting the order of the variable restore order
+  for (int j = heap.getHeapSize() / 2; j >= 0; --j) {
+    heap.update(j);
+  }
 };
 
 void allVarsHalfActivity() {
