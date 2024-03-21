@@ -34,28 +34,27 @@ void *cdcl(void *arg) {
         pthread_exit((void *)1);
 
       int backtrack_lvl = analyze();
-      for(int i : learned) printf("%i ", learned[i]);
-      printf("0\n");
-      // if (backtrack_lvl == 0) {
-      //   printf("WOW%i", learned[0]);
+      // for(int i : learned) printf("%i ", i);
+      // printf("0\n");
+      if (backtrack_lvl == 0) {
+        printf("WOW%i", learned[0]);
 
-      // } else {
-      //   addClause(learned);
-      // } 
-      // // if (conflict_count == luby(luby_index) * luby_unit) {
-      // //   //printf("%i RESTART", luby(luby_index) * luby_unit);
-      // //   luby_index++;
-      // //   //   // restart();
-      // //   restart();
-      // //   continue;
-      // // }
+      } else {
+        addClause(learned);
+      } 
+      // if (conflict_count == luby(luby_index) * luby_unit) {
+      //   //printf("%i RESTART", luby(luby_index) * luby_unit);
+      //   luby_index++;
+      //   //   // restart();
+      //   restart();
+      //   continue;
+      // }
 
-      // // if (conflict_count >= pow(delete_cue, 2)){
-      // //   printf("del%i und 2 hoch %i\n", conflict_count, delete_cue);
-      // //   delete_half();
-      // //   delete_cue++;
-      // // }
-
+      // if (conflict_count >= pow(delete_cue, 2)){
+      //   printf("del%i und 2 hoch %i\n", conflict_count, delete_cue);
+      //   delete_half();
+      //    delete_cue++;
+      //  }
       backtrack(backtrack_lvl);
 
     } else {
@@ -196,7 +195,6 @@ int analyze() {
       continue;
     }
 
-    printf("REASON: %i\n", cnf[vars[index(lit)].reason]);
     std::vector<int> &reason = cnf[vars[index(lit)].reason];
     // for (int i : reason)
     //   printf("%i ", i);
@@ -232,7 +230,7 @@ int analyze() {
         max = i;
     btlvl = vars[index(learned[max])].level;
 
-    // std::swap(learned[0], learned[max]);
+    std::swap(learned[0], learned[max]);
   }
   // printf("BT: %i, CDL: %i\n", btlvl, curDecisionLevel);
   // for (int i : learned)
@@ -242,6 +240,15 @@ int analyze() {
   for (int elem = 0; elem < seen.size(); elem++) {
     seen[index(elem)] = false;
   }
+
+  while (!unitQueue.empty()) {
+  int toDiscard = index(unitQueue.front().literal);
+  vars[toDiscard].enqueued = false;
+  vars[toDiscard].reason = 0;
+  vars[toDiscard].level = -1;
+  unitQueue.pop();
+}
+
   return btlvl;
 }
 
@@ -265,16 +272,10 @@ void backtrack(int btlvl) {
       unassignLit(trail.back());
     }
   }
+
   conflict = false;
 
   // clear unit queue
-  while (!unitQueue.empty()) {
-    int toDiscard = index(unitQueue.front().literal);
-    vars[toDiscard].enqueued = false;
-    vars[toDiscard].reason = 0;
-    vars[toDiscard].level = -1;
-    unitQueue.pop();
-  }
   if (addedClause) {
     int b = trail.back();
     // heap.insert(index(b));
@@ -284,8 +285,6 @@ void backtrack(int btlvl) {
     printf("BTLVL %i\n", btlvl); */
     unassignLit(b);
     // TODO
-    unitQueue.push(Unit(-b, cnf.size() - 1));
-    vars[index(b)].enqueued = true;
   }
 
   else {
@@ -302,15 +301,6 @@ void backtrack(int btlvl) {
   }
 
   curDecisionLevel = decision_vars.size() - 1;
-  // if (curDecisionLevel == 0)
-  //   curVar = 1;
-  // else
-  //   curVar = decision_vars[curDecisionLevel];
-
-  //    for (int i : trail)
-  //     printf("%i: %i, ", i, vars[index(i)].level);
-  // printf("\n CURVAR: %i, %i, %i\n", curVar, curDecisionLevel,
-  // decision_vars.back()); pthread_exit((void *)1);
 }
 
 void restart() {

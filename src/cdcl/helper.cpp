@@ -30,8 +30,11 @@ void addClause(std::vector<int> &clause) {
   clause[1] > 0 ? vars[index(clause[1])].pos_watched.insert(cnf.size() - 1)
                 : vars[index(clause[1])].neg_watched.insert(cnf.size() - 1);
 
-      // unitQueue.push(Unit(clause[0], cnf.size() - 1));
-      // vars[index(clause[0])].enqueued = true;
+  if(!vars[index(clause[0])].enqueued)
+    {
+    unitQueue.push(Unit(clause[0], cnf.size() - 1));
+    vars[index(clause[0])].enqueued = true;
+  }
 
   // for (int i = 0; i < clause.size(); i++) {
   //   vars[index(clause[i])].inlearned = true;
