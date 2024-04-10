@@ -93,13 +93,17 @@ postprocessing:
     }
   }
 
+  // for(int i = 1; i < numOfVars; i++){
+  //   printf("(%i, %i) ", i, vars[i].reason);
+  // }
+
   printModel((intptr_t)res);
 
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
   std::chrono::duration<double> duration =
       std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
 
-  // if ((intptr_t)res == 0)
+  if ((intptr_t)res == 0)
   verifyModel();
 
   if (proof)

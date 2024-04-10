@@ -182,7 +182,9 @@ void* cdcl(void* arg);
 void unitPropagate();
 
 // chooses literals according to the used heuristic
-void pickDecisionLit();
+int pickDecisionLit();
+
+void pickDecisionLit2();
 
 // updates the watched literals after a new assignment is made
 void updateWatched(int literal);
@@ -213,6 +215,8 @@ void verifyModel();
 int preprocess();
 
 void assertLit(int literal, bool forced);
+
+void emptyUnitQueue();
 
 int niverPostprocess();
 

@@ -19,28 +19,6 @@ int index(int literal) { return std::abs(literal); }
 
 bool isFree(int literal) { return vars[index(literal)].getValue() == FREE; }
 
-void addClause(std::vector<int> &clause) {
-
-  cnf.push_back(clause);
-
-  // VSIDS: Bump activity scores of all literals of the learned clause
-  for (int lit : clause)
-    varIncActivity(index(lit));
-
-  // assign watched literals for the learned clause
-  clause[0] > 0 ? vars[index(clause[0])].pos_watched.insert(cnf.size() - 1)
-                : vars[index(clause[0])].neg_watched.insert(cnf.size() - 1);
-
-  clause[1] > 0 ? vars[index(clause[1])].pos_watched.insert(cnf.size() - 1)
-                : vars[index(clause[1])].neg_watched.insert(cnf.size() - 1);
-
-  // The second lit is free due to non-chronological backtracking => enqueue
-  if (!vars[index(clause[0])].enqueued) {
-    unitQueue.push(Unit(clause[0], cnf.size() - 1));
-    vars[index(clause[0])].enqueued = true;
-  }
-}
-
 int luby_index = 1;
 
 int luby_unit = 32;
@@ -77,15 +55,23 @@ void assertLit(int literal, bool forced) {
     lit.level = curDecisionLevel;
     updateWatched(std::abs(literal));
   } else {
-    // if (phase[index(literal)] != FREE)
-    // vars[index(literal)].setValue(phase[index(literal)]);
-    lit.setValue(TRUE);
+    bool isPhaseFalse = phase[index(literal)] == 0;
+
+    if (isPhaseFalse){
+      lit.setValue(FALSE);
+      trail.push_back(-literal);
+      }
+    else{
+      lit.setValue(TRUE);
+      trail.push_back(literal);
+    }
+
     curDecisionLevel++;
-    trail.push_back(literal);
+
     lit.level = curDecisionLevel;
     lit.reason = 0;
-    decision_vars.push_back(literal);
-    updateWatched(literal);
+    decision_vars.push_back(index(literal));
+    updateWatched(index(literal));
   }
 }
 
@@ -100,6 +86,18 @@ void unassignLit(int literal) {
     vars[literal].enqueued = false;
     unitQueue.pop();
   }
+}
+
+void emptyUnitQueue(){
+
+  while (!unitQueue.empty()) {
+  int toDiscard = index(unitQueue.front().literal);
+  vars[toDiscard].enqueued = false;
+  vars[toDiscard].reason = 0;
+  vars[toDiscard].level = -1;
+  unitQueue.pop();
+  }
+
 }
 
 double var_inc = 5.0;
