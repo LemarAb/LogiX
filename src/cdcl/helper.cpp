@@ -34,12 +34,23 @@ int luby(int i) {
 }
 
 void delete_half() {
-  int learned_half = (cnf.size() - 1 - learned_begin) / 2;
-  printf("ANZAHL: %i\n", learned_half);
-  for (int i = learned_begin; i < learned_half; i++) {
-    vars[index(cnf[i][0])].pos_watched.erase(i);
-    vars[index(cnf[i][1])].neg_watched.erase(i);
+  int learned_half = learned_begin + delete_cue / 2;
+  printf("ANZAHL: %i, %i\n", learned_half, learned_begin);
+  int i = learned_begin;
+  int j = learned_begin;
+
+  while(i < learned_half && j < cnf.size()){
+    if(cnf[j].size() > 2){
+      vars[index(cnf[j][0])].pos_watched.erase(j);
+      vars[index(cnf[j][1])].neg_watched.erase(j);
+      for(int lit : cnf[j]) varDecActivity(index(lit));
+     
+      i++;
+    }
+    j++;
   }
+
+  learned_begin = i+1;
 }
 
 void assertLit(int literal, bool forced) {
@@ -53,7 +64,7 @@ void assertLit(int literal, bool forced) {
         curDecisionLevel == 0 ? -1 : unitQueue.front().reason;
     unitQueue.pop();
     lit.level = curDecisionLevel;
-    updateWatched(std::abs(literal));
+
   } else {
     bool isPhaseFalse = phase[index(literal)] == 0;
 
@@ -66,17 +77,18 @@ void assertLit(int literal, bool forced) {
       trail.push_back(literal);
     }
 
-    curDecisionLevel++;
-
-    lit.level = curDecisionLevel;
+    lit.level = ++curDecisionLevel;
     lit.reason = 0;
-    decision_vars.push_back(index(literal));
-    updateWatched(index(literal));
+    
   }
+
+  updateWatched(index(literal));
 }
 
 void unassignLit(int literal) {
   int toUnassign = index(literal);
+
+  heap.insert(toUnassign);
   vars[toUnassign].level = -1;
   vars[toUnassign].reason = 0;
   if (vars[toUnassign].getValue() != FREE) {
@@ -100,7 +112,7 @@ void emptyUnitQueue(){
 
 }
 
-double var_inc = 5.0;
+double var_inc = 1.0;
 
 void createHeap() {
   act.resize(numOfVars + 1);
@@ -114,6 +126,11 @@ void createHeap() {
 
 void varIncActivity(int var) {
   act[var] += var_inc;
+  heap.update(var);
+};
+
+void varDecActivity(int var) {
+  act[var] = std::max(act[var]-var_inc, 1.0);
   heap.update(var);
 };
 

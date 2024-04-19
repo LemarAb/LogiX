@@ -12,10 +12,11 @@ std::vector<int> seen;
 int conflict_clause_id = 0;
 std::vector<int> unitTrail;
 int conflict_count = 0;
-int delete_cue = 0;
+double delete_cue = 0;
 int decision_count = 0;
 
 void *cdcl(void *arg) {
+
   createHeap();
 
   while (true) {
@@ -39,11 +40,17 @@ void *cdcl(void *arg) {
       if (backtrack_lvl > 0){
           addClause(learned);
           unitQueue.push(Unit(learned[0], cnf.size()-1));
+          delete_cue++;
         }
       else
           unitQueue.push(Unit(learned[0], -1));
 
       backtrack(backtrack_lvl);
+
+      if (delete_cue >= 1000){
+        delete_half();
+        delete_cue = 0;
+      }
 
     } else {
     
@@ -70,7 +77,7 @@ int pickDecisionLit() {
   decision_count++;
 
   // every 255th decision, half all var activity
-  if ((decision_count % 255) == 0)
+  if ((decision_count % 256) == 0)
     allVarsHalfActivity();
 
   // get the most relevant unassigned var from the max heap
@@ -128,8 +135,8 @@ void updateWatched(int assertedLit) {
     //
     if (unitLit.getValue() == FREE) {
       if (!unitLit.enqueued) {
-        int ci = *clauseIndex;
-        unitQueue.push(Unit(clause[0], ci));
+        int reason = *clauseIndex;
+        unitQueue.push(Unit(clause[0], reason));
         unitLit.enqueued = true;
       }
     } else {
@@ -208,62 +215,34 @@ int analyze() {
 
 void backtrack(int btlvl) {
 
-  // printf("CUR %i, BT %i\n", curDecisionLevel, btlvl);
-
-  bool addedClause = btlvl > 0;
-
-  if (learned.size() == 1) {
-
-    while (!trail.empty() && vars[index(trail.back())].level > 0) {
-      heap.insert(index(trail.back()));
-      unassignLit(trail.back());
-    }
-  } else {
-    while (!trail.empty() && vars[index(trail.back())].level >= btlvl){
-      heap.insert(index(trail.back()));
-      unassignLit(trail.back());
-    }
-  }
-
   conflict = false;
 
-  // int diff = curDecisionLevel - btlvl + 1;
-  // // printf("BTLVL: %i, CUR: %i\n", btlvl, curDecisionLevel);
-  // if (btlvl == 0) diff--;
+  if (btlvl == 0) btlvl = 1;
 
-  // while (diff > 0) {
-  //   decision_vars.pop_back();
-  //   diff--;
-  // }
+  while (!trail.empty() && vars[index(trail.back())].level >= btlvl)
+    unassignLit(trail.back());
 
-  curDecisionLevel = btlvl - addedClause;
+  curDecisionLevel = btlvl - 1;
   
-  curVar = 1;
 }
 
 void restart() {  
-  printf("ENT!");
+  
+  conflict = false;
+
   for (int i = 0; i < phase.size(); i++)
     phase[i] = FREE;
+
   while (!trail.empty() && vars[index(trail.back())].level > 0) {
     // save current assigs in the phase vector
     int toSave = index(trail.back());
     phase[toSave] = vars[toSave].getValue();
-    heap.insert(toSave);
     unassignLit(trail.back());
   }
   
-  conflict = false;
-
-  // while (decision_vars.size() > 1) {
-  //   decision_vars.pop_back();
-  // }
-
   conflict_count = 0;
 
   curDecisionLevel = 0;
-  
-  heap.rebuild();
 }
 
 void addClause(std::vector<int> &clause) {
@@ -280,6 +259,4 @@ void addClause(std::vector<int> &clause) {
 
   clause[1] > 0 ? vars[index(clause[1])].pos_watched.insert(cnf.size() - 1)
                 : vars[index(clause[1])].neg_watched.insert(cnf.size() - 1);
-
-  // The second lit is free due to non-chronological backtracking => enqueue
 }

@@ -14,6 +14,8 @@ extern Heap<int, VariableOrderActLT> heap;
 // bump activity of learned clause literals
 extern void varIncActivity(int var);
 
+extern void varDecActivity(int var);
+
 // half activity scores of all vars every 255th decision
 extern void allVarsHalfActivity();
 

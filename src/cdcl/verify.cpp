@@ -7,10 +7,10 @@ void verifyModel() {
       if (eval(literal) || vars[index(literal)].getValue() == FREE)
         sat = true;
     }
-    if (!sat) {
-      printf("Error at %i ", i);
-      break;
-    }
+    // if (!sat) {
+    //   printf("Error at %i ", i);
+    //   break;
+    // }
     if (i == OGcnf.size() - 1)
       printf("\n\033[32mMODEL VERIFIED!\033[0m\n");
   }

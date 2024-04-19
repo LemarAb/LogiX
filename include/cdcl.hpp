@@ -140,7 +140,7 @@ extern std::vector<Variable> vars;
 
 extern int learned_begin;
 
-extern int delete_cue;
+extern double delete_cue;
 
 // forget half of the learned claueses every 
 void delete_half();
