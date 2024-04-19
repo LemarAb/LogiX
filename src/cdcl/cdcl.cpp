@@ -42,8 +42,11 @@ void *cdcl(void *arg) {
           unitQueue.push(Unit(learned[0], cnf.size()-1));
           delete_cue++;
         }
-      else
-          unitQueue.push(Unit(learned[0], -1));
+      else {
+        unitQueue.push(Unit(learned[0], -1));
+        learnedUnits.push_back(learned[0]);
+      }
+          
 
       backtrack(backtrack_lvl);
 

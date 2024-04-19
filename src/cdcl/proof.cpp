@@ -6,10 +6,8 @@ std::vector<std::vector<int>> deletedClauses;
 
 void proofLogging(std::string filename) {
 
-  // for (int i = 0; i < 15; i++) {
   filename.erase(0, 16);
   printf("Filename: %s\n", filename.c_str());
-  //}
 
   for (int i = 0; i < 3; i++) {
     filename.pop_back();
@@ -22,23 +20,27 @@ void proofLogging(std::string filename) {
   auto *oldCoutBuffer = std::cout.rdbuf(); // Save old buf
   std::cout.rdbuf(out.rdbuf());            // Redirect std::cout to new .drup
 
-  // Your code here. Anything printed to std::cout will go to output.txt.
-
-  for (int i = 0; i < learnedClauses.size(); i++) {
+  for (int i = learned_begin; i < cnf.size(); i++) {
     std::cout << "  ";
-    for (int j = 0; j < learnedClauses[i].size(); j++) {
-      std::cout << learnedClauses[i][j] << " ";
+    for (int j = 0; j < cnf[i].size(); j++) {
+      printf("%i ",cnf[i][j]);
+      std::cout << cnf[i][j] << " ";
     }
+    printf("\n");
     std::cout << "0\n";
   }
 
-  for (int i = 0; i < deletedClauses.size(); i++) {
+  for (int i = 0; i < learnedUnits.size(); i++){
+    std::cout << learnedUnits[i] << " " << 0 << "\n";
+  }
+
+  /* for (int i = 0; i < deletedClauses.size(); i++) {
     std::cout << "d ";
     for (int j = 0; j < deletedClauses[i].size(); j++) {
       std::cout << deletedClauses[i][j] << " ";
     }
     std::cout << "0\n";
-  }
+  } */
 
   std::cout.rdbuf(oldCoutBuffer);
 }
