@@ -233,4 +233,6 @@ extern bool prepr; // bool for preprocessing
 
 extern bool proof; // bool for proof logging
 
+extern std::vector<int> learnedUnits; // Vector for learned units to add to log
+
 #endif

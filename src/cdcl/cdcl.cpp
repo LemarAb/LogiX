@@ -40,8 +40,11 @@ void *cdcl(void *arg) {
           addClause(learned);
           unitQueue.push(Unit(learned[0], cnf.size()-1));
         }
-      else
-          unitQueue.push(Unit(learned[0], -1));
+      else {
+        unitQueue.push(Unit(learned[0], -1));
+        learnedUnits.push_back(learned[0]);
+      }
+          
 
       backtrack(backtrack_lvl);
 
@@ -242,7 +245,6 @@ void backtrack(int btlvl) {
 }
 
 void restart() {  
-  printf("ENT!");
   for (int i = 0; i < phase.size(); i++)
     phase[i] = FREE;
   while (!trail.empty() && vars[index(trail.back())].level > 0) {

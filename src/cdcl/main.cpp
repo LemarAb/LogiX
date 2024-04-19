@@ -21,6 +21,7 @@ std::vector<int> decision_vars;
 std::vector<Assig> phase;
 bool prepr = false;
 bool proof = false;
+std::vector<int> learnedUnits;
 
 int learned_begin;
 int main(int argc, char *argv[]) {
