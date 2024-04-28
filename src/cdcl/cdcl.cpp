@@ -12,7 +12,7 @@ std::vector<int> seen;
 int conflict_clause_id = 0;
 std::vector<int> unitTrail;
 int conflict_count = 0;
-double delete_cue = 0;
+double delete_cue = 5;
 int decision_count = 0;
 
 void *cdcl(void *arg) {
@@ -37,23 +37,19 @@ void *cdcl(void *arg) {
 
       int backtrack_lvl = analyze();
 
-      if (backtrack_lvl > 0){
+      if (backtrack_lvl > 0)
           addClause(learned);
-          unitQueue.push(Unit(learned[0], cnf.size()-1));
-          delete_cue++;
-        }
-      else {
-        unitQueue.push(Unit(learned[0], -1));
-        learnedUnits.push_back(learned[0]);
-      }
-          
+      else
+        learnedUnits.push_back(learned[0]);     
 
       backtrack(backtrack_lvl);
 
-      if (delete_cue >= 1000){
-        delete_half();
-        delete_cue = 0;
-      }
+
+      // if (conflict_count >= pow(2, delete_cue)){
+      //   delete_half();
+      //   delete_cue++;
+      //  }
+
 
     } else {
     
@@ -88,15 +84,6 @@ int pickDecisionLit() {
     heap.removeMax();
 
   return heap.removeMax();
-}
-
-void pickDecisionLit2(){
-      // printf("CurVar: %i", curVar);
-  while(vars[curVar].getValue() != FREE)
-      curVar++;
-      // printf("CurVar: %i", curVar);}
-     
-  assertLit(curVar, false);
 }
 
 void updateWatched(int assertedLit) {
@@ -220,7 +207,7 @@ void backtrack(int btlvl) {
 
   conflict = false;
 
-  if (btlvl == 0) btlvl = 1;
+  if (btlvl == 0) {btlvl = 1; unitQueue.push(Unit(learned[0], -1));}
 
   while (!trail.empty() && vars[index(trail.back())].level >= btlvl)
     unassignLit(trail.back());
@@ -236,7 +223,7 @@ void restart() {
   for (int i = 0; i < phase.size(); i++)
     phase[i] = FREE;
 
-  while (!trail.empty() && vars[index(trail.back())].level > 0) {
+  while (!trail.empty() && vars[index(trail.back())].reason >= 0) {
     // save current assigs in the phase vector
     int toSave = index(trail.back());
     phase[toSave] = vars[toSave].getValue();
@@ -255,6 +242,8 @@ void addClause(std::vector<int> &clause) {
   // VSIDS: Bump activity scores of all literals of the learned clause
   for (int lit : clause)
     varIncActivity(index(lit));
+
+  unitQueue.push(Unit(learned[0], cnf.size()-1));
 
   // assign watched literals for the learned clause
   clause[0] > 0 ? vars[index(clause[0])].pos_watched.insert(cnf.size() - 1)

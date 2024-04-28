@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
     prepResult = preprocess();
   }
 
-  createHeap();
+  // createHeap();
 
   pthread_t thread;
 

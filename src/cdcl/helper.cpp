@@ -35,22 +35,14 @@ int luby(int i) {
 
 void delete_half() {
   int learned_half = learned_begin + delete_cue / 2;
-  printf("ANZAHL: %i, %i\n", learned_half, learned_begin);
-  int i = learned_begin;
-  int j = learned_begin;
-
-  while(i < learned_half && j < cnf.size()){
-    if(cnf[j].size() > 2){
-      vars[index(cnf[j][0])].pos_watched.erase(j);
-      vars[index(cnf[j][1])].neg_watched.erase(j);
-      for(int lit : cnf[j]) varDecActivity(index(lit));
-     
-      i++;
-    }
-    j++;
+  int i; 
+  
+  for (i = learned_begin; i < learned_half; i++) {
+    vars[index(cnf[i][0])].pos_watched.erase(i);
+    vars[index(cnf[i][1])].neg_watched.erase(i);
   }
 
-  learned_begin = i+1;
+  learned_begin = i;
 }
 
 void assertLit(int literal, bool forced) {

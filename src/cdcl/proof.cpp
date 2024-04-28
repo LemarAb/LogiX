@@ -23,10 +23,8 @@ void proofLogging(std::string filename) {
   for (int i = learned_begin; i < cnf.size(); i++) {
     std::cout << "  ";
     for (int j = 0; j < cnf[i].size(); j++) {
-      printf("%i ",cnf[i][j]);
       std::cout << cnf[i][j] << " ";
     }
-    printf("\n");
     std::cout << "0\n";
   }
 
