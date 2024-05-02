@@ -74,7 +74,7 @@ bool parseDIMACS(std::string filename) {
             }
 
             else if (unit[index(clause[0])] != Assig((clause[0] > 0)))
-              return true;
+              return false;
           }
 
           if (clause.size() > 1) {
@@ -107,5 +107,5 @@ bool parseDIMACS(std::string filename) {
   decision_vars.push_back(-1);
   learned_begin = cnf.size();
 
-  return false;
+  return true;
 }

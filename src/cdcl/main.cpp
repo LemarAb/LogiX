@@ -33,9 +33,8 @@ int main(int argc, char *argv[]) {
 
   std::string index;
 
-  for (int i = 1; i < path.length(); i++) {
-    index += path[i];
-  }
+  for (int i = 1; i < path.length(); i++)
+    index += path[i];  
 
   std::string fileName;
 
@@ -47,44 +46,13 @@ int main(int argc, char *argv[]) {
 
   printf("\nRunning %s\n\n", fileName.c_str());
 
-  int prepResult = 1;
-
-  void *res;
-
-  for (int i = 1; i < argc; i++) {
-    if (strcmp(argv[i], "-pre") == 0) {
-      prepr = true;
-    }
-  }
-
   bool sat;
 
   // if we find a conflict upon parsing the DIMACS, skip the solver
-  if (parseDIMACS(fileName)) {
+  if (!parseDIMACS(fileName))
     sat = false;
-    res = (void *)1;
-    goto postprocessing;
-  }
-
-  if (prepr && !proof) {
-    prepResult = preprocess();
-  }
-
-  // createHeap();
-
-  sat = cdcl();
-
-postprocessing:
-
-  if (prepr && prepResult == 0) {
-
-    int temp = niverPostprocess();
-
-    if (temp == 1) 
-      sat = false;
-    else
-      sat = true;
-  }
+  else
+    sat = cdcl();
 
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
@@ -95,7 +63,6 @@ postprocessing:
 
   if (sat)
     verifyModel();
-
   else {
     auto logPath = proofLog(fileName);
     std::string exec = "drat-trim " + fileName + " " + logPath;
