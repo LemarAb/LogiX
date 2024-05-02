@@ -154,10 +154,6 @@ int analyze() {
   int stampedLit;
   bool firstIter = true;
   do {
-    // found decision var as 1-UIP!
-    if (conflict_clause_id <= 0)
-      break;
-
     std::vector<int> &conf = cnf[conflict_clause_id];
     for (int i = (firstIter) ? 0 : 1; i < conf.size(); i++) {
       int lit = conf[i];
