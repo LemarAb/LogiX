@@ -4,10 +4,9 @@
 std::vector<std::vector<int>> learnedClauses;
 std::vector<std::vector<int>> deletedClauses;
 
-void proofLogging(std::string filename) {
+std::string proofLog(std::string filename) {
 
   filename.erase(0, 16);
-  printf("Filename: %s\n", filename.c_str());
 
   for (int i = 0; i < 3; i++) {
     filename.pop_back();
@@ -15,8 +14,8 @@ void proofLogging(std::string filename) {
 
   filename += "drup";
 
-  std::string path = "proofs/";
-  std::ofstream out(path + filename);
+  std::string path = "proofs/"+ filename;
+  std::ofstream out(path);
   auto *oldCoutBuffer = std::cout.rdbuf(); // Save old buf
   std::cout.rdbuf(out.rdbuf());            // Redirect std::cout to new .drup
 
@@ -41,4 +40,6 @@ void proofLogging(std::string filename) {
   } */
 
   std::cout.rdbuf(oldCoutBuffer);
+
+  return path;
 }

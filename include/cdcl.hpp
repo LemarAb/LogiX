@@ -220,7 +220,7 @@ void emptyUnitQueue();
 
 int niverPostprocess();
 
-void proofLogging(std::string filename);
+std::string proofLog(std::string filename);
 
 // find the luby sequence
 int luby(int i);

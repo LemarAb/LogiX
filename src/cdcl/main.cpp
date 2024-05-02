@@ -107,8 +107,11 @@ postprocessing:
   if ((intptr_t)res == 0)
   verifyModel();
 
-  if (proof)
-    proofLogging(fileName);
+  if (proof) {
+    auto logPath = proofLog(fileName);
+    std::string exec = "drat-trim " + fileName + " " + logPath;
+    system(exec.c_str());
+  }
 
   printf("\nCPU time used: %.6f seconds\n\n", duration.count());
 
