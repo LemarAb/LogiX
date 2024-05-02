@@ -1,7 +1,7 @@
 #include "../../include/cdcl.hpp"
 
 void printModel(int res) {
-  if (res == 1) {
+  if (res == 0) {
     printf("\033[31mUNSAT: No model!\033[0m\n\n");}
     // for (int i = 1; i <= numOfVars; i++) {
     //   int value = 0;

@@ -54,13 +54,14 @@ int main(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], "-pre") == 0) {
       prepr = true;
-    } else if (strcmp(argv[i], "-proof") == 0) {
-      proof = true;
     }
   }
 
+  bool sat;
+
   // if we find a conflict upon parsing the DIMACS, skip the solver
   if (parseDIMACS(fileName)) {
+    sat = false;
     res = (void *)1;
     goto postprocessing;
   }
@@ -71,15 +72,7 @@ int main(int argc, char *argv[]) {
 
   // createHeap();
 
-  pthread_t thread;
-
-  if (pthread_create(&thread, NULL, cdcl, NULL)) {
-    std::cerr << "Error: Unable to create thread." << std::endl;
-    return -1;
-  }
-  // Wait for the child thread to finish
-
-  pthread_join(thread, &res);
+  sat = cdcl();
 
 postprocessing:
 
@@ -87,27 +80,23 @@ postprocessing:
 
     int temp = niverPostprocess();
 
-    if (temp == 1) {
-      res = (void *)1;
-    } else if (temp == 0) {
-      res = (void *)0;
-    }
+    if (temp == 1) 
+      sat = false;
+    else
+      sat = true;
   }
 
-  // for(int i = 1; i < numOfVars; i++){
-  //   printf("(%i, %i) ", i, vars[i].reason);
-  // }
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
-  printModel((intptr_t)res);
+  printModel(sat);
   
   std::chrono::duration<double> duration =
       std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
 
-  if ((intptr_t)res == 0)
-  verifyModel();
+  if (sat)
+    verifyModel();
 
-  if (proof) {
+  else {
     auto logPath = proofLog(fileName);
     std::string exec = "drat-trim " + fileName + " " + logPath;
     system(exec.c_str());

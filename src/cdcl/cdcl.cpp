@@ -15,7 +15,7 @@ int conflict_count = 0;
 double delete_cue = 5;
 int decision_count = 0;
 
-void *cdcl(void *arg) {
+bool cdcl() {
 
   createHeap();
 
@@ -27,7 +27,7 @@ void *cdcl(void *arg) {
       conflict_count++;
 
       if (curDecisionLevel <= 0)
-        pthread_exit((void *)1);
+        return false;
 
       if (conflict_count == luby(luby_index) * luby_unit) {
         luby_index++;
@@ -59,7 +59,7 @@ void *cdcl(void *arg) {
     } else {
     
     if(trail.size() == numOfVars)
-      pthread_exit(0);
+      return true;
 
     int decision_lit = pickDecisionLit();
     assertLit(decision_lit, false);

@@ -177,7 +177,7 @@ void unassignLit(int literal);
 
 bool parseDIMACS(std::string filename);
 
-void* cdcl(void* arg);
+bool cdcl();
 
 void unitPropagate();
 
