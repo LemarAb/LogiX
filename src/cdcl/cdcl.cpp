@@ -37,10 +37,15 @@ void *cdcl(void *arg) {
 
       int backtrack_lvl = analyze();
 
-      if (backtrack_lvl > 0)
+      if (backtrack_lvl > 0) {
           addClause(learned);
-      else
-        learnedUnits.push_back(learned[0]);     
+          unitQueue.push(Unit(learned[0], cnf.size()-1));
+      }
+      
+      else {
+          learnedUnits.push_back(learned[0]);
+          unitQueue.push(Unit(learned[0], -1));
+      }  
 
       backtrack(backtrack_lvl);
 
@@ -137,9 +142,6 @@ void updateWatched(int assertedLit) {
     }
   nextIter:;
   }
-
-  // if (numOfUnassigned == 0 && unitQueue.empty())
-  //   pthread_exit(0);
 }
 
 int analyze() {
@@ -207,7 +209,7 @@ void backtrack(int btlvl) {
 
   conflict = false;
 
-  if (btlvl == 0) {btlvl = 1; unitQueue.push(Unit(learned[0], -1));}
+  if (btlvl == 0) btlvl = 1;
 
   while (!trail.empty() && vars[index(trail.back())].level >= btlvl)
     unassignLit(trail.back());
@@ -223,7 +225,7 @@ void restart() {
   for (int i = 0; i < phase.size(); i++)
     phase[i] = FREE;
 
-  while (!trail.empty() && vars[index(trail.back())].reason >= 0) {
+  while (!trail.empty() && vars[index(trail.back())].level > 0) {
     // save current assigs in the phase vector
     int toSave = index(trail.back());
     phase[toSave] = vars[toSave].getValue();
@@ -242,8 +244,6 @@ void addClause(std::vector<int> &clause) {
   // VSIDS: Bump activity scores of all literals of the learned clause
   for (int lit : clause)
     varIncActivity(index(lit));
-
-  unitQueue.push(Unit(learned[0], cnf.size()-1));
 
   // assign watched literals for the learned clause
   clause[0] > 0 ? vars[index(clause[0])].pos_watched.insert(cnf.size() - 1)
