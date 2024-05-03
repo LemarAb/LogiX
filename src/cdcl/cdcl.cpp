@@ -93,9 +93,9 @@ void updateWatched(int assertedLit) {
 
   auto watchedClauses = &vars[assertedLit].neg_watched;
 
-  if (vars[assertedLit].getValue() == FALSE) {
+  if (vars[assertedLit].getValue() == FALSE)
     watchedClauses = &vars[assertedLit].pos_watched;
-  }
+
 
   auto copy = *watchedClauses;
 
