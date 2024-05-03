@@ -92,7 +92,7 @@ void unassignLit(int literal) {
   }
 }
 
-void emptyUnitQueue(){
+void emptyUnitQueue() {
 
   while (!unitQueue.empty()) {
     int toDiscard = index(unitQueue.front().literal);
