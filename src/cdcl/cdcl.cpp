@@ -6,13 +6,11 @@
 std::vector<int> trail;
 bool conflict;
 std::vector<int> learned;
-int count_lits_highest_dec_level = 1;
 int curDecisionLevel = 0;
 std::vector<int> seen;
 int conflict_clause_id = 0;
 std::vector<int> unitTrail;
 int conflict_count = 0;
-double delete_cue = 5;
 int decision_count = 0;
 
 bool cdcl() {
