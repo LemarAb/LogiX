@@ -160,11 +160,10 @@ int analyze() {
       if (!seen[index(lit)] && vars[index(lit)].level > 0) {
         
         seen[index(lit)] = 1;
-        if (vars[index(lit)].level >= curDecisionLevel
+        if (vars[index(lit)].level >= curDecisionLevel)
           num++;
-        else {
+        else
           learned.push_back(lit);
-        }
       }
     }
 
