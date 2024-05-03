@@ -95,11 +95,11 @@ void unassignLit(int literal) {
 void emptyUnitQueue(){
 
   while (!unitQueue.empty()) {
-  int toDiscard = index(unitQueue.front().literal);
-  vars[toDiscard].enqueued = false;
-  vars[toDiscard].reason = 0;
-  vars[toDiscard].level = -1;
-  unitQueue.pop();
+    int toDiscard = index(unitQueue.front().literal);
+    vars[toDiscard].enqueued = false;
+    vars[toDiscard].reason = 0;
+    vars[toDiscard].level = -1;
+    unitQueue.pop();
   }
 
 }
