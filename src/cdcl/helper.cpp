@@ -33,17 +33,17 @@ int luby(int i) {
     return luby((i + 1) - (1 << k));
 }
 
-void delete_half() {
-  int learned_half = learned_begin + delete_cue / 2;
-  int i; 
+// void delete_half() {
+//   int learned_half = learned_begin + delete_cue / 2;
+//   int i; 
   
-  for (i = learned_begin; i < learned_half; i++) {
-    vars[index(cnf[i][0])].pos_watched.erase(i);
-    vars[index(cnf[i][1])].neg_watched.erase(i);
-  }
+//   for (i = learned_begin; i < learned_half; i++) {
+//     vars[index(cnf[i][0])].pos_watched.erase(i);
+//     vars[index(cnf[i][1])].neg_watched.erase(i);
+//   }
 
-  learned_begin = i;
-}
+//   learned_begin = i;
+// }
 
 void assertLit(int literal, bool forced) {
   auto &lit = vars[std::abs(literal)];

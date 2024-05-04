@@ -27,7 +27,7 @@ bool cdcl() {
       conflict_count++;
 
       if (curDecisionLevel <= 0)
-        {printf("\nCPU time used: %.6f seconds for\n\n", t);;return false;}
+        return false;
 
       if (conflict_count == luby(luby_index) * luby_unit) {
         luby_index++;
@@ -59,7 +59,7 @@ bool cdcl() {
     } else {
     
     if(trail.size() == numOfVars)
-      {printf("\nCPU time used: %.6f seconds for\n\n", t);return true;}
+      return true;
 
     int decision_lit = pickDecisionLit();
     assertLit(decision_lit, false);
@@ -97,7 +97,6 @@ void updateWatched(int assertedLit) {
 
   if (vars[assertedLit].getValue() == FALSE)
     watchedClauses = &vars[assertedLit].pos_watched;
-
 
   for (auto clauseIndex = watchedClauses->begin(); clauseIndex != watchedClauses->end();
        ++clauseIndex) {
