@@ -224,9 +224,7 @@ void restart() {
     unassignLit(trail.back());
   }
   
-  conflict_count = 0;
-
-  curDecisionLevel = 0;
+  curDecisionLevel = conflict_count = 0;
 }
 
 void addClause(std::vector<int> &clause) {
