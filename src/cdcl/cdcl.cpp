@@ -155,8 +155,7 @@ int analyze() {
     std::vector<int> &conf = cnf[conflict_clause_id];
     for (int i = (firstIter) ? 0 : 1; i < conf.size(); i++) {
       int lit = conf[i];
-      if (!seen[index(lit)] && vars[index(lit)].level > 0) {
-        
+      if (!seen[index(lit)] && vars[index(lit)].level > 0) { 
         seen[index(lit)] = 1;
         if (vars[index(lit)].level >= curDecisionLevel)
           num++;
