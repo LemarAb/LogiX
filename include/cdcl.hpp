@@ -13,56 +13,6 @@
 
 #ifndef MYHEADER_HPP
 #define MYHEADER_HPP
-typedef int Var;
-#if defined(MINISAT_CONSTANTS_AS_MACROS)
-#define var_Undef (-1)
-#else
-const Var var_Undef = -1;
-#endif
-
-
-struct Lit {
-  int x;
-
-  // Use this as a constructor:
-  Lit mkLit(Var var, bool sign = false);
-
-  bool operator==(Lit p) const { return x == p.x; }
-  bool operator!=(Lit p) const { return x != p.x; }
-  bool operator<(Lit p) const {
-    return x < p.x;
-  } // '<' makes p, ~p adjacent in the ordering.
-};
-
-inline Lit mkLit(Var var, bool sign) {
-  Lit p;
-  p.x = var + var + (int)sign;
-  return p;
-}
-inline Lit operator~(Lit p) {
-  Lit q;
-  q.x = p.x ^ 1;
-  return q;
-}
-inline Lit operator^(Lit p, bool b) {
-  Lit q;
-  q.x = p.x ^ (unsigned int)b;
-  return q;
-}
-inline bool sign(Lit p) { return p.x & 1; }
-inline int var(Lit p) { return p.x >> 1; }
-
-// Mapping Literals to and from compact integers suitable for array indexing:
-inline int toInt(Var v) { return v; }
-inline int toInt(Lit p) { return p.x; }
-inline Lit toLit(int i) {
-  Lit p;
-  p.x = i;
-  return p;
-}
-
-const Lit lit_Undef = {-2}; // }- Useful special constants.
-const Lit lit_Error = {-1}; // }
 
 extern int numOfVars;
 extern int numOfClauses;
@@ -97,14 +47,6 @@ struct Variable {
     int tot_occ = 0;  // total number of clauses var appears in
     bool enqueued = false;
     void setValue(Assig _assig) {
-        // int assertedLit = unitProp ? curProp : curVar;
-        if (_assig != FREE && val == FREE)
-            numOfUnassigned--;
-        else {
-            if (_assig == FREE) {
-              numOfUnassigned++;
-            } 
-        }
         val = _assig;
     }
     Assig getValue() { return val; }
@@ -151,6 +93,7 @@ extern std::queue<Unit> unitQueue;
 // stack of variables with assigned values
 extern std::stack<int> assig;
 
+extern std::queue<int> del_ref;
 // set of variables occuring only in negative polarity
 extern std::unordered_set<int> neg_pol;
 

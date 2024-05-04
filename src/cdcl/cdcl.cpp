@@ -2,6 +2,7 @@
 #include "../../src/cdcl/Heap/vsids.hpp"
 #include "Heap/vsids.hpp"
 #include <cmath>
+#include <chrono>
 
 std::vector<int> trail;
 bool conflict;
@@ -14,7 +15,8 @@ std::vector<int> unitTrail;
 int conflict_count = 0;
 double delete_cue = 5;
 int decision_count = 0;
-
+double t = 0;
+std::queue<int> del_ref;
 bool cdcl() {
 
   createHeap();
@@ -27,7 +29,7 @@ bool cdcl() {
       conflict_count++;
 
       if (curDecisionLevel <= 0)
-        return false;
+        {printf("\nCPU time used: %.6f seconds for\n\n", t);;return false;}
 
       if (conflict_count == luby(luby_index) * luby_unit) {
         luby_index++;
@@ -59,7 +61,7 @@ bool cdcl() {
     } else {
     
     if(trail.size() == numOfVars)
-      return true;
+      {printf("\nCPU time used: %.6f seconds for\n\n", t);return true;}
 
     int decision_lit = pickDecisionLit();
     assertLit(decision_lit, false);
@@ -99,9 +101,7 @@ void updateWatched(int assertedLit) {
     watchedClauses = &vars[assertedLit].pos_watched;
   }
 
-  auto copy = *watchedClauses;
-
-  for (auto clauseIndex = copy.begin(); clauseIndex != copy.end();
+  for (auto clauseIndex = watchedClauses->begin(); clauseIndex != watchedClauses->end();
        ++clauseIndex) {
 
     std::vector<int> &clause = cnf[*clauseIndex];
@@ -120,7 +120,7 @@ void updateWatched(int assertedLit) {
       if (eval(clause[i]) || vars[index(clause[i])].getValue() == FREE) {
         int swapee = clause[i];
         std::swap(clause[1], clause[i]);
-        watchedClauses->erase(*clauseIndex);
+        del_ref.push(*clauseIndex);
         swapee > 0 ? vars[index(swapee)].pos_watched.insert(*clauseIndex)
                    : vars[index(swapee)].neg_watched.insert(*clauseIndex);
         goto nextIter;
