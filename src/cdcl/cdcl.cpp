@@ -211,7 +211,7 @@ void backtrack(int btlvl) {
 
 void restart() {  
   
-  conflict = false;
+  curDecisionLevel = conflict_count = conflict = 0;
 
   for (int i = 0; i < phase.size(); i++)
     phase[i] = FREE;
@@ -222,8 +222,6 @@ void restart() {
     phase[toSave] = vars[toSave].getValue();
     unassignLit(trail.back());
   }
-  
-  curDecisionLevel = conflict_count = 0;
 }
 
 void addClause(std::vector<int> &clause) {
