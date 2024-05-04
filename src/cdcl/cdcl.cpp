@@ -7,13 +7,11 @@
 std::vector<int> trail;
 bool conflict;
 std::vector<int> learned;
-int count_lits_highest_dec_level = 1;
 int curDecisionLevel = 0;
 std::vector<int> seen;
 int conflict_clause_id = 0;
 std::vector<int> unitTrail;
 int conflict_count = 0;
-double delete_cue = 5;
 int decision_count = 0;
 double t = 0;
 std::queue<int> del_ref;
@@ -97,9 +95,9 @@ void updateWatched(int assertedLit) {
 
   auto watchedClauses = &vars[assertedLit].neg_watched;
 
-  if (vars[assertedLit].getValue() == FALSE) {
+  if (vars[assertedLit].getValue() == FALSE)
     watchedClauses = &vars[assertedLit].pos_watched;
-  }
+
 
   for (auto clauseIndex = watchedClauses->begin(); clauseIndex != watchedClauses->end();
        ++clauseIndex) {
@@ -157,15 +155,12 @@ int analyze() {
     std::vector<int> &conf = cnf[conflict_clause_id];
     for (int i = (firstIter) ? 0 : 1; i < conf.size(); i++) {
       int lit = conf[i];
-      if (!seen[index(lit)] && vars[index(lit)].level > 0) {
-        
+      if (!seen[index(lit)] && vars[index(lit)].level > 0) { 
         seen[index(lit)] = 1;
-        if (vars[index(lit)].level >= curDecisionLevel) {
-          // printf("OK! \n", stampedLit);
+        if (vars[index(lit)].level >= curDecisionLevel)
           num++;
-        } else {
+        else
           learned.push_back(lit);
-        }
       }
     }
 
@@ -228,9 +223,7 @@ void restart() {
     unassignLit(trail.back());
   }
   
-  conflict_count = 0;
-
-  curDecisionLevel = 0;
+  curDecisionLevel = conflict_count = 0;
 }
 
 void addClause(std::vector<int> &clause) {

@@ -63,7 +63,7 @@ void assertLit(int literal, bool forced) {
     if (isPhaseFalse){
       lit.setValue(FALSE);
       trail.push_back(-literal);
-      }
+    }
     else{
       lit.setValue(TRUE);
       trail.push_back(literal);
@@ -100,14 +100,13 @@ void unassignLit(int literal) {
   }
 }
 
-void emptyUnitQueue(){
-
+void emptyUnitQueue() {
   while (!unitQueue.empty()) {
-  int toDiscard = index(unitQueue.front().literal);
-  vars[toDiscard].enqueued = false;
-  vars[toDiscard].reason = 0;
-  vars[toDiscard].level = -1;
-  unitQueue.pop();
+    int toDiscard = index(unitQueue.front().literal);
+    vars[toDiscard].enqueued = false;
+    vars[toDiscard].reason = 0;
+    vars[toDiscard].level = -1;
+    unitQueue.pop();
   }
 
 }
