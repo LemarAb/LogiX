@@ -74,15 +74,12 @@ void assertLit(int literal, bool forced) {
     
   }
 
-  updateWatched(index(literal));
-
-  auto watchedClauses = &vars[index(literal)].neg_watched;
-
-  if (vars[index(literal)].getValue() == FALSE)
-    watchedClauses = &vars[index(literal)].pos_watched;
+  auto watchedClauses = updateWatched(index(literal));
   
-
-  while(!del_ref.empty()) {watchedClauses->erase(del_ref.front());  del_ref.pop();}
+  while(!del_ref.empty()) {
+    watchedClauses->erase(del_ref.front());
+    del_ref.pop();
+  }
 }
 
 void unassignLit(int literal) {

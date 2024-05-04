@@ -91,7 +91,7 @@ int pickDecisionLit() {
   return heap.removeMax();
 }
 
-void updateWatched(int assertedLit) {
+std::set<int>* updateWatched(int assertedLit) {
 
   auto watchedClauses = &vars[assertedLit].neg_watched;
 
@@ -135,10 +135,11 @@ void updateWatched(int assertedLit) {
       conflict_clause_id = *clauseIndex;
       conflict = true;
       emptyUnitQueue();
-      return;
+      return watchedClauses;
     }
   nextIter:;
   }
+  return watchedClauses;
 }
 
 int analyze() {

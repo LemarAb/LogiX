@@ -130,7 +130,7 @@ int pickDecisionLit();
 void pickDecisionLit2();
 
 // updates the watched literals after a new assignment is made
-void updateWatched(int literal);
+std::set<int>* updateWatched(int literal);
 
 // handles conficts and signals UNSAT
 void backtrack(int btlvl);
