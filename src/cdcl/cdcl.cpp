@@ -55,7 +55,6 @@ bool cdcl() {
       //   delete_cue++;
       //  }
 
-
     } else {
     
     if(trail.size() == numOfVars)
@@ -124,7 +123,6 @@ std::set<int>* updateWatched(int assertedLit) {
       }
     }
 
-    //
     if (unitLit.getValue() == FREE) {
       if (!unitLit.enqueued) {
         int reason = *clauseIndex;
@@ -217,7 +215,7 @@ void restart() {
     phase[i] = FREE;
 
   while (!trail.empty() && vars[index(trail.back())].level > 0) {
-    // save current assigs in the phase vector
+    // save current assigs to the phase vector
     int toSave = index(trail.back());
     phase[toSave] = vars[toSave].getValue();
     unassignLit(trail.back());
