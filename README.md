@@ -28,7 +28,7 @@ To analyze the solver's performance, we conducted experiments and visualized the
 <p align="center">
   <img src="cactus/cactusPlot350secs.png" alt="Cactus Runtime">
   <br>
-  <em>Figure 1: DPDL Runtime Plot</em>
+  <em>Figure 2: DPDL Runtime Plot</em>
 </p>
 
 
