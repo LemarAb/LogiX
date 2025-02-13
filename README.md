@@ -47,17 +47,11 @@ Backtracking: If a contradiction occurs, the algorithm reverts the last decision
 
 Various heuristics improve DPLL's efficiency by guiding variable selection. The most common are:
 
-1. DLCS (Dynamic Largest Combined Sum)
+1. DLCS (Dynamic Largest Combined Sum): Selects the variable that appears in the most clauses, considering both positive and negative occurrences.
 
-Selects the variable that appears in the most clauses, considering both positive and negative occurrences.
+2. DLIS (Dynamic Largest Individual Sum): Chooses the variable that occurs most frequently in satisfied clauses, prioritizing the most impactful assignment.
 
-2. DLIS (Dynamic Largest Individual Sum)
-
-Chooses the variable that occurs most frequently in satisfied clauses, prioritizing the most impactful assignment.
-
-3. JW (Jeroslow-Wang Heuristic)
-
-Weights variables based on the sum of inverse clause lengths, prioritizing those in shorter clauses since they are more constraining.
+3. JW (Jeroslow-Wang Heuristic): Weights variables based on the sum of inverse clause lengths, prioritizing those in shorter clauses since they are more constraining.
 
 ## CDCL
 
