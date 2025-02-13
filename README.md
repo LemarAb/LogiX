@@ -19,12 +19,12 @@ To build the project, enter `make`. To run the solver on a test file, enter `./m
 To analyze the solver's performance, we conducted experiments and visualized the results using the images in the cactus folder. The cactus plots illustrate the solver's runtime and efficiency across different test cases and used heuristics.
 
 <p align="center">
-  <img src="cactus/CDCLcactusplot.png" alt="Cactus Runtime" height="600">
+  <img src="cactus/CDCLcactusplot.png" alt="Cactus Runtime" height="400">
   <br>
   <em>Figure 1: CDCL Runtime Plot</em>
 </p>
 <p align="center">
-  <img src="cactus/cactusPlot350secs.png" alt="Cactus Runtime" height="600">
+  <img src="cactus/cactusPlot350secs.png" alt="Cactus Runtime" height="400">
   <br>
   <em>Figure 1: DPDL Runtime Plot</em>
 </p>
