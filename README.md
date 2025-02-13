@@ -18,17 +18,17 @@ To build the project, enter `make`. To run the solver on a test file, enter `./m
 ## Experimenal evaluation
 Experimental Evaluation
 
-To analyze the solver's performance, we conducted experiments and visualized the results using the images in the cactus folder. The cactus plots illustrate the solver's runtime and efficiency across different test cases.
+To analyze the solver's performance, we conducted experiments and visualized the results using the images in the cactus folder. The cactus plots illustrate the solver's runtime and efficiency across different test cases and used heuristics.
 
 <p align="center">
   <img src="cactus/CDCLcactusplot.png" alt="Cactus Runtime">
   <br>
-  <em>Figure 1: Cactus Runtime Plot</em>
+  <em>Figure 1: CDCL Runtime Plot</em>
 </p>
 <p align="center">
   <img src="cactus/cactusPlot350secs.png" alt="Cactus Runtime">
   <br>
-  <em>Figure 1: Cactus Runtime Plot</em>
+  <em>Figure 1: DPDL Runtime Plot</em>
 </p>
 
 
