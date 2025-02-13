@@ -63,7 +63,7 @@ Non-Chronological Backtracking (Backjumping): Instead of undoing only the last d
 
 Restart Strategies: The solver periodically restarts with learned clauses to escape difficult search spaces.
 
-**Test Environment Specifications:**
+## Test Environment Specifications:
 - **Hardware:**
   - Processor: AMD Ryzen 7 5700U @ 1.80 GHz
   - Memory: 16 GB
