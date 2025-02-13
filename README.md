@@ -15,6 +15,23 @@ To build the project, enter `make`. To run the solver on a test file, enter `./m
 
 `python runCDCL.py c 1 30` (run the compiled .exe on the first 30 comp files)
 
+## Experimenal evaluation
+Experimental Evaluation
+
+To analyze the solver's performance, we conducted experiments and visualized the results using the images in the cactus folder. The cactus plots illustrate the solver's runtime and efficiency across different test cases.
+
+<p align="center">
+  <img src="cactus/CDCLcactusplot.png" alt="Cactus Runtime">
+  <br>
+  <em>Figure 1: Cactus Runtime Plot</em>
+</p>
+<p align="center">
+  <img src="cactus/cactusPlot350secs.png" alt="Cactus Runtime">
+  <br>
+  <em>Figure 1: Cactus Runtime Plot</em>
+</p>
+
+
 **Test Environment Specifications:**
 - **Hardware:**
   - Processor: AMD Ryzen 7 5700U @ 1.80 GHz
