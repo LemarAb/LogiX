@@ -28,9 +28,47 @@ To analyze the solver's performance, we conducted experiments and visualized the
 <p align="center">
   <img src="cactus/cactusPlot350secs.png" alt="Cactus Runtime">
   <br>
-  <em>Figure 2: DPDL Runtime Plot</em>
+  <em>Figure 1: DPDL Runtime Plot</em>
 </p>
+## Background
 
+The Davis-Putnam-Logemann-Loveland (DPLL) algorithm and the Conflict-Driven Clause Learning (CDCL) algorithm are two fundamental approaches to solving the Boolean satisfiability problem (SAT).
+
+# DPLL
+
+DPLL is a backtracking algorithm that extends the basic backtracking search with:
+
+Unit Propagation: If a clause has only one unassigned literal, it must be true.
+
+Pure Literal Elimination: If a literal appears only with one polarity, it can be assigned accordingly.
+
+Backtracking: If a contradiction occurs, the algorithm reverts the last decision.
+
+# Heuristics in DPLL
+
+Various heuristics improve DPLL's efficiency by guiding variable selection. The most common are:
+
+1. DLCS (Dynamic Largest Combined Sum)
+
+Selects the variable that appears in the most clauses, considering both positive and negative occurrences.
+
+2. DLIS (Dynamic Largest Individual Sum)
+
+Chooses the variable that occurs most frequently in satisfied clauses, prioritizing the most impactful assignment.
+
+3. JW (Jeroslow-Wang Heuristic)
+
+Weights variables based on the sum of inverse clause lengths, prioritizing those in shorter clauses since they are more constraining.
+
+# CDCL
+
+CDCL enhances DPLL by adding conflict-driven learning, making it significantly more efficient for many practical SAT problems. It introduces:
+
+Clause Learning: New clauses are added based on conflicts, preventing the solver from repeating the same mistakes.
+
+Non-Chronological Backtracking (Backjumping): Instead of undoing only the last decision, the solver jumps back multiple levels in the decision tree.
+
+Restart Strategies: The solver periodically restarts with learned clauses to escape difficult search spaces.
 
 **Test Environment Specifications:**
 - **Hardware:**
