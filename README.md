@@ -16,8 +16,6 @@ To build the project, enter `make`. To run the solver on a test file, enter `./m
 `python runCDCL.py c 1 30` (run the compiled .exe on the first 30 comp files)
 
 ## Experimenal evaluation
-Experimental Evaluation
-
 To analyze the solver's performance, we conducted experiments and visualized the results using the images in the cactus folder. The cactus plots illustrate the solver's runtime and efficiency across different test cases and used heuristics.
 
 <p align="center">
