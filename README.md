@@ -30,11 +30,12 @@ To analyze the solver's performance, we conducted experiments and visualized the
   <br>
   <em>Figure 1: DPDL Runtime Plot</em>
 </p>
-## Background
+
+# Background
 
 The Davis-Putnam-Logemann-Loveland (DPLL) algorithm and the Conflict-Driven Clause Learning (CDCL) algorithm are two fundamental approaches to solving the Boolean satisfiability problem (SAT).
 
-# DPLL
+## DPLL
 
 DPLL is a backtracking algorithm that extends the basic backtracking search with:
 
@@ -44,7 +45,7 @@ Pure Literal Elimination: If a literal appears only with one polarity, it can be
 
 Backtracking: If a contradiction occurs, the algorithm reverts the last decision.
 
-# Heuristics in DPLL
+## Heuristics in DPLL
 
 Various heuristics improve DPLL's efficiency by guiding variable selection. The most common are:
 
@@ -60,7 +61,7 @@ Chooses the variable that occurs most frequently in satisfied clauses, prioritiz
 
 Weights variables based on the sum of inverse clause lengths, prioritizing those in shorter clauses since they are more constraining.
 
-# CDCL
+## CDCL
 
 CDCL enhances DPLL by adding conflict-driven learning, making it significantly more efficient for many practical SAT problems. It introduces:
 
